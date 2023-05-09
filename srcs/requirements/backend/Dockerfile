@@ -1,20 +1,17 @@
-FROM node
+FROM node:16-alpine
 
 LABEL description="backend Docker image based on node"
 
 RUN mkdir -p /usr/src/app
-RUN mkdir -p /usr/src/app/backend
 
-WORKDIR /usr/src/app/backend
+WORKDIR /usr/src/app
 
-COPY package*.json ./
+COPY ./transc-backend/* /usr/src/app/
 
 RUN npm install
-
-COPY ./ ./usr/src/app/backend
 
 RUN npm run build
 
 EXPOSE 3000
 
-CMD ["npm", "start"]
+CMD ["npm", "start", "start:dev"]

@@ -1,4 +1,4 @@
-FROM postgres:latest
+FROM postgres:14.3-alpine
 
 LABEL description="postgresql Docker image based on postgres"
 

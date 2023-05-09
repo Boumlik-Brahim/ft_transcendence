@@ -10,7 +10,7 @@ down:
 clean: down
 	docker volume rm $$(docker volume ls -q);
 
-fclean: down
+fclean: clean
 	docker system prune -a -f;
 
 .PHONY: build run down clean fclean

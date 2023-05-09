@@ -1,20 +1,17 @@
-FROM node
+FROM node:16-alpine
 
 LABEL description="frontend Docker image based on node"
 
 RUN mkdir -p /usr/src/app
-RUN mkdir -p /usr/src/app/frontend
 
-WORKDIR /usr/src/app/frontend
+WORKDIR /usr/src/app
 
-COPY package*.json ./
+COPY ./transc-frontend/* /usr/src/app/
 
 RUN npm install
-
-COPY ./ ./usr/src/app/frontend
 
 RUN npm run build
 
 EXPOSE 3000
 
-CMD ["npm", "start"]
+CMD ["npm", "run", "dev"]
