@@ -2,4 +2,4 @@
 
 npm install
 npm run build
-npm start start:dev
+npm run dev

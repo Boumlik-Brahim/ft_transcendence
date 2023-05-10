@@ -8,10 +8,6 @@ WORKDIR /usr/src/app
 
 COPY ./transc-backend/* /usr/src/app/
 
-RUN sh script.sh
-
-RUN npm run build
-
 EXPOSE 3000
 
-CMD ["npm", "start", "start:dev"]
+ENTRYPOINT [ "/bin/sh", "/usr/src/app/script.sh" ]
