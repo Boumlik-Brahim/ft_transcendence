@@ -1,0 +1,6 @@
+# ignore .git folders.
+..
+.git
+# ignore all markdown files (md) beside all README*.md
+*.md
+!README*.md
