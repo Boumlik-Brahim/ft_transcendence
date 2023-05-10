@@ -8,7 +8,7 @@ WORKDIR /usr/src/app
 
 COPY ./transc-backend/* /usr/src/app/
 
-RUN npm install
+RUN sh script.sh
 
 RUN npm run build
 
