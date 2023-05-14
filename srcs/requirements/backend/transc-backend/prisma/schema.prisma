@@ -9,3 +9,162 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+//* ---------------------------------------------------------------------------------------------------------------------------- *//   
+model User {
+  id  Int @id @default(autoincrement())
+  name  String?
+  email String  @unique
+  password  String
+  Avatar  String?
+  Status  String[]
+  created_at  DateTime
+  userStat  UserStat[]
+  achievement Achievement[]
+  userThatBlock BlockedUser[] @relation("Bloking")
+  blockedUser   BlockedUser[] @relation("blocked")
+  sendFriendRequest      FriendRequest[]  @relation("sendFriendRequest")
+  receiveFriendRequest   FriendRequest[]  @relation("receiveFriendRequest")
+  user    Friend[]  @relation("user")
+  friend  Friend[]  @relation("friend")
+  senders   DirectMessage[] @relation("sendeMessage")
+  receivers DirectMessage[] @relation("receiveMessage")
+  channel Channel[]
+  player  Game[]  @relation("player")
+  openent Game[]  @relation("openent")
+}
+
+model UserStat {
+  id  Int  @id @default(autoincrement())
+  winsNmbr  Int
+  lossesNmbr  Int
+  rate  Int
+  user  User  @relation(fields: [userId], references: [id])
+  userId  Int @unique
+}
+
+model Achievement {
+  id  Int @id @default(autoincrement())
+  achievement String
+  created_at  DateTime
+  user  User @relation(fields: [userId], references: [id])
+  userId  Int @unique
+}
+
+model BlockedUser {
+  id  Int  @id @default(autoincrement())
+  userThatBlock User @relation("Bloking", fields: [userId], references: [id])
+  userId  Int @unique
+  blockedUser User  @relation("blocked", fields: [blockedUserId], references: [id])
+  blockedUserId Int @unique
+}
+
+model FriendRequest {
+  id  Int @id @default(autoincrement())
+  status  String
+  created_at  DateTime
+  sendFriendRequest User  @relation("sendFriendRequest", fields: [senderId], references: [id])
+  senderId  Int @unique
+  receiveFriendRequest  User  @relation("receiveFriendRequest", fields: [receiverId], references: [id])
+  receiverId  Int @unique
+}
+
+model Friend {
+  id  Int @id @default(autoincrement())
+  created_at  DateTime
+  user  User  @relation("user", fields: [userId], references: [id])
+  userId  Int @unique
+  friend  User  @relation("friend", fields: [friendId], references: [id])
+  friendId  Int @unique
+}
+
+model DirectMessage {
+  id  Int @id @default(autoincrement())
+  content String
+  created_at  DateTime
+  sender  User  @relation("sendeMessage", fields: [senderId], references: [id])
+  senderId Int  @unique
+  reciever  User  @relation("receiveMessage", fields: [recieverId], references: [id])
+  recieverId  Int @unique
+}
+
+//* ---------------------------------------------------------------------------------------------------------------------------- *//
+
+model Channel {
+  id  Int @id @default(autoincrement())
+  channelName String
+  channelType String
+  channelPassword String?
+  created_at  DateTime
+  channelOwnerId  Int
+  user  User[]
+  channelMember ChannelMember[] @relation("channelMember")
+  kickedMember  KickedMember[]  @relation("kickedMember")
+  bannedMembers BannedMember[]  @relation("bannedMember")
+  mutedMembers  MutedMember[] @relation("mutedMember")
+  reciever  ChannelMessage[]  @relation("receiverRelation")
+}
+
+model ChannelMember {
+  id  Int @id @default(autoincrement())
+  isAdmin Boolean @default(false)
+  userId  Int
+  channel Channel @relation("channelMember", fields: [channelId], references: [id])
+  channelId Int @unique
+  sender  ChannelMessage[]  @relation("senderRelation")
+}
+
+model KickedMember {
+  id  Int @id @default(autoincrement())
+  kicked_at DateTime
+  userId  Int
+  channel Channel @relation("kickedMember", fields: [channelId], references: [id])
+  channelId Int @unique
+}
+
+model BannedMember {
+  id  Int @id @default(autoincrement())
+  banned_at DateTime
+  userId  Int
+  channel   Channel @relation("bannedMember", fields: [channelId], references: [id])
+  channelId      Int @unique
+}
+
+model MutedMember {
+  id  Int @id @default(autoincrement())
+  muted_at  DateTime
+  userId  Int
+  channel Channel @relation("mutedMember", fields: [channelId], references: [id])
+  channelId Int @unique
+}
+
+model ChannelMessage {
+  id  Int @id @default(autoincrement())
+  content String
+  created_at  DateTime
+  sender  ChannelMember @relation("senderRelation", fields: [memberId], references: [id])
+  memberId  Int @unique
+  reciever  Channel @relation("receiverRelation", fields: [channelId], references: [id])
+  channelId Int @unique
+}
+
+//* ---------------------------------------------------------------------------------------------------------------------------- *//
+model GameHistory {
+  id  Int @id @default(autoincrement())
+  game  Game[] @relation("gameHistory")
+}
+
+model Game {
+  id  Int @id @default(autoincrement())
+  gameType  String
+  gameStat  String[]
+  created_at  DateTime
+  player  User  @relation("player", fields: [player1Id], references: [id])
+  player1Id Int @unique
+  openent User  @relation("openent", fields: [player2Id], references: [id])
+  player2Id Int @unique
+  gameHistory GameHistory @relation("gameHistory", fields: [gameHistoryId], references: [id])
+  gameHistoryId Int @unique
+}
+
+//* ---------------------------------------------------------------------------------------------------------------------------- *//
