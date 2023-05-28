@@ -6,7 +6,7 @@ RUN mkdir -p /usr/src/app
 
 WORKDIR /usr/src/app
 
-COPY ./transc-frontend/* /usr/src/app/
+COPY ./transc-frontend/package*.json /usr/src/app/
 
 EXPOSE 3000
 

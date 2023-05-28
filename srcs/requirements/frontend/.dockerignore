@@ -1,8 +1,12 @@
-# ignore .git folders.
+# Ignore .git folders.
 ..
 .git
-# ignore all markdown files (md) beside all README*.md
+# Ignore all markdown files (md) beside all README*.md
 *.md
 !README*.md
-# ignore node_modules
-**/node_modules
+# Ignore development files
+.DS_Store
+.env
+# Ignore node_modules and build
+node_modules/
+build/
