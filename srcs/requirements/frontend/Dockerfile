@@ -8,6 +8,6 @@ WORKDIR /usr/src/app
 
 COPY ./transc-frontend/package*.json /usr/src/app/
 
-EXPOSE 3000
+EXPOSE 5173
 
 ENTRYPOINT [ "/bin/sh", "/usr/src/app/script.sh" ]
