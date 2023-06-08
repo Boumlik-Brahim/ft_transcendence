@@ -1,9 +1,13 @@
-import { SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
+import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
+import { Socket } from 'dgram';
 
 @WebSocketGateway()
 export class GameGateway {
-  @SubscribeMessage('message')
-  handleMessage(client: any, payload: any): string {
-    return 'Hello world!';
-  }
+  @SubscribeMessage('createGame')
+  handleEvent(
+    @MessageBody() data: string,
+    @ConnectedSocket() client: Socket
+  ) {
+
+    }
 }

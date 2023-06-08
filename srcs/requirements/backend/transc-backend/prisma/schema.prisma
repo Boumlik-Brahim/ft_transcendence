@@ -16,10 +16,10 @@ model User {
   id  Int @id @default(autoincrement())
   name  String
   email String
-  password  String
-  Avatar  String
+  password  String?
+  Avatar  String?
   Status  String[]
-  created_at  DateTime
+  created_at  DateTime?
   userStat  UserStat[]
   achievement Achievement[]
   userThatBlock BlockedUser[] @relation("Bloking")
@@ -135,7 +135,7 @@ model Game {
   openent User  @relation("openent", fields: [player2Id], references: [id])
   player2Id Int
   ball_x Int
-  ball_x Int
+  ball_y Int
   player1_x Int
   player2_x Int
   player1_y Int
