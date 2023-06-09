@@ -1,4 +1,4 @@
-import './App.css'
+import './index.css'
 import { Nav } from './components/nav';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Landingpage } from './pages/landingPage';
@@ -13,6 +13,8 @@ import { Provider } from 'react-redux';
 import store from './store/store';
 import { PersistGate } from 'redux-persist/integration/react';
 import { persistor } from './store/store';
+import RootLayout from './components/nav/RootLayout';
+
 
 function App() {
 
@@ -21,8 +23,9 @@ function App() {
     <Provider store={store}>
       <PersistGate persistor={persistor}>
         <BrowserRouter>
-          <div className=''>
-            <Nav />
+          {/* <div className='' > */}
+            {/* <Nav /> */}
+            <RootLayout >
             <Routes>
               <Route path='/' element={<Landingpage/>}/>
               <Route path='/auth' element={<Auth/>} />
@@ -33,11 +36,12 @@ function App() {
               <Route path='/leaderboard' element={<Leaderboard/>}/>
               <Route path='/achievement' element={<Achievements/>}/>
             </Routes>
-          </div>
+            </RootLayout>
+          {/* </div> */}
         </BrowserRouter>
       </PersistGate>
       </Provider>
-    </>
+     </>
   )
 }
 
