@@ -3,6 +3,7 @@ import { ChatService } from './chat.service';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
 import { ApiHeader, ApiTags } from '@nestjs/swagger';
+import { DirectMessage, Prisma } from '@prisma/client';
 
 @ApiTags('chat')
 @Controller('chat')
@@ -10,8 +11,9 @@ export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
   @Post()
-  async create(@Body() createChatDto: CreateChatDto) {
-    return this.chatService.create(createChatDto);
+  async create(@Body() createChatDto: CreateChatDto): Promise<DirectMessage> {
+    const chat = await this.chatService.create(createChatDto);
+    return chat;
   }
 
   @Get()
