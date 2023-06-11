@@ -134,12 +134,12 @@ model Game {
   player1Id Int
   openent User  @relation("openent", fields: [player2Id], references: [id])
   player2Id Int
-  ball_x Int
-  ball_y Int
-  player1_x Int
-  player2_x Int
-  player1_y Int
-  player2_y Int
+  ball_x Int @default(0)
+  ball_y Int @default(0)
+  player1_x Int @default(0)
+  player2_x Int @default(0)
+  player1_y Int @default(0)
+  player2_y Int @default(0)
 }
 
 //* ---------------------------------------------------------------------------------------------------------------------------- *//
