@@ -25,18 +25,29 @@ function App() {
         <BrowserRouter>
           {/* <div className='' > */}
             {/* <Nav /> */}
-            <RootLayout >
             <Routes>
               <Route path='/' element={<Landingpage/>}/>
               <Route path='/auth' element={<Auth/>} />
-              <Route path='/chat' element={<Chat/>}/>
-              <Route path='/profile' element={<Profile/>}/>
-              <Route path='/channels' element={<Channels/>}/>
-              <Route path='/game' element={<Game/>}/>
-              <Route path='/leaderboard' element={<Leaderboard/>}/>
-              <Route path='/achievement' element={<Achievements/>}/>
+                  <Route element={<RootLayout title="Chat"/>} >
+                    <Route path='/chat' element={<Chat/>}/>
+                  </Route>
+                  <Route element={<RootLayout title="Profile"/>} >
+                    <Route path='/profile' element={<Profile/>}/>    
+                  </Route>
+                  <Route element={<RootLayout title="Channels"/>} >
+                    <Route path='/channels' element={<Channels/>}/>
+                  </Route>
+                  <Route element={<RootLayout title="Game"/>} >
+                    <Route path='/game' element={<Game/>}/>
+                  </Route>
+                  <Route element={<RootLayout title="Leaderboard"/>} >
+                    <Route path='/leaderboard' element={<Leaderboard/>}/>
+                  </Route>
+                  <Route element={<RootLayout title="Achievements"/>} >
+                    <Route path='/achievement' element={<Achievements/>}/>
+                  </Route>
+                {/* </Route> */}
             </Routes>
-            </RootLayout>
           {/* </div> */}
         </BrowserRouter>
       </PersistGate>

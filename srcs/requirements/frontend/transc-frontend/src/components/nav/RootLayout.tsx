@@ -1,16 +1,24 @@
 
-import Sidebar from "./Sidebar";
+import { Outlet } from "react-router-dom";
+// import Sidebar from "./Sidebar";
+import Nav from './Nav';
+import { useState } from "react";
 
 interface Props {
-    children: React.ReactNode;
+    title: string;
 }
 
-export default function RootLayout({ children } : Props){
+export default function RootLayout({title} : Props){
+    const [isOpen, setIsOpen] = useState(false);
+
     return(
 
-<div className=" grid grid-cols-10 h-screen ">
-    <Sidebar />
-    <main className="col-span-8 sm:col-span-7">{children}</main>
+<div className=" "> {/* grid grid-cols-10 h-screen lg:grid-cols-12  */}
+    {/* <Sidebar /> */}
+    <Nav title = {title} isOpen={isOpen} setIsOpen={setIsOpen} />
+    {!isOpen && (<main className=""> {/*col-span-8 sm:col-span-7 lg:col-span-9*/}
+        <Outlet />
+    </main>)}
 </div>
 
 );
