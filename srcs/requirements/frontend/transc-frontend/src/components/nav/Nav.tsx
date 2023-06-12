@@ -6,13 +6,13 @@ import {MdNotifications} from 'react-icons/md'
 import {CgClose}  from "react-icons/cg";
 import {FiMenu} from 'react-icons/fi'
 
-
+import { useMediaQuery } from '@react-hook/media-query';
 
 export default function Nav({title, setIsOpen, isOpen}: {title :string,
     setIsOpen : React.Dispatch<React.SetStateAction<boolean>>
     isOpen : boolean
 } ){
-   
+    const isMdScreen = useMediaQuery('(min-width: 768px)');
     const [color, setColor] = useState("bg-primary-100");
     const toggleColor = () => {
         setIsOpen(!isOpen);
@@ -24,22 +24,25 @@ export default function Nav({title, setIsOpen, isOpen}: {title :string,
 
     return(
 <>
-    <div className={`${isOpen ? "hidden" : "flex"} ${"w-screen h-[100px] flex items-center justify-between px-[27px] bg-primary-100"}`}>
+<div className={`${"border-2 border-green-500 md:col-span-2"}   }`}>
+    <div className={`${isOpen ? "hidden" : "flex md:grid"} ${"border-2 border-yellow-500 w-screen md:w-full md:h-full h-[100px] md:col-span-2 flex items-center justify-between px-[27px] bg-primary-100 md:bg-primary-900"}`}>
         <div className=" flex items-center">
             <button
-                className="flex flex-col   rounded justify-center items-center group lg:hidden "
+                className="flex flex-col rounded justify-center items-center group  lg:hidden "
                 onClick={toggleColor}
             >
                 < FiMenu className="text-primary-900 text-lg "/> 
             </button>
         </div>
-        <p className="text-lg font-poppins font-normal text-primary-900">{title}</p>
-        <MdNotifications className="text-[20px] text-primary-900"/>
+        <p className="text-lg font-poppins font-normal text-primary-900 ">{title}</p>
+        <MdNotifications className="text-[20px] text-primary-900 "/>
     </div>
+
+
 
                     {/* this div gonna show up when the the toggle button is clicked */}
 
-    <div className={`${isOpen ? "h-screen w-screen bg-primary-900 flex  flex-col items-center justify-center" : "hidden"}`}>
+    <div className={`${isOpen ? "h-screen w-screen md:h-full md:w-full bg-primary-900 flex  flex-col items-center justify-center" : "hidden"} `}>
         <div className="w-screen h-[100px] flex items-center justify-center px-[27px] ">
             <div className="flex items-center ">
                 <button
@@ -50,7 +53,7 @@ export default function Nav({title, setIsOpen, isOpen}: {title :string,
                 </button>
             </div>
         </div>
-        <div className="flex flex-col items-center justify-evenly  h-full w-[128px]">
+        <div className="flex flex-col items-center justify-evenly  h-full w-[128px] border-2 border-red-500 ">
             <div className="flex flex-col items-center gap-[8px] w-[128px]">
                     <div className="border-[1px] border-white w-full h-[60px] xs:h-[50px] xxs:h-[50px] flex justify-center items-center rounded-full bg-white">
                         <img src="/imgs/profile.png" alt="profile" className="w-[30px] h-[30px]"/>
@@ -81,8 +84,9 @@ export default function Nav({title, setIsOpen, isOpen}: {title :string,
                 </div>
             </div>
         </div>
+       
     </div>      
-    
+</div>   
 </>
 );
 };
