@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus, UseFilters } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
@@ -11,9 +11,18 @@ export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
   @Post()
-  async create(@Body() createChatDto: CreateChatDto): Promise<DirectMessage> {
-    const chat = await this.chatService.create(createChatDto);
-    return chat;
+  async create(@Body() createChatDto: CreateChatDto): Promise<DirectMessage> { 
+    try {
+      const chat = await this.chatService.createChat(createChatDto);
+      return chat;
+    } catch (error) {
+      throw new HttpException({
+        status: HttpStatus.BAD_REQUEST,
+        error: 'BadRequestException',
+      }, HttpStatus.BAD_REQUEST, {
+        cause: error
+      });
+    }
   }
 
   @Get()

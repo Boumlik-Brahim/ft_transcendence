@@ -8,7 +8,7 @@ import { DirectMessage, Prisma } from '@prisma/client';
 export class ChatService {
   constructor(private prisma: PrismaService) {}
 
-  create(createChatDto: CreateChatDto): Promise<DirectMessage> {
+  createChat(createChatDto: CreateChatDto): Promise<DirectMessage> {
     return this.prisma.directMessage.create({ data: createChatDto });
   }
 
