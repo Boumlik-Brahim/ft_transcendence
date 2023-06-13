@@ -9,10 +9,13 @@ export default {
       'md': '768px',
       'lg': '1024px',
       'xl': '1280px',
+      '2xl': '1536px',
+      // 'xl':{'min': '1023px', 'max': '1280px'}
     },
     fontFamily: {
       'poppins' : ['"Poppins"', 'sans-serif'],
-      'press' : ['"Iceberg"'],
+      'ice' : ['"Iceberg"'],
+      'press': '"Press Start 2P"',
       'nova-flat': '"Nova Flat"'
     },
   extend: {
@@ -34,7 +37,11 @@ export default {
             700:'#5BB59B',
             600:'#FF0059',
             500:'#F5A623',
-            400:'#53BBB5'
+            400:'#FFCB5B',
+            300:'#53BBB5',
+            200:'#4E4E4E',
+            100: '#6B6A5D',
+
           },
           tertiary:{},
 
@@ -43,8 +50,8 @@ export default {
   },
 },
   plugins: [
-    require('tailwindcss'),
-    require('autoprefixer')
+    // require('tailwindcss'),
+    // require('autoprefixer'),
   ],
 }
 

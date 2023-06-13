@@ -6,6 +6,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Iceberg&display=swap');
 
 
+.content {
+    height: calc(100vh - 100px);
+    overflow-y: auto;
+    background-color: lightgray;
+  }
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

@@ -14,10 +14,10 @@ export default function RootLayout({title} : Props){
 
     return(
 
-<div className="md:grid md:grid-cols-12  h-screen"> {/* grid grid-cols-10 h-screen lg:grid-cols-12  */}
+<div className="md:grid md:grid-cols-12  lg:cols-12 h-screen "> {/* grid grid-cols-10 h-screen lg:grid-cols-12  */}
     {/* <Sidebar /> */}
     <Nav title = {title} isOpen={isOpen} setIsOpen={setIsOpen} />
-    {!isOpen && (<main className="md:col-span-10 "> {/*col-span-8 sm:col-span-7 lg:col-span-9*/}
+    {!isOpen && (<main className="md:col-span-10 lg:col-span-9"> {/*col-span-8 sm:col-span-7 lg:col-span-9*/}
         <Outlet />
     </main>)}
 </div>
