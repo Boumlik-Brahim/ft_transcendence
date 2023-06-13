@@ -1,9 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus, UseFilters } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { CreateChatDto } from './dto/create-chat.dto';
-import { UpdateChatDto } from './dto/update-chat.dto';
-import { ApiHeader, ApiTags } from '@nestjs/swagger';
-import { DirectMessage, Prisma } from '@prisma/client';
+import { ApiTags } from '@nestjs/swagger';
+import { DirectMessage } from '@prisma/client';
 
 @ApiTags('chat')
 @Controller('chat')
@@ -12,36 +11,19 @@ export class ChatController {
 
   @Post()
   async create(@Body() createChatDto: CreateChatDto): Promise<DirectMessage> { 
-    try {
-      const chat = await this.chatService.createChat(createChatDto);
-      return chat;
-    } catch (error) {
-      throw new HttpException({
-        status: HttpStatus.BAD_REQUEST,
-        error: 'BadRequestException',
-      }, HttpStatus.BAD_REQUEST, {
-        cause: error
-      });
-    }
+    const chat = await this.chatService.createChat(createChatDto);
+    return chat;
   }
 
   @Get()
-  findAll() {
-    return this.chatService.findAll();
+  async findAll(@Query('senderId') senderId: number, @Query('receiverId') receiverId: number): Promise<DirectMessage[]> {
+    const chat = await this.chatService.findAllChats(+senderId, +receiverId);
+    return chat;
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.chatService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateChatDto: UpdateChatDto) {
-    return this.chatService.update(+id, updateChatDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.chatService.remove(+id);
+  async findOne(@Param('id') id: string): Promise<DirectMessage> {
+    const chat = await this.chatService.findOneChat(+id);
+    return chat;
   }
 }
