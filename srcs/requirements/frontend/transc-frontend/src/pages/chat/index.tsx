@@ -1,36 +1,108 @@
 
-interface Pic {
-    src : string;
-    alt : string;
-}
-const unsplashimg: Pic = {
-    src: 'https://source.unsplash.com/1600x900/?men',
-    alt: 'random unsplash image'
-  };
+import {FaPaperPlane} from 'react-icons/fa'
+import {HiUserGroup} from 'react-icons/hi'
+
+import MessageBox from './MessageBox'
 
 export const Chat  = () => {
     return (
-        // <div className=" grid grid-rows-[10fr,90fr] h-screen ">
-        //    <div className=" flex items-center bg-primary-300 text-primary-900 justify-between pl-2 pr-5">
-        //         <div>
-        //             <img src={unsplashimg.src} alt={unsplashimg.alt}  className="w-[50px] h-[50px] rounded-full  object-cover"/>
-        //             <p className="sm:text-red-500">Messages</p>
-        //         </div>
-        //         <div>
-        //             <p>search</p>
-        //         </div>
-        //     </div>
-        //    <div className=" ">
-        //         <p>pic + title + search</p>
-        //    </div>
-        // </div>
-        // <div className="border-2 border-black  h-[90vh] md:h-[100vh] w-screen overflow">
-        //         <div className="border-2 border-red-600">
+     <div className='h-[90vh] w-full '>
 
-        //         </div>                
-        // </div>
-        <div className=" h-[90vh] md:h-[100vh] bg-red-300 " >
+        <div className='h-full w-full  bg-white ] '>
+            <div className='flex  flex-col  pl-[23px] items-start rounded h-[90%]  overflow-auto'>
+                {/* <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p>
+                <p className='p-[5px]'>message</p> */}
+                <MessageBox />
 
+
+            </div>
+            <div className='grow h-[10%]  flex items-center justify-center bg-primary-100 '>
+                <div className='w-full text-base text-primary-900 flex items-center justify-center'>
+                    <input placeholder="Type your message" className='h-9 w-[269px] rounded-full font-poppins text-[13px] focus:outline-none placeholder:text-primary-900 placeholder:text-[13px] pl-3.5'/>
+                    <FaPaperPlane className='text-primary-900 w-[18px] h-[18px] ml-2 cursor-pointer'/>
+                    <HiUserGroup className='text-primary-900 text-base w-[18px] h-[18px] ml-2 cursor-pointer'/>
+                </div>
+            </div>
         </div>
+     </div>
+        
     )
 }

@@ -29,7 +29,7 @@ export default {
               400: '#DDE6ED',
               300 : '#dcdcdc',
               200: '#4679A6',
-              100:'#F6F6F6',
+              100:'#F5F5F5',
           }, 
           secondary:{
             900:'#FFC107',

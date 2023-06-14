@@ -1,6 +1,6 @@
 export const Profile  = () => {
     return (
-        <div className="border-2 border-black h-full xl:bg-red-500 2xl:bg-cyan-500" >
+        <div className="h-full bg-green-300" >
             <h1 className="">Profile er</h1>
             
         </div>
