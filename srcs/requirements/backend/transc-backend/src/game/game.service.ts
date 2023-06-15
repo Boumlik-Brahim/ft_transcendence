@@ -22,14 +22,16 @@ export class GameService {
 
     joinGame(userId : any, gameID : any) {}
 
-    gameLogique(clients: any) {
-        
+    gameLogique(clients: any, gameValue : GameEntity) {
+        gameValue.ball_x += gameValue.vx;
+        gameValue.ball_y += gameValue.vy;
     }
     
     gameLoop(client1 : any) {
         const gameValue : GameEntity = this.getGameInitValue();
         setInterval(() => {
-            this.gameLogique(client1);
+            this.gameLogique(client1, gameValue);
+            client1.emit("value", gameValue);
         }, 16);
     }
 

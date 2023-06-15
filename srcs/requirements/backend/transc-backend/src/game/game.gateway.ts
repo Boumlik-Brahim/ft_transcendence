@@ -21,6 +21,7 @@ export class GameGateway {
   
   @SubscribeMessage('createGame')
   createGame(@MessageBody() data: CreateGameDto, @ConnectedSocket() client: Socket) {
+    console.log(data)
     const { creatorID, invitedName } = data;
     this.gameService.createGame(creatorID, invitedName, client);
   }
@@ -40,10 +41,16 @@ export class GameGateway {
     }
   }
 
+  @SubscribeMessage('isPlaying')
+  isPlaying(@ConnectedSocket() client: Socket) {
+    this.gameService.gameLoop(client);
+  }
+
   @SubscribeMessage('keyDown')
   keyDown(@ConnectedSocket() client: Socket) {
     
   }
+  
 
   @SubscribeMessage('keyUp')
   keyUp(@ConnectedSocket() client: Socket) {
