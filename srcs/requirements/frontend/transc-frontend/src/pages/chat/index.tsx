@@ -91,6 +91,9 @@ export const Chat  = () => {
                 <p className='p-[5px]'>message</p>
                 <p className='p-[5px]'>message</p> */}
                 <MessageBox />
+                
+
+
 
 
             </div>
