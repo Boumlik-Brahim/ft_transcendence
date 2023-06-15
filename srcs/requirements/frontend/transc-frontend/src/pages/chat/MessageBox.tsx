@@ -1,6 +1,10 @@
 
 
-export default function MessageBox() {
+export default function MessageBox({messageContent, date, time, profilePicture} :{
+    messageContent: string, 
+    date:string, 
+    time:string, 
+    profilePicture:string}){
 
     return (
 <div className="flex w-full justify-start pl-[23px]">  
@@ -10,15 +14,15 @@ export default function MessageBox() {
                 Bilal Ben Aouad
             </div>
             <div className="font-poppins font-light tracking-wider text-[9px] leading-5 text-light-900  max-w-[90px]">
-                <span>08/06/2023</span>
-                <span className="pl-[5px]">12:12</span>
+                <span>{date}</span>
+                <span className="pl-[5px]">{time}</span>
             </div>
         </div>
         <div className="p-[10px] relative flex w-[280px] justify-start  ">
             <div className="mt-[10px] ml-[5px] bg-light-800 w-full min-h-[30px] flex gap-[5px] items-start pl-[30px]  rounded-lg pt-2.5 pb-1.5">
-                <p className="pb-[7px] font-poppins text-primary-500 font-semibold text-[10px] leading-4 pr-[10px]">Lorem ipsum dolor sit amet consectetur adipisicing elit. Nam a sint sit, rerum autem sequi.</p>
+                <p className="pb-[7px] font-poppins text-primary-500 font-semibold text-[10px] leading-4 pr-[10px]">{messageContent}</p>
             </div>
-            <img src="/imgs/bben-aou.jpeg" alt="profilePic" className="absolute top-0 left-0 w-[40px] h-[40px] rounded-full" />
+            <img src={`/imgs/${profilePicture}`} alt="profilePic" className="absolute top-0 left-0 w-[40px] h-[40px] rounded-full" />
         </div>
     </div>
 
