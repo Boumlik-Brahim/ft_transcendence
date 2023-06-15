@@ -22,12 +22,11 @@ export class GameGateway {
   @SubscribeMessage('createGame')
   createGame(@MessageBody() data: CreateGameDto, @ConnectedSocket() client: Socket) {
     const { creatorID, invitedName } = data;
-    if (creatorID) { 
-      this.gameService.createGame(creatorID, invitedName);
-    }
-    else {
-      client.emit('error', "Bad request");
-    }
+    this.gameService.createGame(creatorID, invitedName, client);
+  }
+
+  joinAQue(@MessageBody() data: JoinGameDto, @ConnectedSocket() client: Socket) {
+
   }
 
   @SubscribeMessage('joinGame')
