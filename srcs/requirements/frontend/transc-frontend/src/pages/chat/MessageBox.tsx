@@ -3,24 +3,26 @@
 export default function MessageBox() {
 
     return (
-<>  
-<div className=" flex flex-col items-start ">
-        
-                <p className="relative top-[20%] left-[18%] w-[280px] flex items-center">
-                    <div className="font-poppins font-bold text-[11px] leading-5 mr-2 text-primary-900 max-w-[120px]  truncate">Billaaa Ben Aouad aa</div> 
-                    <span className="font-normal tracking-wider text-[8px] leading-4">08/06/2023 09:19
-                    </span>
-                    </p>
-    <div className=" p-[10px] relative flex w-[280px] justify-start">
-            <div className="mt-[10px] ml-[5px] bg-slate-200 w-full max-h-[176px] flex gap-[5px] items-start pl-[25px]   pt-[10px]">
-            <p className="pb-[7px]">slm cv !</p>
-                </div>
-            <img src="/imgs/profile.png" alt="profilePic"  className="absolute top-0 left-0 w-[40px] h-[40px] "/>
-
+<div className="flex w-full justify-start pl-[23px]">  
+    <div className="flex flex-col items-start">
+        <div className=" relative top-[22px] left-[45px]  flex items-center ">
+            <div className="font-poppins font-bold text-[11px] leading-5  text-primary-900 max-w-[120px] truncate mr-[8px] ">
+                Bilal Ben Aouad
+            </div>
+            <div className="font-poppins font-light tracking-wider text-[9px] leading-5 text-light-900  max-w-[90px]">
+                <span>08/06/2023</span>
+                <span className="pl-[5px]">12:12</span>
+            </div>
+        </div>
+        <div className="p-[10px] relative flex w-[280px] justify-start  ">
+            <div className="mt-[10px] ml-[5px] bg-light-800 w-full min-h-[30px] flex gap-[5px] items-start pl-[30px]  rounded-lg pt-2.5 pb-1.5">
+                <p className="pb-[7px] font-poppins text-primary-500 font-semibold text-[10px] leading-4 pr-[10px]">Lorem ipsum dolor sit amet consectetur adipisicing elit. Nam a sint sit, rerum autem sequi.</p>
+            </div>
+            <img src="/imgs/bben-aou.jpeg" alt="profilePic" className="absolute top-0 left-0 w-[40px] h-[40px] rounded-full" />
+        </div>
     </div>
-</div>
 
-</>
+</div>
 );
 
 

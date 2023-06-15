@@ -6,91 +6,15 @@ import MessageBox from './MessageBox'
 
 export const Chat  = () => {
     return (
-     <div className='h-[90vh] w-full '>
+     <div className='h-[90vh] md:h-[100vh] w-full '>
 
         <div className='h-full w-full  bg-white ] '>
-            <div className='flex  flex-col  pl-[23px] items-start rounded h-[90%]  overflow-auto'>
-                {/* <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p>
-                <p className='p-[5px]'>message</p> */}
+            <div className='flex  flex-col items-start rounded h-[90%]  overflow-auto'>
+                
                 <MessageBox />
+                
+               
+
                 
 
 
