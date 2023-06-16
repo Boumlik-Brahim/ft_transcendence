@@ -23,6 +23,11 @@ export class GameService {
     joinGame(userId : any, gameID : any) {}
 
     gameLogique(clients: any, gameValue : GameEntity) {
+        /** ball logique **/
+        if (gameValue.ball_x >= gameValue.W_screen || gameValue.ball_x <= 0)  
+            gameValue.vx *= -1;
+        if (gameValue.ball_y >= gameValue.H_screen || gameValue.ball_y <= 0)
+            gameValue.vy *= -1;
         gameValue.ball_x += gameValue.vx;
         gameValue.ball_y += gameValue.vy;
     }
@@ -32,7 +37,7 @@ export class GameService {
         setInterval(() => {
             this.gameLogique(client1, gameValue);
             client1.emit("value", gameValue);
-        }, 16);
+        }, 160);
     }
 
 
@@ -42,8 +47,8 @@ export class GameService {
             H_screen : 80,
             ball_x : 80,
             ball_y : 40,
-            vx : 1,
-            vy : 1,
+            vx : 5,
+            vy : 5,
             paddle1_x : 2,
             paddle2_x : 38,
             paddle1_y : 30,
