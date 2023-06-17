@@ -23,13 +23,31 @@ export class GameService {
     joinGame(userId : any, gameID : any) {}
 
     gameLogique(clients: any, gameValue : GameEntity) {
-        /** ball logique **/
-        if (gameValue.ball_x >= gameValue.W_screen || gameValue.ball_x <= 0)  
-            gameValue.vx *= -1;
-        if (gameValue.ball_y >= gameValue.H_screen || gameValue.ball_y <= 0)
-            gameValue.vy *= -1;
+        this.isLimit(gameValue)
         gameValue.ball_x += gameValue.vx;
         gameValue.ball_y += gameValue.vy;
+    }
+
+    isLimit(gameValue : GameEntity) {
+        const  {
+            W_screen,
+            H_screen,
+            ball_x,
+            ball_y,
+            paddle1_x,
+            paddle2_x,
+            paddle1_y,
+            paddle2_y,
+            h_paddle,
+        } = gameValue;
+        if (ball_y >= paddle1_y && ball_y <= paddle1_y + h_paddle && ball_x === paddle1_x)
+            gameValue.vx *= -1;
+        if (ball_y >= paddle2_y && ball_y <= paddle2_y + h_paddle && ball_x === paddle2_x)
+            gameValue.vx *= -1;
+        if (ball_x >= W_screen || ball_x <= 0)
+            gameValue.vx *= -1;
+        if (ball_y >= H_screen || ball_y <= 0)
+            gameValue.vy *= -1;
     }
     
     gameLoop(client1 : any) {
