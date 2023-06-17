@@ -5,18 +5,17 @@ import {MdGroups2} from 'react-icons/md'
 import {HiChat} from 'react-icons/hi'
 import {IoLogoGameControllerB} from 'react-icons/io'
 import {BsPower} from 'react-icons/bs'
-// import {GiThreeBurningBalls} from 'react-icons/gi'
 import { useNavigate } from 'react-router-dom';
-// import {FaTableTennis} from 'react-icons/fa'
+
+
 
 type IconType = 'CgProfile' | 'HiPresentationChartBar' | 'GiAchievement' | 'HiChat' | 'MdGroups2' | 'IoLogoGameControllerB' | 'BsPower';
 
 
 
 export default function Sidebar() {
-
-    let color : string = 'text-primary-400';
-    let colorCheckedIcons : string = 'text-secondary-500';
+    const color = 'text-primary-400';
+    const colorCheckedIcons = 'text-secondary-500';
     const navigate = useNavigate();
     const handleIconClick = (icon: IconType) => {
         const iconElements = document.querySelectorAll('.icon');

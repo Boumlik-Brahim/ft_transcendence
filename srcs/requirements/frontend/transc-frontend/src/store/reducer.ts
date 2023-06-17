@@ -1,21 +1,26 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-export interface initialvalueType {
-    value : number
+interface ToggleState {
+    isShoFriendListToggled: boolean;
 }
 
-const initialState : initialvalueType = {
-    value : 0
-}
+const initialState: ToggleState = {
+    isShoFriendListToggled: false,
+};
 
-const DataReducer = createSlice ({
-    name : "store",
+const toggleFriendListSlice = createSlice({
+    name: 'toggleFriendList',
     initialState,
-    reducers : {
-        increment : (state : initialvalueType) => { state.value += 1 },
-        decrement : (state : initialvalueType) => { state.value -= 1 }
-    } 
-})
+    reducers: {
+        on: (state) => {
+            state.isShoFriendListToggled = !state.isShoFriendListToggled;
+        },
+        off: (state) => {
+            state.isShoFriendListToggled = false;
+        },
+    },
+});
 
-export const {increment, decrement} = DataReducer.actions;
-export default DataReducer.reducer;
+export const toggleReducer = toggleFriendListSlice.reducer;
+
+export const { on, off } = toggleFriendListSlice.actions;

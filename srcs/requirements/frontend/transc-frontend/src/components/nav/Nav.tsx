@@ -8,12 +8,18 @@ import {FiMenu} from 'react-icons/fi'
 
 import { useMediaQuery } from '@react-hook/media-query';
 
+
+import {  useSelector} from 'react-redux';
+import { RootState } from '../../store/store';
+
+
 export default function Nav({title, setIsOpen, isOpen}: {title :string,
-    setIsOpen : React.Dispatch<React.SetStateAction<boolean>>
+    setIsOpen  : React.Dispatch<React.SetStateAction<boolean>>
     isOpen : boolean
 } ){
     const isMdScreen = useMediaQuery('(min-width: 768px)');
     const isLgScreen = useMediaQuery('(min-width: 1024px)');
+    const currentState = useSelector((state : RootState) => state.toggle.isShoFriendListToggled);
     const [color, setColor] = useState("bg-primary-100");
     const toggleColor = () => {
         setIsOpen(!isOpen);
@@ -22,13 +28,12 @@ export default function Nav({title, setIsOpen, isOpen}: {title :string,
         else
             setColor("bg-primary-100");
     };
-    console.log(isMdScreen, isOpen);
     if (isMdScreen)
         setIsOpen(false);
     return(
 <>
 <div className={`${" md:col-span-2 lg:col-span-3"}   }`}>
-    <div className={`${(isMdScreen || isOpen) ? "hidden" : "flex md:grid"} ${"w-screen md:w-full md:h-full h-[10vh] md:col-span-2 flex items-center justify-between px-[27px] bg-primary-100 md:bg-primary-900"}`}>
+    <div className={`${(isMdScreen || isOpen || currentState) ? "hidden" : "flex md:grid"} ${"w-screen md:w-full md:h-full h-[10vh]  md:col-span-2 flex items-center justify-between px-[27px] bg-primary-100 md:bg-primary-900"}`}>
         <div className=" flex items-center">
             <button
                 className="flex flex-col rounded justify-center items-center group  lg:hidden "

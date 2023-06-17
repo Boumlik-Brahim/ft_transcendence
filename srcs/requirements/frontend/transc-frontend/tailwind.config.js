@@ -33,7 +33,8 @@ export default {
           },
           light:{
               900 :'#A9A9A9', 
-              800:'#F0EFFF',
+              800 :'#F0EFFF',
+              700 :'#FAFAFA',
           }, 
           secondary:{
             900:'#FFC107',

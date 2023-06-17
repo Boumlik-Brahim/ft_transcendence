@@ -1,5 +1,5 @@
 import './index.css'
-import { Nav } from './components/nav';
+// import { Nav } from './components/nav';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Landingpage } from './pages/landingPage';
 import { Auth } from './pages/auth';
@@ -10,9 +10,10 @@ import { Game } from './pages/game';
 import { Leaderboard } from './pages/leaderboard';
 import { Achievements } from './pages/achievement';
 import { Provider } from 'react-redux';
-import store from './store/store';
-import { PersistGate } from 'redux-persist/integration/react';
-import { persistor } from './store/store';
+// import { configureStore } from "@reduxjs/toolkit";
+import {store} from './store/store';
+// import { PersistGate } from 'redux-persist/integration/react';
+// import { persistor } from './store/store';
 import RootLayout from './components/nav/RootLayout';
 
 
@@ -21,7 +22,7 @@ function App() {
   return (
     <>
     <Provider store={store}>
-      <PersistGate persistor={persistor}>
+      {/* <PersistGate persistor={persistor}> */} 
         <BrowserRouter>
           {/* <div className='' > */}
             {/* <Nav /> */}
@@ -50,8 +51,8 @@ function App() {
             </Routes>
           {/* </div> */}
         </BrowserRouter>
-      </PersistGate>
-      </Provider>
+      {/* </PersistGate>*/}
+      </Provider> 
      </>
   )
 }
