@@ -50,11 +50,99 @@ export default[
       "user": "Robert Wilson"
     },
     {
-      "id": 7,
+      "id": 8,
       "messageContent": "It was called 'The Farthest: Voyager in Space.' You should check it out!",
       "date": "2023/06/16",
       "time": "15:45",
       "profilePicture": "bben-aou.jpeg",
       "user": "Bilal Ben Aouad"
+    },
+    {
+      "id": 9,
+      "messageContent": "It was called 'The Farthest: Voyager in Space.' You should check it out!",
+      "date": "2023/06/16",
+      "time": "15:45",
+      "profilePicture": "profileChat.png",
+      "user": "Robert Wilson"
+    },
+    {
+      "id": 10,
+      "messageContent": "It was called 'The Farthest: Voyager in Space.' You should check it out!",
+      "date": "2023/06/16",
+      "time": "15:45",
+      "profilePicture": "bben-aou.jpeg",
+      "user": "Bilal Ben Aouad"
+    },
+    {
+      "id": 11,
+      "messageContent": "It was called 'The Farthest: Voyager in Space.' You should check it out!",
+      "date": "2023/06/16",
+      "time": "15:45",
+      "profilePicture": "profileChat.png",
+      "user": "Robert Wilson"
+    },
+    {
+      "id": 12,
+      "messageContent": "It was called 'The Farthest: Voyager in Space.' You should check it out!",
+      "date": "2023/06/16",
+      "time": "15:45",
+      "profilePicture": "bben-aou.jpeg",
+      "user": "Bilal Ben Aouad"
+    },
+    {
+      "id": 13,
+      "messageContent": "It was called 'The Farthest: Voyager in Space.' You should check it out!",
+      "date": "2023/06/16",
+      "time": "15:45",
+      "profilePicture": "profileChat.png",
+      "user": "Robert Wilson"
+    },
+    {
+      "id": 14,
+      "messageContent": "I'm doing well, thanks for asking! What have you been up to?",
+      "date": "2023/06/16",
+      "time": "15:32",
+      "profilePicture": "bben-aou.jpeg",
+      "user": "Bilal Ben Aouad"
+    },
+    {
+      "id": 15,
+      "messageContent": "I'm doing well, thanks for asking! What have you been up to?",
+      "date": "2023/06/16",
+      "time": "15:32",
+      "profilePicture": "profileChat.png",
+      "user": "Robert Wilson"
+    },
+    {
+      "id": 16,
+      "messageContent": "I'm doing well, thanks for asking! What have you been up to?",
+      "date": "2023/06/16",
+      "time": "15:32",
+      "profilePicture": "bben-aou.jpeg",
+      "user": "Bilal Ben Aouad"
+    },
+    {
+      "id": 17,
+      "messageContent": "I'm doing well, thanks for asking! What have you been up to?",
+      "date": "2023/06/16",
+      "time": "15:32",
+      "profilePicture": "profileChat.png",
+      "user": "Robert Wilson"
+    },
+    {
+      "id": 18,
+      "messageContent": "I'm doing well, thanks for asking! What have you been up to?",
+      "date": "2023/06/16",
+      "time": "15:32",
+      "profilePicture": "bben-aou.jpeg",
+      "user": "Bilal Ben Aouad"
+    },
+    {
+      "id": 19,
+      "messageContent": "I'm doing well, thanks for asking! What have you been up to?",
+      "date": "2023/06/16",
+      "time": "15:32",
+      "profilePicture": "profileChat.png",
+      "user": "Robert Wilson"
     }
   ]

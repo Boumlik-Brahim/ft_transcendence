@@ -12,13 +12,13 @@ import { useMediaQuery } from '@react-hook/media-query';
 import {  useSelector} from 'react-redux';
 import { RootState } from '../../store/store';
 
-
 export default function Nav({title, setIsOpen, isOpen}: {title :string,
     setIsOpen  : React.Dispatch<React.SetStateAction<boolean>>
     isOpen : boolean
 } ){
     const isMdScreen = useMediaQuery('(min-width: 768px)');
     const isLgScreen = useMediaQuery('(min-width: 1024px)');
+    
     const currentState = useSelector((state : RootState) => state.toggle.isShoFriendListToggled);
     const [color, setColor] = useState("bg-primary-100");
     const toggleColor = () => {
@@ -30,6 +30,7 @@ export default function Nav({title, setIsOpen, isOpen}: {title :string,
     };
     if (isMdScreen)
         setIsOpen(false);
+
     return(
 <>
 <div className={`${" md:col-span-2 lg:col-span-3"}   }`}>

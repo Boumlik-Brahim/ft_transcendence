@@ -6,10 +6,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { off } from '../../store/reducer';
 import { RootState } from '../../store/store';
 
+import { useMediaQuery } from '@react-hook/media-query';
 
 export default function ContactList() {
     const currentState = useSelector((state: RootState) => state.toggle.isShoFriendListToggled);
     const dispatch = useDispatch();
+    const isMdScreen = useMediaQuery('(min-width: 768px)');
     const toggleFriendList = () => {
         dispatch(off());
     };
@@ -25,14 +27,14 @@ export default function ContactList() {
     });
     return (
         <>
-            <div className={`${currentState ? "h-screen w-screen md:w-[20%] bg-primary-900 " : "hidden"}`}>
+            <div className={`${(currentState || isMdScreen) ? "h-screen w-screen md:w-[19%] bg-primary-900 md:flex md:items-center md:justify-end " : "hidden"}`}>
                 <div className=' w-full h-[13%] flex items-center justify-between pl-[8%] pr-[8%] md:hidden '>
                     <div className='font-poppins font-bold text-sm text-white leading-5 md:hidden'>
                         Contacts
                     </div>
                     <MdOutlineClose className='text-white  text-2xl cursor-pointer md:hidden' onClick={toggleFriendList} />
                 </div>
-                <div className=' w-full h-[87%] overflow-auto pl-[8%] pr-[8%] md:pl-0 md:pr-0 md:mt-[50px]' >
+                <div className=' w-full h-[87%] md:h-[92%] overflow-auto no-scrollbar pl-[8%] pr-[8%] md:pl-0 md:pr-0 ' >
                    {contacts}
                 </div>
             </div>
