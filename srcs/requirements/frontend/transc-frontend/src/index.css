@@ -36,11 +36,30 @@
   }
 }
 
+html{
+  height: webkit-fill-available;
+}
+
+.debug{
+  border: 3px solid red !important;
+}
+.debug > * {
+  border: 3px solid green !important;
+}
+.debug > * > * {
+  border:3px solid blue !important;
+}
 
 
-
-
-
+.debug2{
+  border: 3px solid orange !important;
+}
+.debug2 > * {
+  border: 3px solid black !important;
+}
+.debug2 > * > * {
+  border:3px solid teal !important;
+}
 
 
 

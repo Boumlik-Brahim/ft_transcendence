@@ -7,6 +7,7 @@ import { off } from '../../store/reducer';
 import { RootState } from '../../store/store';
 
 import { useMediaQuery } from '@react-hook/media-query';
+import  { useState } from 'react';
 
 export default function ContactList() {
     const currentState = useSelector((state: RootState) => state.toggle.isShoFriendListToggled);
@@ -15,6 +16,10 @@ export default function ContactList() {
     const toggleFriendList = () => {
         dispatch(off());
     };
+    const [activeButtonId, setActiveButtonId] = useState<number | null>(null);
+    const handleButtonClick = (buttonId: number) => {
+        setActiveButtonId(buttonId);
+      };
     const contacts = contactFriendList.map((item : ContactFriend) =>{
         return(
             <Contact
@@ -22,6 +27,8 @@ export default function ContactList() {
                 name                = {item.name}
                 unreadMessages      = {item.unreadMessages}
                 profilePicturePath  = {item.profilePicturePath}
+                activeButtonId={activeButtonId}
+                onClick={handleButtonClick}
             />
         );
     });

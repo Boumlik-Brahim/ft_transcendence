@@ -22,7 +22,7 @@ export default function MessageBox({ userId,messageContent, date, time, profileP
 
     
     return (
-        <div className={`flex w-full ${position} pl-[23px] `}>
+        <div className={`flex w-full ${position} pl-[23px]`}>
             <div className="flex flex-col items-start md:w-[60%]  xxs:w-[100%] ">
                 <div className=" relative top-[22px]  left-[45px]  flex items-center md:left-[50px] ">
                     <div className="font-poppins font-bold text-[11px] leading-5   text-primary-900 max-w-[120px] truncate mr-[8px]  md:text-[12px] md:leading-6">

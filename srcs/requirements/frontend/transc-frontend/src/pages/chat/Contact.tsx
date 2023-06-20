@@ -1,18 +1,22 @@
 
 import { useMediaQuery } from '@react-hook/media-query';
 interface Props {
-    id: number;
+    id : number;
     name: string;
     profilePicturePath: string;
     unreadMessages: number;
+    activeButtonId: number | null;
+    onClick: (buttonId: number) => void;
 }
 
-
-export default function Contact({ name, unreadMessages, profilePicturePath }: Props) {}
+export default function Contact({id,name, unreadMessages, profilePicturePath,activeButtonId, onClick }: Props) {
     const isMdScreen = useMediaQuery('(min-width: 768px)');
-
+    const isActive = activeButtonId === id;
+    const handleClick = () => {
+        onClick(id);
+      };
     return (
-        <div className='w-full h-[56px] md:h-[93px] md:w-full  bg-primary-800 md:bg-transparent mb-2.5  flex items-center justify-between  md:justify-center md:items-center pl-[42px] pr-[42px] rounded-sm md:pl-[0px] md:pr-[0px]  md:mb-0  md:rounded-none '>
+        <div className={`${`w-full h-[56px] md:h-[93px] md:w-full  bg-primary-800 md:${isActive ? '' : 'bg-transparent'} mb-2.5  flex items-center justify-between  md:justify-center md:items-center pl-[42px] pr-[42px] rounded-sm md:pl-[0px] md:pr-[0px]  md:mb-0  md:rounded-none`}`} onClick={handleClick}>
             <div className='md:pt-[18%]'>
                 <img src={`./imgs/${profilePicturePath}`} alt='profilePic' className='w-[38px] h-[38px] md:w-[65px] md:h-[65px] rounded-full' />
                 <div className={`${isMdScreen ? "w-[19px] h-[19px] bg-red-500  rounded-full flex justify-center items-center relative top-[-60px] right-[-50px] font-poppins text-xs text-white" : "hidden"}`}>
