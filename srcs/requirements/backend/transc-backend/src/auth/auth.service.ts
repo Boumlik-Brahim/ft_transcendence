@@ -1,40 +1,18 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
-import { AuthDto } from "./dto/auth.dto";
-import { PrismaService } from "prisma/prisma.service";
-import * as bcrypt from 'bcryptjs';
-import { JwtService } from "@nestjs/jwt";
-import { JWT_SECRET } from "../utils/constants";
-import { Response } from "express";
-import { ConfigService } from '@nestjs/config';
-import { HttpClient } from '@nestjs/common';
+import { Injectable } from "@nestjs/common";
+// import { AuthDto } from "./dto/auth.dto";
+// import { PrismaService } from "prisma/prisma.service";
+// import * as bcrypt from 'bcryptjs';
+// import { JwtService } from "@nestjs/jwt";
+// import { JWT_SECRET } from "../utils/constants";
+// import { Response } from "express";
+// import { ConfigService } from '@nestjs/config';
+// import { HttpClient } from '@nestjs/common';
 
 
 @Injectable()
 export class AuthService {
     // constructor(private prisma: PrismaService, private jwt: JwtService) {} 
-    constructor(private http: HttpClient, private configService: ConfigService) {} 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    // constructor(private http: HttpClient, private configService: ConfigService) {} 
 
     // async signUp(dto: AuthDto) {
     //     const {email, password} = dto;
