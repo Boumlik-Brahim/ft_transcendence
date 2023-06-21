@@ -1,27 +1,23 @@
-import { Controller, Post, Body, Res, Get } from "@nestjs/common";
-import { AuthService } from "./auth.service"
+import { Controller, Req, Res, Get, UseGuards, Redirect } from "@nestjs/common";
+import { AuthService } from "./auth.service";
 import { AuthDto } from "./dto/auth.dto"
 import { Response } from "express";
+import { AuthGuard } from "@nestjs/passport";
 
 @Controller('auth')
 export class AuthController {
     constructor (private authService: AuthService) {}
 
-    
-
-    // @Post('signup')
-    // signUp(@Body() dto: AuthDto) {
-    //     return this.authService.signUp(dto);
-    // }
-
-    // @Post('signin')
-    // signIn(@Body() dto: AuthDto, @Res() res: Response) {
-    //     return this.authService.signIn(dto, res);
+    @Get()
+    @UseGuards(AuthGuard('42'))
+    login(req: any) {
+        req.user;
+        return "Secured Data";
     }
-
-    // @Get('s')
-    // signOut(@Res() res: Response) {
-    //     return "Sign out";
-    //     // return this.authService.signOut(res);
-    // }
+    
+    @Get('callback')
+    @UseGuards(AuthGuard('42'))
+    callback(@Req() req: any) {
+        return this.login(req)
+    }
 }
