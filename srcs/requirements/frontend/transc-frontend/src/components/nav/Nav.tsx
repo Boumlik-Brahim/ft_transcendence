@@ -34,7 +34,7 @@ export default function Nav({ title, setIsOpen, isOpen }: {
 
     return (
         <>
-            <div className={`${" md:col-span-2 lg:col-span-3 "}}`}>
+            <div className={`${" md:col-span-2 lg:col-span-3 2xl:col-span-3 "}}`}>
                 <div className={`${(isMdScreen || isOpen || currentState) ? "hidden" : "flex md:grid"} ${"w-screen h-[10vh] items-center justify-between px-[27px] bg-primary-100       md:w-full md:h-full  md:col-span-2 flex md:bg-primary-900  "}`}>
                     <div className=" flex items-center">
                         <button
@@ -124,7 +124,7 @@ export default function Nav({ title, setIsOpen, isOpen }: {
                             </div>
                         </div>
                         <div className=" w-full flex justify-center ">
-                            <div className={`${!isLgScreen ? `border-[1px] border-white w-full h-[40px] flex justify-center items-center rounded-full bg-white     xs:h-[50px] xxs:h-[50px]        md:pb-[40px] md:bg-transparent md:border-none ` : "hidden"}`}>
+                            <div className={`${!isLgScreen ? `border-[1px] border-white w-full h-[50px] flex justify-center items-center rounded-full bg-white     xs:h-[50px] xxs:h-[50px]        md:pb-[40px] md:bg-transparent md:border-none ` : "hidden"}`}>
                                 <img src="/imgs/logout.png" alt="profile" className="w-[25px] h-[25px]  md:w-[40px] md:h-[40px]" />
                             </div>
                             <div className={`${isLgScreen ? `w-full h-[50px] flex items-center justify-center rounded-full bg-white      xl:w-[270px] mb-[49px]      lg:mt-[10px]` : "hidden"}`}>

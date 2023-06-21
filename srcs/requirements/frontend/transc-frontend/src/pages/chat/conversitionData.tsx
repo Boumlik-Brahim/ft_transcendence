@@ -11,7 +11,7 @@ export default[
     },
     {
       "id": 2,
-      "messageContent": "I'm doing well, thanks for asking! What have you been up to?",
+      "messageContent": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Cumque nulla dolores fuga. Porro illum iure est iste quod, fugit, maxime consequuntur suscipit quia laboriosam obcaecati vero harum nam ex possimus. Necessitatibus, similique impedit consectetur nobis laboriosam, alias perspiciatis perferendis, dolor maiores maxime nulla repudiandae commodi nostrum magnam. Mollitia aspernatur cum adipisci modi? Rerum accusantium adipisci ipsa quae nulla provident aspernatur beatae fuga eveniet vero autem, non saepe, et minus cumque velit magnam aut optio quam mollitia. Inventore saepe illum maiores molestias. Eos ab a est fugit modi nostrum harum ut?",
       "date": "2023/06/16",
       "time": "15:32",
       "profilePicture": "profileChat.png",

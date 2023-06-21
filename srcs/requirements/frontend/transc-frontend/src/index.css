@@ -41,25 +41,27 @@ html{
 }
 
 .debug{
-  border: 3px solid red !important;
+  border: 1px solid red !important;
 }
 .debug > * {
-  border: 3px solid green !important;
+  border: 2px solid yellowgreen !important;
 }
 .debug > * > * {
-  border:3px solid blue !important;
+  border:1px solid blue !important;
 }
 
 
 .debug2{
-  border: 3px solid orange !important;
+  border: 1px solid orange !important;
 }
 .debug2 > * {
-  border: 3px solid black !important;
+  border: 1px solid black !important;
 }
 .debug2 > * > * {
-  border:3px solid teal !important;
+  border:1px solid teal !important;
+  color:rgba(255, 255, 255, 0.239);
 }
+
 
 
 

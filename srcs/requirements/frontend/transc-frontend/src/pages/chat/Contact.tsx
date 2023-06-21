@@ -10,24 +10,27 @@ interface Props {
 }
 
 export default function Contact({id,name, unreadMessages, profilePicturePath,activeButtonId, onClick }: Props) {
-    const isMdScreen = useMediaQuery('(min-width: 768px)');
+    const isMdScreen = useMediaQuery('(min-width: 1024px)');
+    const isLgScreen = useMediaQuery('(min-width: 1300px)');
+    
+
     const isActive = activeButtonId === id;
     const handleClick = () => {
         onClick(id);
       };
     return (
         <div className={`${`w-full h-[56px] md:h-[93px] md:w-full  bg-primary-800 md:${isActive ? '' : 'bg-transparent'} mb-2.5  flex items-center justify-between  md:justify-center md:items-center pl-[42px] pr-[42px] rounded-sm md:pl-[0px] md:pr-[0px]  md:mb-0  md:rounded-none`}`} onClick={handleClick}>
-            <div className='md:pt-[18%]'>
+            <div className='md:pt-[18%] xl:pt-0'>
                 <img src={`./imgs/${profilePicturePath}`} alt='profilePic' className='w-[38px] h-[38px] md:w-[65px] md:h-[65px] rounded-full' />
-                <div className={`${isMdScreen ? "w-[19px] h-[19px] bg-red-500  rounded-full flex justify-center items-center relative top-[-60px] right-[-50px] font-poppins text-xs text-white" : "hidden"}`}>
+                <div className={`${isMdScreen ? "w-[19px] h-[19px] bg-red-500 rounded-full flex justify-center items-center relative top-[-60px] right-[-50px] font-poppins text-xs text-white xl:hidden" : "hidden"}`}>
                     {unreadMessages}
                 </div>
             </div>
 
-            <div className='text-color font-poppins text-sm text-white  max-w-[150px] md:w-full flex items-center h-full truncate md:hidden'>
+            <div className={ `text-color font-poppins text-sm text-white  max-w-[150px] md:w-full flex items-center h-full truncate xl:pl-[21px] md:hidden xl:flex` }>
                 {name}
             </div>
-            <div className='w-[21px] h-[21px] rounded-full bg-red-500 flex items-center justify-center text-white font-poppins text-xs md:hidden  md:w-[23px] md:h-[23px] '>
+            <div className={`w-[21px] h-[21px] rounded-full bg-red-500 flex items-center justify-center text-white font-poppins text-xs   md:w-[23px] md:h-[23px] md:hidden xl:flex`}>
                 {unreadMessages}
             </div>
         </div>

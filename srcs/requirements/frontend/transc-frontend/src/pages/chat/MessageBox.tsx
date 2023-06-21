@@ -16,14 +16,14 @@ export default function MessageBox({ userId,messageContent, date, time, profileP
         bgColor = "bg-light-800";
     }
     else {
-        position = "justify-end pr-[25px]";
+        position = "justify-end  pr-[25px]";
         bgColor = "bg-light-700";
     }
 
     
     return (
-        <div className={`flex w-full ${position} pl-[23px]`}>
-            <div className="flex flex-col items-start md:w-[60%]  xxs:w-[100%] ">
+        <div className={`flex w-full ${position} pl-[23px] `}>
+            <div className="flex flex-col items-start md:w-[60%] 2xl:w-[55%]  xxs:w-[100%] ">
                 <div className=" relative top-[22px]  left-[45px]  flex items-center md:left-[50px] ">
                     <div className="font-poppins font-bold text-[11px] leading-5   text-primary-900 max-w-[120px] truncate mr-[8px]  md:text-[12px] md:leading-6">
                         {user}
@@ -39,14 +39,13 @@ export default function MessageBox({ userId,messageContent, date, time, profileP
                 </div>
                 <div className="p-[10px] relative flex w-[280px] md:w-full justify-start  xxs:w-full">
                     <div className={`mt-[10px]  ml-[5px] ${bgColor} w-full min-h-[30px] flex gap-[5px] items-start pl-[30px]   rounded-lg pt-2.5  pb-1.5  md:min-h-[50px] md:pt-3.5 md:pl-[33px] `}>
-                        <p className="pb-[7px] font-poppins text-primary-500 font-semibold text-[10px] leading-4 pr-[10px]  md:text-[11px] ">
+                        <p className="pb-[7px] font-poppins text-primary-500 font-semibold text-[10px] leading-4 2xl:leading-5 pr-[10px]  md:text-[11px] ">
                             {messageContent}
                         </p>
                     </div>
                     <img src={`/imgs/${profilePicture}`} alt="profilePic" className="absolute top-0 md:top-[-3px] left-0 w-[40px] md:w-[45px] md:h-[45px] h-[40px] rounded-full" />
                 </div>
             </div>
-
         </div>
     );
 

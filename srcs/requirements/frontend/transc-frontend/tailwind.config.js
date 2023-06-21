@@ -9,7 +9,7 @@ export default {
       'md': '768px',
       'lg': '1024px',
       'xl': '1280px',
-      '2xl': '1536px',
+      '2xl': '1660px',
       // 'xl':{'min': '1023px', 'max': '1280px'}
     },
     fontFamily: {
@@ -27,7 +27,7 @@ export default {
               600 : '#6b6598',
               500 : '#444444',
               400: '#DDE6ED',
-              300 : '#dcdcdc',
+              300 : '#fcfcfc',
               200: '#4679A6',
               100:'#F5F5F5',
           },
@@ -49,6 +49,7 @@ export default {
 
           },
           tertiary:{},
+      
 
     },
    
