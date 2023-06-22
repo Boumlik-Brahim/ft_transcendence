@@ -31,30 +31,40 @@ export class GameGateway {
   }
 
   @SubscribeMessage('joinGame')
-  joinGame(@MessageBody() data: JoinGameDto, @ConnectedSocket() client: Socket) {
+  async joinGame(@MessageBody() data: JoinGameDto, @ConnectedSocket() client: Socket) {
     const { gameID, userId } = data;
     if (gameID && userId ) {
-      this.gameService.joinGame(userId, gameID);
+      await this.gameService.joinGame(userId, gameID, client, this.server);
+      console.log("sorti")
     }
     else {
       client.emit('error', "Bad request");
     }
   }
 
-  @SubscribeMessage('isPlaying')
-  isPlaying(@ConnectedSocket() client: Socket) {
-    this.gameService.gameLoop(client);
-  }
+  // @SubscribeMessage('isPlaying')
+  // isPlaying(@ConnectedSocket() client: Socket) {
+  //   this.gameService.gameLoop(client);
+  // }
 
   @SubscribeMessage('keyDown')
-  keyDown(@ConnectedSocket() client: Socket) {
-    
+  keyDown(@MessageBody() data: JoinGameDto, @ConnectedSocket() client: Socket) {
+    console.log(data, "ok");
+    const { gameID, userId } = data;
+    if (gameID && userId) 
+    {
+      this.gameService.keyDown(gameID, userId);
+    }
   }
   
 
   @SubscribeMessage('keyUp')
-  keyUp(@ConnectedSocket() client: Socket) {
-
+  keyUp(@MessageBody() data: JoinGameDto, @ConnectedSocket() client: Socket) {
+    const { gameID, userId } = data;
+    if (gameID && userId) 
+    {
+      this.gameService.keyUp(gameID, userId);
+    }
   }
 
   @SubscribeMessage('keyPress')

@@ -6,6 +6,6 @@ export class JoinGameDto {
     gameID : string;
 
     @IsNotEmpty()
-    @IsNumber()
-    userId : number;
+    @IsString()
+    userId : string;
 }

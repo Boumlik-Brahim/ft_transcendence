@@ -1,15 +1,21 @@
 export interface GameEntity {
+    id : String,
     W_screen : number,
     H_screen : number,
     ball_x : number,
     ball_y : number,
     vx : number,
     vy : number,
-    paddle1_x : number,
-    paddle2_x : number,
-    paddle1_y : number,
-    paddle2_y : number,
+    player1 : Player,
+    player2 : Player,
     w_paddle : number,
     h_paddle : number,
     playerSpeed : number,
+}
+
+export interface Player {
+    id : String,
+    paddleX : number,
+    paddleY : number,
+    score : number
 }

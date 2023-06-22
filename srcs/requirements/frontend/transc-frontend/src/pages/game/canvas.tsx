@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from 'react'
 
 interface propsType {
     socket : any,
+    myId : string,
+    gameId : string
 }
 
 interface GameEntity {
@@ -20,7 +22,7 @@ interface GameEntity {
     playerSpeed : number,
 }
 
-const Canvas = ({ socket } : propsType) => {
+const Canvas = ({ socket, gameId, myId } : propsType) => {
 
     const [gameData, setGamedata] = useState<GameEntity>();
     const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -75,6 +77,23 @@ const Canvas = ({ socket } : propsType) => {
     socket.on("value", (data : GameEntity) => {
         setGamedata(data);
     })
+
+    document.addEventListener("keydown", () => {
+        socket.emit("keyDown", {
+            userId : myId,
+            gameID : gameId
+        });
+        console.log("down");
+
+    })
+    document.addEventListener("keyup", () => {
+        socket.emit("keyUp", {
+            userId : myId,
+            gameID : gameId
+        });
+        console.log(myId, gameId);
+    })
+
 
     return (
         <canvas ref={canvasRef} style={{ border : "solid 4px "}}></canvas>
