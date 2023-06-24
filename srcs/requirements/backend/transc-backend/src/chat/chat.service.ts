@@ -1,6 +1,6 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { CreateChatDto } from './dto/create-chat.dto';
-import { PrismaService } from '../prisma.service';
+import { PrismaService } from '../../prisma/prisma.service';
 import { DirectMessage } from '@prisma/client';
 
 @Injectable()
@@ -19,7 +19,7 @@ export class ChatService {
     });
   }
 
-  async findAllChats(senderId: number, receiverId: number): Promise<DirectMessage[]> {
+  async findAllChats(senderId: string, receiverId: string): Promise<DirectMessage[]> {
     return this.prisma.directMessage.findMany({
       where: {
         sender: {
@@ -43,7 +43,7 @@ export class ChatService {
     });
   }
 
-  async findOneChat(id: number): Promise<DirectMessage> {
+  async findOneChat(id: string): Promise<DirectMessage> {
     return this.prisma.directMessage.findUnique({ where: 
       {
         id
