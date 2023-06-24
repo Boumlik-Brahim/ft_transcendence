@@ -2,9 +2,6 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsDate, IsNotEmpty, IsNumber, IsString, IsUUID } from "class-validator";
 
 export class CreateChatDto {
-    @ApiProperty()
-    @IsUUID()
-    id: number;
 
     @ApiProperty()
     @IsString()
@@ -12,14 +9,10 @@ export class CreateChatDto {
     content: string;
 
     @ApiProperty()
-    @IsDate()
-    created_at: Date;
-
+    @IsUUID()
+    senderId: string;
+    
     @ApiProperty()
-    @IsNumber()
-    senderId: number;
-
-    @ApiProperty()
-    @IsNumber()
-    recieverId: number;
+    @IsUUID()
+    recieverId: string;
 }
