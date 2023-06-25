@@ -2,10 +2,12 @@ import { createSlice } from "@reduxjs/toolkit";
 
 interface ToggleState {
     isShoFriendListToggled: boolean;
+    createChannelBtnToggled: boolean;
 }
 
 const initialState: ToggleState = {
     isShoFriendListToggled: false,
+    createChannelBtnToggled: false,
 };
 
 const toggleFriendListSlice = createSlice({
@@ -21,6 +23,26 @@ const toggleFriendListSlice = createSlice({
     },
 });
 
-export const toggleReducer = toggleFriendListSlice.reducer;
 
+const toggleCreateChannelSlice = createSlice({
+    name: 'toggleCreateChannel',
+    initialState,
+    reducers: {
+        createChannelOn: (state) => {
+            state.createChannelBtnToggled = !state.createChannelBtnToggled;
+        },
+        createChannelOff: (state) => {
+            state.createChannelBtnToggled = false;
+        },
+    },
+});
+
+
+
+
+
+export const toggleReducer = toggleFriendListSlice.reducer;
 export const { on, off } = toggleFriendListSlice.actions;
+
+export const createChannelToggleReducer  = toggleCreateChannelSlice.reducer;
+export const {createChannelOn, createChannelOff} = toggleCreateChannelSlice.actions;

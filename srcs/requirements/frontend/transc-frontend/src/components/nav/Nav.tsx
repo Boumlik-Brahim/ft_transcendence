@@ -19,8 +19,9 @@ export default function Nav({ title, setIsOpen, isOpen }: {
 }) {
     const isMdScreen = useMediaQuery('(min-width: 768px)');
     const isLgScreen = useMediaQuery('(min-width: 1230px)');
-    const isShort = useMediaQuery('min-height : 637px');
-    const currentState = useSelector((state: RootState) => state.toggle.isShoFriendListToggled);
+    // const isShort = useMediaQuery('min-height : 637px');
+    const currentState = useSelector((state: RootState) => state.toggle.isShoFriendListToggled) as boolean;
+    const isCreateChannelOn = useSelector((state: RootState) => state.createChannelToggle);
     const [color, setColor] = useState("bg-primary-100");
     const toggleColor = () => {
         setIsOpen(!isOpen);
@@ -35,7 +36,7 @@ export default function Nav({ title, setIsOpen, isOpen }: {
     return (
         <>
             <div className={`${" md:col-span-2 lg:col-span-3 2xl:col-span-3 "}}`}>
-                <div className={`${(isMdScreen || isOpen || currentState) ? "hidden" : "flex md:grid"} ${"w-screen h-[10vh] items-center justify-between px-[27px] bg-primary-100       md:w-full md:h-full  md:col-span-2 flex md:bg-primary-900  "}`}>
+                <div className={`${(isMdScreen || isOpen || currentState || isCreateChannelOn) ? "hidden" : "flex md:grid"} ${"w-screen h-[10vh] items-center justify-between px-[27px] bg-primary-100       md:w-full md:h-full  md:col-span-2 flex md:bg-primary-900  "}`}>
                     <div className=" flex items-center">
                         <button
                             className="flex flex-col rounded justify-center items-center group  lg:hidden "

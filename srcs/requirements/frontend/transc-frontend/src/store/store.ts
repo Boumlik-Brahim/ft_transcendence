@@ -3,9 +3,12 @@ import { configureStore } from "@reduxjs/toolkit"
 
 
 import { toggleReducer } from './reducer';
+import {createChannelToggleReducer} from './reducer';
+
 const store = configureStore({
     reducer: {
       toggle: toggleReducer,
+      createChannelToggle : createChannelToggleReducer,
     },
 });
 const currentState = store.getState();

@@ -30,12 +30,19 @@ export default {
               300 : '#fcfcfc',
               200: '#4679A6',
               100:'#F5F5F5',
+              50: '#EEF8F8'
           },
           light:{
               900 :'#A9A9A9', 
               800 :'#F0EFFF',
               700 :'#FAFAFA',
-          }, 
+          },
+          channel:{
+            100:'#EEF8F8',
+            200:'#FFE9E9',
+            300: '#53BBB5',
+            400: '#FF2626',
+          },
           secondary:{
             900:'#FFC107',
             800:'#FF6C6C',
