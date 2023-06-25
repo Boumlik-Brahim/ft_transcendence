@@ -36,7 +36,7 @@ export default function Nav({ title, setIsOpen, isOpen }: {
     return (
         <>
             <div className={`${" md:col-span-2 lg:col-span-3 2xl:col-span-3 "}}`}>
-                <div className={`${(isMdScreen || isOpen || currentState || isCreateChannelOn) ? "hidden" : "flex md:grid"} ${"w-screen h-[10vh] items-center justify-between px-[27px] bg-primary-100       md:w-full md:h-full  md:col-span-2 flex md:bg-primary-900  "}`}>
+                <div className={`${(isMdScreen || isOpen || currentState || isCreateChannelOn.createChannelBtnToggled) ? "hidden" : "flex md:grid"} ${"w-screen h-[10vh] items-center justify-between px-[27px] bg-primary-100       md:w-full md:h-full  md:col-span-2 flex md:bg-primary-900  "}`}>
                     <div className=" flex items-center">
                         <button
                             className="flex flex-col rounded justify-center items-center group  lg:hidden "
