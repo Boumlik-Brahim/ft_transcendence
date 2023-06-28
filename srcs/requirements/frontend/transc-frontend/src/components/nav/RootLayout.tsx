@@ -5,6 +5,9 @@ import Nav from './Nav';
 import { useState } from "react";
 
 
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store/store';
+
 interface Props {
     title: string;
 
@@ -12,17 +15,17 @@ interface Props {
 
 export default function RootLayout({title} : Props){
     const [isOpen, setIsOpen] = useState(false);
-
+    const isCreateChannelOn = useSelector((state: RootState) => state.createChannelToggle);
     return(
 
-<div className="md:grid md:grid-cols-12  lg:grid-cols-12 2xl:grid-cols-12  h-screen flex flex-col "> {/* grid grid-cols-10 h-screen lg:grid-cols-12  */}
+<div className={`${"md:grid md:grid-cols-12  lg:grid-cols-12 2xl:grid-cols-12  h-screen flex flex-col "}`}> {/* grid grid-cols-10 h-screen lg:grid-cols-12  */}
     {/* <Sidebar /> */}
     <Nav 
         title = {title} 
         isOpen={isOpen} 
         setIsOpen={setIsOpen} 
     />
-    {!isOpen && (<main className="md:col-span-10 lg:col-span-9  2xl:col-span-9 flex-1"> {/*col-span-8 sm:col-span-7 lg:col-span-9*/}
+    {!isOpen && (<main className={`${ !isCreateChannelOn.createChannelBtnToggled ? "md:col-span-10 lg:col-span-9  2xl:col-span-9 flex-1" :"col-span-full" }`}> {/*col-span-8 sm:col-span-7 lg:col-span-9*/}
         <Outlet />
     </main>)}
 </div>

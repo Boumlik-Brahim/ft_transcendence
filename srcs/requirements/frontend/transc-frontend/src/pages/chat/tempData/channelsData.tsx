@@ -13,7 +13,7 @@ export const channelsData: channelProps[] = [
       id: 1,
       bg_color: "bg-channel-100",
       txt_color: "text-channel-300",
-      channel_name: "Gaming",
+      channel_name: "Worriers",
       channel_owner: "Bilal Ben Aouad",
       channel_members: 130,
       channel_mode: "Private"
@@ -22,7 +22,7 @@ export const channelsData: channelProps[] = [
       id: 2,
       bg_color: "bg-channel-200",
       txt_color: "text-channel-400",
-      channel_name: "Gaming",
+      channel_name: "Gamers Galore",
       channel_owner: "Jenna Smith",
       channel_members: 75,
       channel_mode: "Public"
@@ -40,7 +40,7 @@ export const channelsData: channelProps[] = [
       id: 4,
       bg_color: "bg-channel-200",
       txt_color: "text-primary-900",
-      channel_name: "Gaming",
+      channel_name: "Gamers kingdom",
       channel_owner: "Megan Lee",
       channel_members: 90,
       channel_mode: "Public"
@@ -49,7 +49,7 @@ export const channelsData: channelProps[] = [
       id: 5,
       bg_color: "bg-channel-100",
       txt_color: "text-channel-400",
-      channel_name: "Gaming",
+      channel_name: "Game On",
       channel_owner: "Adam Chen",
       channel_members: 150,
       channel_mode: "Private"
@@ -58,7 +58,7 @@ export const channelsData: channelProps[] = [
       id: 6,
       bg_color: "bg-channel-200",
       txt_color: "text-primary-900",
-      channel_name: "Gaming",
+      channel_name: "Valhalla",
       channel_owner: "Avery Johnson",
       channel_members: 50,
       channel_mode: "Public"
@@ -67,7 +67,7 @@ export const channelsData: channelProps[] = [
       id: 7,
       bg_color: "bg-channel-100",
       txt_color: "text-channel-300",
-      channel_name: "Gaming",
+      channel_name: "Pong Ball",
       channel_owner: "Samantha Lee",
       channel_members: 95,
       channel_mode: "Private"
@@ -76,7 +76,7 @@ export const channelsData: channelProps[] = [
       id: 8,
       bg_color: "bg-channel-200",
       txt_color: "text-primary-900",
-      channel_name: "Gaming",
+      channel_name: "Playground",
       channel_owner: "Jacob Brown",
       channel_members: 200,
       channel_mode: "Public"
@@ -94,7 +94,7 @@ export const channelsData: channelProps[] = [
       id: 10,
       bg_color: "bg-channel-200",
       txt_color: "text-channel-400",
-      channel_name: "Gaming",
+      channel_name: "flepara",
       channel_owner: "Gabriel Wong",
       channel_members: 80,
       channel_mode: "Public"
