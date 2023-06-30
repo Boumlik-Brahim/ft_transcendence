@@ -36,7 +36,7 @@ export  function Channels() {
                     id = {onlineFriends.id}
                     picture =  {onlineFriends.picture}
                     user_name = {onlineFriends.name}
-                    status = {onlineFriends.online ? "text-green-400" :"text-red-400"}
+                    status = {onlineFriends.online ? "bg-green-400" :"bg-orange-500"}
                 
                 />
             );
@@ -53,6 +53,7 @@ export  function Channels() {
 return (
     <div className="w-full h-full lg:flex ">
         <div className="lg:w-[67%]">
+            
             {/*----------------------- Create Channel Page : sm && md Devices ------------------------------ */}
             <div className={`${isCreateChannelOn.createChannelBtnToggled ? "w-screen h-screen bg-primary-900  flex flex-col " : "hidden"}`}>
                 <div className="w-full h-[15%]  flex items-center justify-end pr-[15px] md:pr-[50px]">
