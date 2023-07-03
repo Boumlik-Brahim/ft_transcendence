@@ -1,4 +1,6 @@
 import { useMediaQuery } from '@react-hook/media-query';
+import {  useSelector } from 'react-redux';
+import { RootState } from '../../store/store';
 
 
 interface NavbarProps {
@@ -7,9 +9,10 @@ interface NavbarProps {
 
 export default function MediumNav(props: NavbarProps) {
     const isLgScreen = useMediaQuery('(min-width: 1230px)');
+    const currentPopUpStatus = useSelector((state: RootState) => state.togglePopUp);
 
     return (
-        <div className={`${isLgScreen ? "bg-primary-900 h-full w-full" : "hidden"}`}>
+        <div className={`${isLgScreen ? "bg-primary-900 h-full w-full relative  " : "hidden"} ${currentPopUpStatus.showPopUpCreateChannel ? "blur-sm" : ""}`}>
             <div className="w-full h-[15%]  flex items-center justify-center">
                 <div className=" w-[80px] h-[40px]  flex flex-col items-center text-white font-press  text-[20px] font-normal leading-5 uppercase">
                     <span >Ping</span>

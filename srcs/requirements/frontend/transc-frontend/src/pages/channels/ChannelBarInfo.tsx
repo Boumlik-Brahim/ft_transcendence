@@ -1,11 +1,36 @@
-import { useDispatch } from 'react-redux';
-import { createChannelOn } from '../../store/reducer';
+import { useDispatch, useSelector } from 'react-redux';
+import { createChannelOn, showPopUp } from '../../store/reducer';
+
+import { RootState } from '../../store/store';
+
+import { useMediaQuery } from "@react-hook/media-query"
+
 
 export default function ChannelBarInfo({title, btn_visibility: btn_visibility} : {title:string, btn_visibility:string}) {
     const dispatch = useDispatch();
+    const currentPopUpStatus = useSelector((state: RootState) => state.togglePopUp);
+
+    const isLgScreen = useMediaQuery('(min-width: 1230px)');
     const handleCreateChannelToggleOn = () => {
-        dispatch(createChannelOn());
+        const rs = isLgScreen;
+        switch(rs) {
+            case true:
+                dispatch(showPopUp());
+              break;
+            case false:
+                dispatch(createChannelOn());
+                console.log('Not')
+              break;
+            default:
+                dispatch(createChannelOn());
+          }
+        //     dispatch(createChannelOn());
+        // else if (isLgScreen)
+        //     dispatch(showPopUp());
+          console.log(currentPopUpStatus);
     }
+
+
 return (
 <>
 
@@ -14,7 +39,7 @@ return (
                 {title}
             </div>
             <button
-                className={`w-[60px] h-[25px] bg-primary-900 rounded-full font-poppins text-white text-[11px] font-semibold  flex items-center justify-center ${btn_visibility}   md:w-[70px] md:h-[35px] lg:h-[30px]`}
+                className={`w-[60px] h-[25px] bg-primary-900 rounded-full font-poppins text-white text-[11px] font-semibold  flex items-center justify-center ${btn_visibility}   md:w-[70px] md:h-[35px] lg:h-[30px]   `}
                 onClick={handleCreateChannelToggleOn}
             >
                 Create

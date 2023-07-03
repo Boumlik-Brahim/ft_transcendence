@@ -11,7 +11,6 @@ interface Props {
 
 export default function Contact({id,name, unreadMessages, profilePicturePath,activeButtonId, onClick }: Props) {
     const isMdScreen = useMediaQuery('(min-width: 1024px)');
-    const isLgScreen = useMediaQuery('(min-width: 1300px)');
     
 
     const isActive = activeButtonId === id;
