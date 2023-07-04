@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString } from "class-validator"
+import { IsBoolean, IsNotEmpty, IsNumber, IsString } from "class-validator"
 
 export class CreateGameDto {
     @IsNotEmpty()
@@ -7,4 +7,8 @@ export class CreateGameDto {
 
     @IsString()
     invitedName : string;
+
+    @IsBoolean()
+    @IsNotEmpty()
+    isRamdomOponent : boolean;
 }

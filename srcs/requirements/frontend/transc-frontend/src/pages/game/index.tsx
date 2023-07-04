@@ -15,17 +15,27 @@ export const Game  = () => {
 
     const create = () => {
         const creatorID = "064f8d07-7a1e-45cc-844d-3106548484c1";
-        const invitedName = "d65b3199-89cd-4824-aa3d-45aea1109c93"
-        socket.emit('createGame', {creatorID, invitedName})
+        const invitedId = "d65b3199-89cd-4824-aa3d-45aea1109c93";
+        const isRamdomOponent = false;
+        socket.emit('createGame', {creatorID, invitedId, isRamdomOponent})
     }
 
     const joinGame = () => {
         console.log(gameId, myid)
        socket.emit('joinGame', {
-        userId : myid,
-        gameID : gameId
+        userId : '064f8d07-7a1e-45cc-844d-3106548484c1',
+        gameID : '1131201b-9965-450d-8653-66094691f7ab',
     })
     }
+    const joinGameB = () => {
+        console.log(gameId, myid)
+       socket.emit('joinGame', {
+        userId : 'd65b3199-89cd-4824-aa3d-45aea1109c93',
+        gameID : '1131201b-9965-450d-8653-66094691f7ab',
+    })
+    }
+
+
 
     socket.on('error', (error) => {
         console.log(error)
@@ -37,6 +47,7 @@ export const Game  = () => {
 
     return (
         <div>
+            <p></p>
             <button onClick={create}>CreateNewGame</button>
             {/* <p>{error}</p> */}
             <Canvas socket={socket} myId={myid || "none"} gameId={gameId || "none"} ></Canvas>
@@ -45,6 +56,7 @@ export const Game  = () => {
                 <input onChange={(e) => setMyId(e.target.value)}></input><br/>
             </form>
             <button onClick={joinGame}>join a game</button>
+            <button onClick={joinGameB}>join a game</button>
         </div>
     )
 }

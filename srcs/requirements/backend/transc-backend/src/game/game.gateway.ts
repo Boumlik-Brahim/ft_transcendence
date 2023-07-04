@@ -5,6 +5,7 @@ import { CreateGameDto } from './dto/game-create.dto';
 import { JoinGameDto } from './dto/join-game.dto';
 import { UsePipes } from '@nestjs/common';
 import { GameService } from './game.service';
+import { subscribe } from 'diagnostics_channel';
 
 
 @WebSocketGateway({
@@ -18,12 +19,19 @@ export class GameGateway {
 
   @WebSocketServer()
   server: Server;
+
+  afterInit(server : Server) {
+    console.log('The server has started');
+  }
+
+  handleConnection(client : Socket) {
+    console.log(client.id, "new User");
+  }
   
   @SubscribeMessage('createGame')
   createGame(@MessageBody() data: CreateGameDto, @ConnectedSocket() client: Socket) {
-    console.log(data)
-    const { creatorID, invitedName } = data;
-    this.gameService.createGame(creatorID, invitedName, client);
+    console.log(data);
+    this.gameService.createGame(data, client);
   }
 
   joinAQue(@MessageBody() data: JoinGameDto, @ConnectedSocket() client: Socket) {
@@ -42,28 +50,23 @@ export class GameGateway {
     }
   }
 
-  // @SubscribeMessage('isPlaying')
-  // isPlaying(@ConnectedSocket() client: Socket) {
-  //   this.gameService.gameLoop(client);
-  // }
-
-  @SubscribeMessage('keyDown')
+  @SubscribeMessage('ArrowDown')
   keyDown(@MessageBody() data: JoinGameDto, @ConnectedSocket() client: Socket) {
-    console.log(data, "ok");
+    console.log("ArrowDown");
     const { gameID, userId } = data;
     if (gameID && userId) 
     {
-      this.gameService.keyDown(gameID, userId);
+      this.gameService.ArrowDown(gameID, userId);
     }
   }
-  
 
-  @SubscribeMessage('keyUp')
+  @SubscribeMessage('ArrownUp')
   keyUp(@MessageBody() data: JoinGameDto, @ConnectedSocket() client: Socket) {
+    console.log("ArrownUp");
     const { gameID, userId } = data;
     if (gameID && userId) 
     {
-      this.gameService.keyUp(gameID, userId);
+      this.gameService.ArrowUp(gameID, userId);
     }
   }
 
@@ -75,6 +78,10 @@ export class GameGateway {
   @SubscribeMessage('quitGame')
   quitGame(@ConnectedSocket() client: Socket) {
 
+  }
+
+  handleDisconnect(client : Socket) {
+    console.log(client.id, "Client disconnected");
   }
 
 }

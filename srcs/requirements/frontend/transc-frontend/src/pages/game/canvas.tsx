@@ -6,20 +6,31 @@ interface propsType {
     gameId : string
 }
 
-interface GameEntity {
+export interface GameEntity {
+    id : String,
     W_screen : number,
     H_screen : number,
     ball_x : number,
     ball_y : number,
     vx : number,
+    radius : number,
     vy : number,
-    paddle1_x : number,
-    paddle2_x : number,
-    paddle1_y : number,
-    paddle2_y : number,
+    player1 : Player,
+    player2 : Player,
     w_paddle : number,
     h_paddle : number,
     playerSpeed : number,
+    scoreLimit : number,
+    // gameLevel? : String,
+    ball_speed : number,
+    gameStatus : null | 'waiting' | 'started' | 'finished' | 'canceled' | 'inThequeue';
+}
+
+export interface Player {
+    id : String,
+    paddleX : number,
+    paddleY : number,
+    score : number
 }
 
 const Canvas = ({ socket, gameId, myId } : propsType) => {
@@ -39,8 +50,8 @@ const Canvas = ({ socket, gameId, myId } : propsType) => {
 
     const DrawCircle = (context : any, x : number, y : number, r : number) => {
         context.beginPath();
-        const ball_x = x * 5;
-        const ball_y = y * 5;
+        const ball_x = x;
+        const ball_y = y ;
         context.arc(ball_x, ball_y, r,  0, Math.PI * 2);
         context.fillStyle = 'black';
         context.fill();
@@ -51,8 +62,8 @@ const Canvas = ({ socket, gameId, myId } : propsType) => {
         if (canvasRef?.current) {
             const canvas = canvasRef.current;
             if (gameData) {
-                const w : number = gameData.W_screen * 5;
-                const h : number = gameData.H_screen * 5;
+                const w : number = gameData.W_screen;
+                const h : number = gameData.H_screen ;
                 canvas.width = w;
                 canvas.height = h;
                 const context = canvas.getContext('2d');
@@ -62,38 +73,43 @@ const Canvas = ({ socket, gameId, myId } : propsType) => {
                 DrawHorizline(context, w / 2, 0, h);
 
                 /** Draw a  Left Paddle line */
+                const paddle1 = gameData.player1.paddleY;
+                const paddle2 = gameData.player2.paddleY;
                 
-                DrawHorizline(context, 10, 20, 80);
+                DrawHorizline(context, gameData.player1.paddleX, paddle1, gameData.h_paddle);
                 
-                /** Draw a Rigth Paddle line */
-                DrawHorizline(context, w - 10, 20, 80  );
+                /** Draw a Rigth Paddle line */+
+
+                DrawHorizline(context, gameData.player2.paddleX, paddle2 , gameData.h_paddle);
 
                 /** Drawn a ball */
-                DrawCircle(context, gameData.ball_x, gameData.ball_y, 10);
+                DrawCircle(context, gameData.ball_x, gameData.ball_y, gameData.radius);
             }
         }
-    }, [gameData])
+    }, [gameData]);
+
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "ArrowUp") 
+        {
+            socket.emit("keyDown", {
+                userId : myId,
+                gameID : gameId
+            });
+            console.log(event.key);
+        }
+        if (event.key === "ArrowDown") 
+        {
+            socket.emit("keyUp", {
+                userId : myId,
+                gameID : gameId
+            });
+            console.log(event.key);
+        }
+    })
 
     socket.on("value", (data : GameEntity) => {
         setGamedata(data);
     })
-
-    document.addEventListener("keydown", () => {
-        socket.emit("keyDown", {
-            userId : myId,
-            gameID : gameId
-        });
-        console.log("down");
-
-    })
-    document.addEventListener("keyup", () => {
-        socket.emit("keyUp", {
-            userId : myId,
-            gameID : gameId
-        });
-        console.log(myId, gameId);
-    })
-
 
     return (
         <canvas ref={canvasRef} style={{ border : "solid 4px "}}></canvas>
