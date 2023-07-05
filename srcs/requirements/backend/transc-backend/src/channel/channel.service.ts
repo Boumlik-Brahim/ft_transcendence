@@ -1,26 +1,87 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { CreateChannelDto } from './dto/create-channel.dto';
 import { UpdateChannelDto } from './dto/update-channel.dto';
+import { PrismaService } from 'prisma/prisma.service';
+import { Channel } from '@prisma/client';
 
 @Injectable()
 export class ChannelService {
-  create(createChannelDto: CreateChannelDto) {
-    return 'This action adds a new channel';
+  constructor(private prisma: PrismaService) {}
+
+  async createChannel(createChannelDto: CreateChannelDto): Promise<Channel> {
+    return this.prisma.channel.create({ data: createChannelDto })
+    .catch (error => {
+      throw new HttpException({
+        status: HttpStatus.BAD_REQUEST,
+        error: 'BadRequestException',
+      }, HttpStatus.BAD_REQUEST, {
+        cause: error
+      });
+    });
   }
 
-  findAll() {
-    return `This action returns all channel`;
+  async findAllChannels(): Promise<Channel[]> {
+    return this.prisma.channel.findMany({
+      orderBy: {
+        created_at: 'asc',
+      },
+    })
+    .catch (error => {
+      throw new HttpException({
+        status: HttpStatus.NOT_FOUND,
+        error: 'NotFoundException',
+      }, HttpStatus.NOT_FOUND, {
+        cause: error
+      });
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} channel`;
+  async findOneChannel(id: string): Promise<Channel> {
+    return this.prisma.channel.findUniqueOrThrow({
+      where: {
+        id
+      },
+    })
+    .catch (error => {
+      throw new HttpException({
+        status: HttpStatus.NOT_FOUND,
+        error: 'NotFoundException',
+      }, HttpStatus.NOT_FOUND, {
+        cause: error
+      });
+    });
   }
 
-  update(id: number, updateChannelDto: UpdateChannelDto) {
-    return `This action updates a #${id} channel`;
+  async updateChannel(id: string, updateChannelDto: UpdateChannelDto): Promise<Channel> {
+    return this.prisma.channel.update({
+      where: {
+        id
+      },
+      data: updateChannelDto
+    })
+    .catch (error => {
+      throw new HttpException({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        error: 'InternalServerErrorException',
+      }, HttpStatus.INTERNAL_SERVER_ERROR, {
+        cause: error
+      });
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} channel`;
+  async removeChannel(id: string): Promise<void> {
+    await this.prisma.channel.delete({
+      where: {
+        id
+      }
+    })
+    .catch (error => {
+      throw new HttpException({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        error: 'InternalServerErrorException',
+      }, HttpStatus.INTERNAL_SERVER_ERROR, {
+        cause: error
+      });
+    });
   }
 }
