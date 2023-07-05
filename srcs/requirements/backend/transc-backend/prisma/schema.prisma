@@ -18,7 +18,7 @@ model User {
   email String
   password  String
   Avatar  String?
-  Status  String[]
+  Status  String
   created_at  DateTime?  @default(now())
   userStat  UserStat[]
   achievement Achievement[]
@@ -84,8 +84,9 @@ model Channel {
   id  String @id @default(uuid())
   channelName String
   channelType String
-  channelPassword String
+  channelPassword String?
   created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
   channelOwnerId  String
   user  User[]
   channelMember ChannelMember[] @relation("channelMember")
@@ -101,7 +102,7 @@ model ChannelMember {
   channelId String
   sender  ChannelMessage[]  @relation("senderRelation")
   isBanned Boolean @default(false)
-  bannedTime DateTime  @default(now())
+  bannedTime DateTime
   isMuted Boolean @default(false)
   mutedTime DateTime  @default(now())
 }
