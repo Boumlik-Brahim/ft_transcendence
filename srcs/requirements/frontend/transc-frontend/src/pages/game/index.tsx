@@ -24,14 +24,14 @@ export const Game  = () => {
         console.log(gameId, myid)
        socket.emit('joinGame', {
         userId : '064f8d07-7a1e-45cc-844d-3106548484c1',
-        gameID : '1131201b-9965-450d-8653-66094691f7ab',
+        gameID : '7e0640ff-7e56-485f-94f2-b892578e6bf3',
     })
     }
     const joinGameB = () => {
         console.log(gameId, myid)
        socket.emit('joinGame', {
         userId : 'd65b3199-89cd-4824-aa3d-45aea1109c93',
-        gameID : '1131201b-9965-450d-8653-66094691f7ab',
+        gameID : '7e0640ff-7e56-485f-94f2-b892578e6bf3',
     })
     }
 
@@ -50,7 +50,7 @@ export const Game  = () => {
             <p></p>
             <button onClick={create}>CreateNewGame</button>
             {/* <p>{error}</p> */}
-            <Canvas socket={socket} myId={myid || "none"} gameId={gameId || "none"} ></Canvas>
+            <Canvas socket={socket} myId="d65b3199-89cd-4824-aa3d-45aea1109c93" gameId={"7e0640ff-7e56-485f-94f2-b892578e6bf3"} ></Canvas>
             <form>
                 <input onChange={(e) => setgameId(e.target.value)}></input><br/>
                 <input onChange={(e) => setMyId(e.target.value)}></input><br/>

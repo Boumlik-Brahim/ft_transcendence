@@ -76,11 +76,11 @@ const Canvas = ({ socket, gameId, myId } : propsType) => {
                 const paddle1 = gameData.player1.paddleY;
                 const paddle2 = gameData.player2.paddleY;
                 
-                DrawHorizline(context, gameData.player1.paddleX, paddle1, gameData.h_paddle);
+                DrawHorizline(context, gameData.player1.paddleX, paddle1,  paddle1 + gameData.h_paddle);
                 
                 /** Draw a Rigth Paddle line */+
 
-                DrawHorizline(context, gameData.player2.paddleX, paddle2 , gameData.h_paddle);
+                DrawHorizline(context, gameData.player2.paddleX, paddle2 , paddle2 + gameData.h_paddle);
 
                 /** Drawn a ball */
                 DrawCircle(context, gameData.ball_x, gameData.ball_y, gameData.radius);
@@ -91,7 +91,7 @@ const Canvas = ({ socket, gameId, myId } : propsType) => {
     document.addEventListener("keydown", (event) => {
         if (event.key === "ArrowUp") 
         {
-            socket.emit("keyDown", {
+            socket.emit("ArrowUp", {
                 userId : myId,
                 gameID : gameId
             });
@@ -99,7 +99,7 @@ const Canvas = ({ socket, gameId, myId } : propsType) => {
         }
         if (event.key === "ArrowDown") 
         {
-            socket.emit("keyUp", {
+            socket.emit("ArrowDown", {
                 userId : myId,
                 gameID : gameId
             });
@@ -112,7 +112,11 @@ const Canvas = ({ socket, gameId, myId } : propsType) => {
     })
 
     return (
-        <canvas ref={canvasRef} style={{ border : "solid 4px "}}></canvas>
+        <div>
+            <p>score player_1 : {gameData?.player1.score} </p>
+            <p>score player_1 : {gameData?.player2.score} </p>
+            <canvas ref={canvasRef} style={{ border : "solid 4px "}}></canvas>
+        </div>
     )
 }
 

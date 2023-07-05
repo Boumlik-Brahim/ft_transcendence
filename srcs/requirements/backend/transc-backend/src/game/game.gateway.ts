@@ -60,9 +60,9 @@ export class GameGateway {
     }
   }
 
-  @SubscribeMessage('ArrownUp')
+  @SubscribeMessage('ArrowUp')
   keyUp(@MessageBody() data: JoinGameDto, @ConnectedSocket() client: Socket) {
-    console.log("ArrownUp");
+    console.log("ArrowUp");
     const { gameID, userId } = data;
     if (gameID && userId) 
     {

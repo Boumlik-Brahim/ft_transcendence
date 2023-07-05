@@ -123,9 +123,10 @@ export class GameService {
         const paddle1_top = paddle1_y;
         const paddle2_top = paddle2_y;
 
-        if (ball_left <= paddle1_surface && ball_y >= paddle1_top && ball_x <= paddle1_bottom)
+        if (ball_left <= paddle1_surface && ball_bottom > paddle1_top && ball_top < paddle1_bottom)
         {
             gameValue.ball_speed += 0.2;
+            console.log(ball_left, paddle1_surface, ball_y, paddle1_top, ball_x);
             const angle = this.paddleCollisionAngle(ball_y, paddle1_y, paddle_middle);
             gameValue.vx = gameValue.ball_speed * Math.cos(angle);
             gameValue.vy = gameValue.ball_speed * Math.sin(angle);
@@ -133,7 +134,7 @@ export class GameService {
                 gameValue.vx *= -1;
             console.log("1");
         }
-        else if (ball_right >= paddle2_surface && ball_y >= paddle2_top && ball_x <= paddle2_bottom)
+        else if (ball_right >= paddle2_surface && ball_bottom > paddle2_top && ball_top < paddle2_bottom)
         {
             gameValue.ball_speed += 0.2;
             const angle = this.paddleCollisionAngle(ball_y, paddle2_y, paddle_middle);
@@ -147,6 +148,7 @@ export class GameService {
         else if (ball_right > W_screen || ball_left < 0)
         {
             gameValue.vx *= -1;
+            gameValue.vy *= -1;
             gameValue.ball_x = W_screen / 2;
             gameValue.ball_y = H_screen / 2;
             if (ball_right > W_screen) {
@@ -158,11 +160,7 @@ export class GameService {
             console.log("3");
         }
         else if (ball_bottom > H_screen || ball_top < 0)
-        {
             gameValue.vy *= -1;
-            
-            console.log("4");
-        }
     }
     
     gameLoop(gameId : String, player1Id : String, player2Id : String, server : any) {
@@ -199,15 +197,16 @@ export class GameService {
         if (game) {
             if (playerId === game.player1.id) {
                 if (game.player1.paddleY + game.h_paddle < game.H_screen)
-                    game.player1.paddleY += 1;
+                game.player1.paddleY += 1;
                 this.gameMap.set(gameId, game)   
             }
             if (playerId === game.player2.id) {
                 if (game.player2.paddleY + game.h_paddle < game.H_screen)
-                    game.player2.paddleY -= 1;
+                game.player2.paddleY += 1;
                 this.gameMap.set(gameId, game)
             }
         }
+        // console.log(game.player1.paddleY)
     }
 
     updatePaddle(currentGame : GameEntity) {
@@ -232,17 +231,17 @@ export class GameService {
             player1 : {
                 id : player1Id,
                 paddleX : 20,
-                paddleY : 70,
+                paddleY : 40,
                 score : 0
             },
             player2 : {
                 id : player2Id,
                 paddleX : 840,
-                paddleY : 70,
+                paddleY : 40,
                 score : 0
             },
             w_paddle : 20,
-            h_paddle : 300,
+            h_paddle : 200,
             playerSpeed : 2,
             scoreLimit : 11,
             ball_speed : 20,
