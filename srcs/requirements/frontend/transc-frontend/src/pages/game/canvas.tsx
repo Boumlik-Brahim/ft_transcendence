@@ -23,7 +23,7 @@ export interface GameEntity {
     scoreLimit : number,
     // gameLevel? : String,
     ball_speed : number,
-    gameStatus : null | 'waiting' | 'started' | 'finished' | 'canceled' | 'inThequeue';
+    gameStatus : null | 'waiting' | 'started' | 'finished' | 'canceled' | 'inThequeue',
 }
 
 export interface Player {

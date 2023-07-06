@@ -100,7 +100,6 @@ export class GameService {
             radius,
             ball_y,
             player1,
-            w_paddle,
             player2,
             h_paddle,
         } = gameValue;
@@ -132,7 +131,6 @@ export class GameService {
             gameValue.vy = gameValue.ball_speed * Math.sin(angle);
             if (gameValue.vx < 0)
                 gameValue.vx *= -1;
-            console.log("1");
         }
         else if (ball_right >= paddle2_surface && ball_bottom > paddle2_top && ball_top < paddle2_bottom)
         {
@@ -142,7 +140,6 @@ export class GameService {
             gameValue.vy = gameValue.ball_speed * Math.sin(angle);
             if (gameValue.vx > 0)
             gameValue.vx *= -1;
-            console.log("2");
         }
         
         else if (ball_right > W_screen || ball_left < 0)
@@ -153,11 +150,21 @@ export class GameService {
             gameValue.ball_y = H_screen / 2;
             if (ball_right > W_screen) {
                 gameValue.player1.score += 1;
+                if (gameValue.player1.score === gameValue.scoreLimit)
+                {
+                    gameValue.gameStatus = 'finished';
+                    gameValue.winner = gameValue.player1.id;
+                }
+
             }
             else if (ball_left < 0) {
                 gameValue.player2.score += 1;
+                if (gameValue.player2.score === gameValue.scoreLimit)
+                {
+                    gameValue.gameStatus = 'finished';
+                    gameValue.winner = gameValue.player2.id;
+                }
             }
-            console.log("3");
         }
         else if (ball_bottom > H_screen || ball_top < 0)
             gameValue.vy *= -1;
@@ -169,8 +176,7 @@ export class GameService {
         const id = setInterval(() => {
             this.updatePaddle(gameValue);
             this.gameLogique(gameValue);
-            if (gameValue.gameStatus === "canceled" || gameValue.gameStatus === "finished")
-                clearInterval(id);
+            this.istheGameEnd(gameValue, id);
             server.to(gameId).emit("value", gameValue);
         }, 160);
     }
@@ -246,7 +252,18 @@ export class GameService {
             scoreLimit : 11,
             ball_speed : 20,
             gameStatus : "waiting",
+            winner : null
         }
         return newGameValue;
     }
+
+    istheGameEnd(game : GameEntity, intervalId) {
+        const { gameStatus } = game;
+        if (gameStatus === 'finished' || gameStatus === 'canceled')
+            clearInterval(intervalId);
+    }
+
+    // stopAgame(gameId : number) {
+    //     clearInterval(gameLoopId);
+    // }
 }
