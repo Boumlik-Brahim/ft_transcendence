@@ -38,8 +38,22 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   }
   
   @SubscribeMessage('joinChannel')
-  handleJoinRoom(@MessageBody() payload, @ConnectedSocket() socket: Socket): void {
-
+  async handleJoinRoom(@MessageBody() payload: { channelID: string, channelPasword: string }, @ConnectedSocket() socket: Socket): Promise<void> {
+    const channel = await this.channelService.findOneChannel(payload.channelID);
+    console.log(`channelID==>  ${channel.id} channel name==> ${channel.channelName} channelType==> ${channel.channelType} channelpaswd==> ${channel.channelPassword} channelOwner==> ${channel.channelOwnerId}`);
+    if (channel.channelType === 'protected'){
+      if (channel.channelPassword === payload.channelPasword){
+        socket.join(payload.channelID);
+        this.server.to(payload.channelID).emit('onMessage', `${socket.id} has joined ${payload.channelID}`);
+      }
+      else{
+        console.log(`Invalid password ${payload.channelPasword}`);
+      }
+    }
+    else{
+      socket.join(payload.channelID);
+      this.server.to(payload.channelID).emit('onMessage', `${socket.id} has joined ${payload.channelID}`);
+    }
   }
 
   @SubscribeMessage('messageChannel')
