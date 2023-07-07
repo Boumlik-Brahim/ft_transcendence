@@ -3,7 +3,9 @@ import { ChannelService } from './channel.service';
 import { CreateChannelDto } from './dto/create-channel.dto';
 import { UpdateChannelDto } from './dto/update-channel.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { Channel } from '@prisma/client';
+import { Channel, ChannelMember } from '@prisma/client';
+import { CreateChannelMemberDto } from './dto/create-channelMember.dto';
+import { UpdateChannelMemberDto } from './dto/update-channelMember.dto';
 
 @ApiTags('channel')
 @Controller('channel')
@@ -37,5 +39,35 @@ export class ChannelController {
   @Delete(':id')
   async remove(@Param('id') id: string): Promise<void> {
     await this.channelService.removeChannel(id);
+  }
+  
+
+  @Post('/member')
+  async createChannelMember(@Body() createChannelMemberDto: CreateChannelMemberDto): Promise<ChannelMember> {
+    const channelMember = await this.channelService.createChannelMember(createChannelMemberDto);
+    return channelMember;
+  }
+
+  @Get('/member')
+  async findAllChannelMembers(): Promise<ChannelMember[]> {
+    const channelMembers = await this.channelService.findAllChannelMembers();
+    return channelMembers;
+  }
+  
+  @Get('/member/:id')
+  async findOneChannelMember(@Param('id') id: string): Promise<ChannelMember> {
+    const channelMember = await this.channelService.findOneChannelMember(id);
+    return channelMember;
+  }
+  
+  @Patch('/member/:id')
+  async updateChannelMember(@Param('id') id: string, @Body() updateChannelMemberDto: UpdateChannelMemberDto): Promise<ChannelMember> {
+    const updatedChannel = await this.channelService.updateChannelMember(id, updateChannelMemberDto);
+    return updatedChannel;
+  }
+  
+  @Delete(':id')
+  async removeChannelMember(@Param('id') id: string): Promise<void> {
+    await this.channelService.removeChannelMember(id);
   }
 }
