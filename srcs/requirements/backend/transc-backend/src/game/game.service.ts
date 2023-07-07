@@ -1,18 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { GameEntity } from './entity/game.entity';
+import { Game } from '@prisma/client';
 
 @Injectable()
 export class GameService {
     private gameMap = new Map<String, GameEntity>();
+    private inTheQueue : String | null;
 
     constructor(private prisma : PrismaService) {}
     async createGame(data, client : any)  {
         const { invitedId, creatorID, isRamdomOponent } = data;
-
-        const gameType : string = "not solo";
-        const status : string = "waiting";
-        console.log(invitedId, creatorID);
         if (!isRamdomOponent) {
             try {
                 const user = await this.prisma.user.findUnique({
@@ -24,25 +22,28 @@ export class GameService {
                     client.emit("error", "openent not find");
                     return; 
                 }
-                const game = await this.prisma.game.create( {
-                    data : {
-                        gameType : gameType,
-                        gameStatus : status,
-                        created_at : new Date(),
-                        creatorId : creatorID,
-                        invitedId : user.id
-                    }
-                });
-                console.log(game)
-                if (game)
-                    client.emit("newGame", game);
+                const game : GameEntity = this.getGameInitValue(creatorID, invitedId);
+                this.gameMap.set(game.id, game);
+                client.emit("newGame", game);
             }
             catch (error) {
                 client.emit("error", error);
             }
         }
         else {
-
+            if (this.inTheQueue != null) {
+                const game : GameEntity = this.getGameInitValue(creatorID, invitedId);
+                this.inTheQueue = game.id;
+                this.gameMap.set(game.id, game);
+                client.emit("newGame", game);
+            }
+            else {
+                const gameJoined : GameEntity = this.gameMap.get(this.inTheQueue);
+                this.inTheQueue = null;
+                gameJoined .player2.id = creatorID;
+                this.gameMap.set(gameJoined.id, gameJoined);
+                client.emit("newGame", gameJoined);
+            }
         }
     }
 
@@ -52,16 +53,12 @@ export class GameService {
 
     async joinGame(userId : string, gameID : string, client : any, server : any) {
         try {
-            const game = await this.prisma.game.findUnique({
-                where : {
-                    id : gameID
-                }
-            });
+            const game = this.gameMap.get(gameID);
             if (!game) {
                 client.emit("error", "This game does not exist");
                 return;
             }
-            if (userId !== game.creatorId && userId !== game.invitedId) {
+            if (userId !== game.player1.id && userId !== game.player2.id) {
                 client.emit("error", "Permission denied");
                 return;
             }
@@ -69,7 +66,7 @@ export class GameService {
             const nbrClientRequire = 2;
             const rooms = server.sockets.adapter.rooms.get(gameID);
             if (rooms && rooms.size === nbrClientRequire) {
-                this.gameLoop(game.id, game.creatorId, game.invitedId, server);
+                this.gameLoop(game, server);
             }
         }
         catch (error) {
@@ -125,27 +122,25 @@ export class GameService {
         if (ball_left <= paddle1_surface && ball_bottom > paddle1_top && ball_top < paddle1_bottom)
         {
             gameValue.ball_speed += 0.2;
-            console.log(ball_left, paddle1_surface, ball_y, paddle1_top, ball_x);
-            const angle = this.paddleCollisionAngle(ball_y, paddle1_y, paddle_middle);
-            gameValue.vx = gameValue.ball_speed * Math.cos(angle);
-            gameValue.vy = gameValue.ball_speed * Math.sin(angle);
-            if (gameValue.vx < 0)
-                gameValue.vx *= -1;
+            gameValue.vx *= -1;
+            // console.log(ball_left, paddle1_surface, ball_y, paddle1_top, ball_x);
+            // const angle = this.paddleCollisionAngle(ball_y, paddle1_y, paddle_middle);
+            // gameValue.vx = gameValue.ball_speed * Math.cos(angle);
+            // gameValue.vy = gameValue.ball_speed * Math.sin(angle);
+            // if (gameValue.vx < 0)
         }
         else if (ball_right >= paddle2_surface && ball_bottom > paddle2_top && ball_top < paddle2_bottom)
         {
             gameValue.ball_speed += 0.2;
-            const angle = this.paddleCollisionAngle(ball_y, paddle2_y, paddle_middle);
-            gameValue.vx = gameValue.ball_speed * Math.cos(angle);
-            gameValue.vy = gameValue.ball_speed * Math.sin(angle);
-            if (gameValue.vx > 0)
             gameValue.vx *= -1;
-        }
-        
+            // const angle = this.paddleCollisionAngle(ball_y, paddle2_y, paddle_middle);
+            // gameValue.vx = gameValue.ball_speed * Math.cos(angle);
+            // gameValue.vy = gameValue.ball_speed * Math.sin(angle);
+            // if (gameValue.vx > 0)
+        }  
         else if (ball_right > W_screen || ball_left < 0)
         {
             gameValue.vx *= -1;
-            gameValue.vy *= -1;
             gameValue.ball_x = W_screen / 2;
             gameValue.ball_y = H_screen / 2;
             if (ball_right > W_screen) {
@@ -166,18 +161,16 @@ export class GameService {
                 }
             }
         }
-        else if (ball_bottom > H_screen || ball_top < 0)
+        else if (ball_bottom >= H_screen || ball_top <= 0)
             gameValue.vy *= -1;
     }
     
-    gameLoop(gameId : String, player1Id : String, player2Id : String, server : any) {
-        const gameValue : GameEntity = this.getGameInitValue(gameId, player1Id, player2Id);
-        this.gameMap.set(gameId, gameValue);
+    gameLoop(game : GameEntity, server : any) {
         const id = setInterval(() => {
-            this.updatePaddle(gameValue);
-            this.gameLogique(gameValue);
-            this.istheGameEnd(gameValue, id);
-            server.to(gameId).emit("value", gameValue);
+            this.updatePaddle(game);
+            this.gameLogique(game);
+            this.istheGameEnd(game, id);
+            server.to(game.id).emit("value", game);
         }, 160);
     }
 
@@ -224,16 +217,17 @@ export class GameService {
         }
     }
 
-    getGameInitValue(gameId : String, player1Id : String, player2Id : String) : GameEntity {
+    getGameInitValue(player1Id : String, player2Id : String) : GameEntity {
+        const ballDirectionX : number = Math.round(Math.random()) === 1 ? -1 : 1;
         const newGameValue : GameEntity =  {
-            id : gameId,
+            id : "kkkkkkkkkkkkk",
             W_screen : 860,
             H_screen : 400,
             ball_x : 430,
             ball_y : 200,
             radius : 10,
-            vx : 20,
-            vy : 40,
+            vx : 20 * ballDirectionX,
+            vy : 20,
             player1 : {
                 id : player1Id,
                 paddleX : 20,
@@ -246,7 +240,7 @@ export class GameService {
                 paddleY : 40,
                 score : 0
             },
-            w_paddle : 20,
+            w_paddle : 25,
             h_paddle : 200,
             playerSpeed : 2,
             scoreLimit : 11,
