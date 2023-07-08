@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { GameEntity } from './entity/game.entity';
-import { Game } from '@prisma/client';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class GameService {
@@ -25,6 +25,7 @@ export class GameService {
                 const game : GameEntity = this.getGameInitValue(creatorID, invitedId);
                 this.gameMap.set(game.id, game);
                 client.emit("newGame", game);
+                console.log(game);
             }
             catch (error) {
                 client.emit("error", error);
@@ -32,7 +33,7 @@ export class GameService {
         }
         else {
             if (this.inTheQueue != null) {
-                const game : GameEntity = this.getGameInitValue(creatorID, invitedId);
+                const game : GameEntity = this.getGameInitValue(creatorID, null);
                 this.inTheQueue = game.id;
                 this.gameMap.set(game.id, game);
                 client.emit("newGame", game);
@@ -77,8 +78,8 @@ export class GameService {
 
     gameLogique(gameValue : GameEntity) {
         this.collision(gameValue)
-        gameValue.ball_x += gameValue.vx;
-        gameValue.ball_y += gameValue.vy;
+        gameValue.ball_x += (gameValue.vx * gameValue.ball_speed);
+        gameValue.ball_y += (gameValue.vy * gameValue.ball_speed);
     }
 
     paddleCollisionAngle(ball_y : number, paddle_y : number, paddle_middle : number) : number {
@@ -101,42 +102,40 @@ export class GameService {
             h_paddle,
         } = gameValue;
 
-        const paddle1_x = player1.paddleX;
-        const paddle1_y = player1.paddleY;
-        const paddle2_x = player2.paddleX;
-        const paddle2_y = player2.paddleY;
-
         const ball_left = ball_x - radius;
         const ball_right = ball_x + radius;
         const ball_top = ball_y - radius;
         const ball_bottom = ball_y + radius;
 
         const paddle_middle = h_paddle / 2;
-        const paddle1_surface = paddle1_x;
-        const paddle2_surface = paddle2_x;
-        const paddle1_bottom = paddle1_y + h_paddle;
-        const paddle2_bottom = paddle2_y + h_paddle;
-        const paddle1_top = paddle1_y;
-        const paddle2_top = paddle2_y;
+        const paddle1_surface = player1.paddleX;
+        const paddle2_surface = player2.paddleX;
+        const paddle1_bottom = player1.paddleY + h_paddle;
+        const paddle2_bottom = player2.paddleY + h_paddle;
+        const paddle1_top = player1.paddleY;
+        const paddle2_top = player2.paddleY;
 
         if (ball_left <= paddle1_surface && ball_bottom > paddle1_top && ball_top < paddle1_bottom)
         {
             gameValue.ball_speed += 0.2;
-            gameValue.vx *= -1;
-            // console.log(ball_left, paddle1_surface, ball_y, paddle1_top, ball_x);
-            // const angle = this.paddleCollisionAngle(ball_y, paddle1_y, paddle_middle);
+            gameValue.vx *= -1; 
+            // const angle = this.paddleCollisionAngle(ball_y, paddle1_top, paddle_middle);
             // gameValue.vx = gameValue.ball_speed * Math.cos(angle);
             // gameValue.vy = gameValue.ball_speed * Math.sin(angle);
             // if (gameValue.vx < 0)
+            // {
+            // }
         }
         else if (ball_right >= paddle2_surface && ball_bottom > paddle2_top && ball_top < paddle2_bottom)
         {
             gameValue.ball_speed += 0.2;
             gameValue.vx *= -1;
-            // const angle = this.paddleCollisionAngle(ball_y, paddle2_y, paddle_middle);
+            // const angle = this.paddleCollisionAngle(ball_y, paddle2_top, paddle_middle);
             // gameValue.vx = gameValue.ball_speed * Math.cos(angle);
             // gameValue.vy = gameValue.ball_speed * Math.sin(angle);
             // if (gameValue.vx > 0)
+            // {
+            // }
         }  
         else if (ball_right > W_screen || ball_left < 0)
         {
@@ -149,6 +148,7 @@ export class GameService {
                 {
                     gameValue.gameStatus = 'finished';
                     gameValue.winner = gameValue.player1.id;
+                    gameValue.ball_speed = 20;
                 }
 
             }
@@ -158,6 +158,7 @@ export class GameService {
                 {
                     gameValue.gameStatus = 'finished';
                     gameValue.winner = gameValue.player2.id;
+                    gameValue.ball_speed = 20;
                 }
             }
         }
@@ -219,15 +220,16 @@ export class GameService {
 
     getGameInitValue(player1Id : String, player2Id : String) : GameEntity {
         const ballDirectionX : number = Math.round(Math.random()) === 1 ? -1 : 1;
+        const _id = uuidv4();
         const newGameValue : GameEntity =  {
-            id : "kkkkkkkkkkkkk",
+            id : _id,
             W_screen : 860,
             H_screen : 400,
             ball_x : 430,
             ball_y : 200,
             radius : 10,
-            vx : 20 * ballDirectionX,
-            vy : 20,
+            vx : 10 * ballDirectionX,
+            vy : 10,
             player1 : {
                 id : player1Id,
                 paddleX : 20,
@@ -244,7 +246,7 @@ export class GameService {
             h_paddle : 200,
             playerSpeed : 2,
             scoreLimit : 11,
-            ball_speed : 20,
+            ball_speed : 2,
             gameStatus : "waiting",
             winner : null
         }

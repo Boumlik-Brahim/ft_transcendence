@@ -8,12 +8,11 @@ export interface GameEntity {
     radius : number,
     vy : number,
     player1 : Player,
-    player2 : Player,
+    player2 : Player | null,
     w_paddle : number,
     h_paddle : number,
     playerSpeed : number,
     scoreLimit : number,
-    // gameLevel? : String,
     ball_speed : number,
     gameStatus : null | 'waiting' | 'started' | 'finished' | 'canceled' | 'inThequeue',
     winner : null | String
