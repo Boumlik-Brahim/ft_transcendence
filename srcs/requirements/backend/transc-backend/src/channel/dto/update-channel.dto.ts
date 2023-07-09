@@ -10,13 +10,4 @@ export class UpdateChannelDto extends PartialType(CreateChannelDto) {
     @IsOptional()
     channelName: string;
 
-    @ApiProperty()
-    @IsString()
-    @IsOptional()
-    channelType: string;
-
-    @ApiProperty()
-    @IsString()
-    @IsOptional()
-    channelPassword: string;
 }
