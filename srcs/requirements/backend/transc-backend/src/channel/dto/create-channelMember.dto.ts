@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsBoolean, IsDate, IsDateString, IsNotEmpty, IsOptional, IsString, IsUUID } from "class-validator";
+import { IsBoolean, IsDate, IsDateString, IsNotEmpty, IsString } from "class-validator";
 
 export class CreateChannelMemberDto {
 
@@ -23,6 +23,7 @@ export class CreateChannelMemberDto {
 
     @ApiProperty()
     @IsDateString()
+    @IsNotEmpty()
     bannedTime: Date;
 
     @ApiProperty()
@@ -31,6 +32,7 @@ export class CreateChannelMemberDto {
 
     @ApiProperty()
     @IsDateString()
+    @IsNotEmpty()
     mutedTime: Date;
 
 }
