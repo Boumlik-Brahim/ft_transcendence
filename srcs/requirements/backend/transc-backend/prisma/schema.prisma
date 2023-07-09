@@ -96,15 +96,17 @@ model Channel {
 
 model ChannelMember {
   id  String @id @default(uuid())
-  isAdmin Boolean @default(false)
   userId  String
   channel Channel @relation("channelMember", fields: [channelId], references: [id])
   channelId String
   sender  ChannelMessage[]  @relation("senderRelation")
+  isAdmin Boolean @default(false)
   isBanned Boolean @default(false)
   bannedTime DateTime
   isMuted Boolean @default(false)
-  mutedTime DateTime  @default(now())
+  mutedTime DateTime
+  created_at  DateTime  @default(now())
+  @@unique([userId, channelId], name: "userAndChannel")
 }
 
 model KickedMember {
@@ -112,16 +114,19 @@ model KickedMember {
   userId  String
   channel Channel @relation("kickedMember", fields: [channelId], references: [id])
   channelId String
+  created_at  DateTime  @default(now())
+  @@unique([userId, channelId], name: "kickedMemberAndChannel")
 }
 
 model ChannelMessage {
   id  String @id @default(uuid())
   content String
-  created_at  DateTime  @default(now())
   sender  ChannelMember @relation("senderRelation", fields: [memberId], references: [id])
   memberId  String
   recievers  Channel @relation("receiverRelation", fields: [channelId], references: [id])
   channelId String
+  created_at  DateTime  @default(now())
+  @@unique([memberId, channelId], name: "senderAndChannel")
 }
 
 //* ---------------------------------------------------------------------------------------------------------------------------- *//
