@@ -3,6 +3,8 @@ import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect,
 import { ChannelService } from '../channel.service';
 import { Server, Socket } from 'socket.io';
 import { CreateChannelDto } from '../dto/create-channel.dto';
+import { CreateChannelMessageDto } from '../dto/create-channelMessage.dto';
+import { CreateKickedMemberDto } from '../dto/create-kickedMember.dto';
 
 @WebSocketGateway({
   cors: {
@@ -36,11 +38,10 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
     socket.join(channel.id);
     this.server.to(channel.id).emit('onMessage', `${socket.id} has joined ${channel.channelName}`);
   }
-  
+
   @SubscribeMessage('joinChannel')
   async handleJoinRoom(@MessageBody() payload: { channelID: string, channelPasword: string }, @ConnectedSocket() socket: Socket): Promise<void> {
     const channel = await this.channelService.findOneChannel(payload.channelID);
-    console.log(`channelID==>  ${channel.id} channel name==> ${channel.channelName} channelType==> ${channel.channelType} channelpaswd==> ${channel.channelPassword} channelOwner==> ${channel.channelOwnerId}`);
     if (channel.channelType === 'protected'){
       if (channel.channelPassword === payload.channelPasword){
         socket.join(payload.channelID);
@@ -57,15 +58,38 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   }
 
   @SubscribeMessage('messageChannel')
-  handleMessage(@MessageBody() payload: string): void {
+  async handleMessage(@MessageBody() payload: CreateChannelMessageDto): Promise<void> {
     this.server.to(this.channelId).emit('onMessage', payload);
+    await this.channelService.createChannelMessage(payload);
+  }
+
+  @SubscribeMessage('kickMember')
+  async handleKickMember(@MessageBody() payload: CreateKickedMemberDto , @ConnectedSocket() socket: Socket): Promise<void> {
+    await this.channelService.createKickedMember(payload);
+    await this.channelService.removeChannelMember(payload.channelId, payload.userId);
+    this.server.to(payload.channelId).emit('onMessage', `${socket.id} is kicked from ${payload.channelId}`);
+  }
+
+  @SubscribeMessage('banMember')
+  async handleBanMember(@MessageBody() payload: { channelId: string, memberId: string }, @ConnectedSocket() socket: Socket): Promise<void> {
+    const member = await this.channelService.findOneChannelMember(payload.channelId, payload.memberId);
+    member.isBanned = true;
+    await this.channelService.updateChannelMember(payload.channelId, payload.memberId, member);
+    this.server.to(payload.channelId).emit('onMessage', `${socket.id} is banned from ${payload.channelId}`);
+  }
+
+  @SubscribeMessage('muteMember')
+  async handleMuteMember(@MessageBody() payload: { channelId: string, memberId: string }, @ConnectedSocket() socket: Socket): Promise<void> {
+    const member = await this.channelService.findOneChannelMember(payload.channelId, payload.memberId);
+    member.isMuted = true;
+    await this.channelService.updateChannelMember(payload.channelId, payload.memberId, member);
+    this.server.to(payload.channelId).emit('onMessage', `${socket.id} is muted from ${payload.channelId}`);
   }
 
   @SubscribeMessage('leaveChannel')
   handleLeaveRoom(@ConnectedSocket() socket: Socket): void {
     socket.leave(this.channelId);
     this.server.to(this.channelId).emit('onMessage', `${socket.id} has leaved the channel`);
-    
   }
 
   handleDisconnect(client: any) {
