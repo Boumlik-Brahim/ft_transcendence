@@ -3,10 +3,12 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { GameModule } from './game/game.module';
 import { TestModule } from './test/test.module';
-import { PrismaModule } from './prisma/prisma.module';
+import { ChatModule } from './chat/chat.module';
+import { ChannelModule } from './channel/channel.module';
+import { PrismaModule } from 'prisma/prisma.module';
 
 @Module({
-  imports: [GameModule, TestModule, PrismaModule],
+  imports: [PrismaModule, GameModule, TestModule, ChatModule, ChannelModule],
   controllers: [AppController],
   providers: [AppService],
 })

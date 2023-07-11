@@ -14,12 +14,12 @@ datasource db {
 
 model User {
   id  String @id @default(uuid())
-  name  String
+  name  String?
   email String
-  password  String?
+  password  String
   Avatar  String?
-  Status  String[]
-  created_at  DateTime?
+  Status  String
+  created_at  DateTime?  @default(now())
   userStat  UserStat[]
   achievement Achievement[]
   userThatBlock BlockedUser[] @relation("Bloking")
@@ -34,9 +34,9 @@ model User {
 }
 
 model UserStat {
-  id  String  @id @default(uuid())
-  winsNumbr  String
-  lossesNumbr  String
+  id  String @id @default(uuid())
+  winsNumbr  Int
+  lossesNumbr  Int
   rate  Int
   user  User  @relation(fields: [userId], references: [id])
   userId  String
@@ -45,13 +45,13 @@ model UserStat {
 model Achievement {
   id  String @id @default(uuid())
   achievement String
-  created_at  DateTime
+  created_at  DateTime  @default(now())
   user  User @relation(fields: [userId], references: [id])
   userId  String
 }
 
 model BlockedUser {
-  id  Int  @id @default(autoincrement())
+  id  String @id @default(uuid())
   userThatBlock User @relation("Bloking", fields: [userId], references: [id])
   userId  String
   blockedUser User  @relation("blocked", fields: [blockedUserId], references: [id])
@@ -59,8 +59,8 @@ model BlockedUser {
 }
 
 model Friend {
-  id  Int @id @default(autoincrement())
-  created_at  DateTime
+  id  String @id @default(uuid())
+  created_at  DateTime  @default(now())
   friendShipStatus String[]
   user  User  @relation("user", fields: [userId], references: [id])
   userId  String
@@ -69,9 +69,9 @@ model Friend {
 }
 
 model DirectMessage {
-  id  Int @id @default(autoincrement())
+  id  String @id @default(uuid())
   content String
-  created_at  DateTime
+  created_at  DateTime  @default(now())
   sender  User  @relation("sendeMessage", fields: [senderId], references: [id])
   senderId String
   reciever  User  @relation("receiveMessage", fields: [recieverId], references: [id])
@@ -81,11 +81,12 @@ model DirectMessage {
 //* ---------------------------------------------------------------------------------------------------------------------------- *//
 
 model Channel {
-  id  Int @id @default(autoincrement())
+  id  String @id @default(uuid())
   channelName String
   channelType String
-  channelPassword String
-  created_at  DateTime
+  channelPassword String?
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
   channelOwnerId  String
   user  User[]
   channelMember ChannelMember[] @relation("channelMember")
@@ -94,46 +95,38 @@ model Channel {
 }
 
 model ChannelMember {
-  id  Int @id @default(autoincrement())
-  isAdmin Boolean @default(false)
+  id  String @id @default(uuid())
   userId  String
   channel Channel @relation("channelMember", fields: [channelId], references: [id])
-  channelId Int
+  channelId String
   sender  ChannelMessage[]  @relation("senderRelation")
+  isAdmin Boolean @default(false)
   isBanned Boolean @default(false)
   bannedTime DateTime
   isMuted Boolean @default(false)
   mutedTime DateTime
+  created_at  DateTime  @default(now())
+  @@unique([userId, channelId], name: "userAndChannel")
 }
 
 model KickedMember {
-  id  Int @id @default(autoincrement())
+  id  String @id @default(uuid())
   userId  String
   channel Channel @relation("kickedMember", fields: [channelId], references: [id])
-  channelId Int
+  channelId String
+  created_at  DateTime  @default(now())
+  @@unique([userId, channelId], name: "kickedMemberAndChannel")
 }
 
 model ChannelMessage {
-  id  Int @id @default(autoincrement())
-  content String
-  created_at  DateTime
-  sender  ChannelMember @relation("senderRelation", fields: [memberId], references: [id])
-  memberId  Int
-  recievers  Channel @relation("receiverRelation", fields: [channelId], references: [id])
-  channelId Int
-}
-
-//* ---------------------------------------------------------------------------------------------------------------------------- *//
-
-model Game {
   id  String @id @default(uuid())
-  gameType  String
-  gameStatus String
-  created_at  DateTime
-  player  User  @relation("player", fields: [creatorId], references: [id])
-  creatorId String
-  openent User?  @relation("openent", fields: [invitedId], references: [id])
-  invitedId String?
+  content String
+  sender  ChannelMember @relation("senderRelation", fields: [memberId], references: [id])
+  memberId  String
+  recievers  Channel @relation("receiverRelation", fields: [channelId], references: [id])
+  channelId String
+  created_at  DateTime  @default(now())
+  @@unique([memberId, channelId], name: "senderAndChannel")
 }
 
 //* ---------------------------------------------------------------------------------------------------------------------------- *//
