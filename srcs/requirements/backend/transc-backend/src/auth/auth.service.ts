@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
+import { UsersService } from "src/users/users.service";
+import { PrismaClient } from '@prisma/client';
 // import { AuthDto } from "./dto/auth.dto";
-// import { PrismaService } from "prisma/prisma.service";
 // import * as bcrypt from 'bcryptjs';
 // import { JwtService } from "@nestjs/jwt";
 // import { JWT_SECRET } from "../utils/constants";
@@ -11,6 +12,15 @@ import { Injectable } from "@nestjs/common";
 
 @Injectable()
 export class AuthService {
+    constructor (private userService: UsersService) {}
+
+    async valideUser(req: any) {
+        // console.log(req.user.id);
+        let user = this.userService.findOne(req.user.id);
+        console.log(user);
+        return ;
+    }
+
     // constructor(private prisma: PrismaService, private jwt: JwtService) {} 
     // constructor(private http: HttpClient, private configService: ConfigService) {} 
 
