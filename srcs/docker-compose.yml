@@ -30,6 +30,7 @@ services:
     container_name: backend
     ports:
       - "3000:3000"
+      - "5555:5555"
     restart: always
     depends_on:
       - database
@@ -38,16 +39,16 @@ services:
     volumes:
       - ./requirements/backend/transc-backend:/usr/src/app
 
-  # frontend:
-  #   image: frontend
-  #   build: ./requirements/frontend
-  #   container_name: frontend
-  #   ports:
-  #     - "5173:5173"
-  #   restart: always
-  #   depends_on:
-  #     - backend
-  #   env_file:
-  #     - .env
-  #   volumes:
-  #     - ./requirements/frontend/transc-frontend:/usr/src/app
+  frontend:
+    image: frontend
+    build: ./requirements/frontend
+    container_name: frontend
+    ports:
+      - "5173:5173"
+    restart: always
+    depends_on:
+      - backend
+    env_file:
+      - .env
+    volumes:
+      - ./requirements/frontend/transc-frontend:/usr/src/app
