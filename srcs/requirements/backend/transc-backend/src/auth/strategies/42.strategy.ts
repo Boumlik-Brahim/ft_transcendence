@@ -16,15 +16,17 @@ export class IntraStrategy extends PassportStrategy(Strategy, '42') {
             profileFields: {
                 'username': 'login',
                 'emails.value': 'email',
+                'id' : 'id',
             }
         }); // Config
     }
     
     async validate(accessToken: string, refreshToken: string, profile: any, done: Function): Promise<any> {
-        const {username, emails} = profile;
+        const {username, emails, id} = profile;
         const user: AuthDto = {
             username: username,
             email: emails.value,
+            id: id,
         }
         done(null, user);
     }
