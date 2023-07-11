@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from 'prisma/prisma.service';
 import { GameEntity } from './entity/game.entity';
 import { v4 as uuidv4 } from 'uuid';
 
