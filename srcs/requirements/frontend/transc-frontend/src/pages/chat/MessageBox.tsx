@@ -23,14 +23,14 @@ export default function MessageBox({ userId, messageContent, date, time, profile
 
     return (
         <div className={`flex flex-col ${position}  mb-[28px] pr-[13px]`}>
-            <div className='relative  w-[280px]  min-h-[30px]'>
+            <div className='relative  w-[280px]  min-h-[30px] lg:w-[340px]'>
                 <img src={`imgs/${profilePicture}`} alt='profile' className=' absolute  w-[40px] h-[40px] rounded-full' />
                 <div className='w-full h-[24px]  flex pl-[46px]'>
-                    <div className='h-full w-[80px] text-[10px] text-primary-900 flex items-center font-poppins font-bold truncate'>
+                    <div className='h-full w-[80px] text-[10px]  text-primary-900 flex items-center font-poppins font-bold truncate'>
                         {user}
                     </div>
                     <div className='flex items-center text-[8px] font-poppins font-normal tracking-wider ml-[5px] text-light-900'>
-                        <div className=' mr-[3px]'>
+                        <div className=' mr-[3px] lg:ml-[5px]'>
                             {date}
                         </div>
                         <div>

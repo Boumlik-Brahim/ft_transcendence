@@ -16,12 +16,12 @@ export default function MessageInputBox() {
         <>
             <div className='
                                     pr-[8px]  h-full w-[80%] flex items-center pl-[23px] 
-                                    md:pl-[30px] md:w-[90%]
+                                    md:pl-[30px] md:w-[90%] 
             '>
             <input
                     placeholder="Type your message"
                     className={`
-                            h-[40px] w-full rounded-full text-primary-900 font-poppins font-semibold text-[11px] pl-3.5  
+                            h-[40px] lg:h-[38px] w-full rounded-full text-primary-900 font-poppins font-semibold text-[11px] pl-3.5  
                             focus:outline-none  focus:border-primary-900 focus:ring-2 focus:ring-primary-900
                             placeholder:font-semibold placeholder:text-light-900 placeholder:text-[11px] 
                             md:h-[45px] md:text-[14px]  md:placeholder:text-[13px]
@@ -29,7 +29,7 @@ export default function MessageInputBox() {
             </div>
             <div className='
                                     h-full flex items-center justify-start w-[20%] pl-[5px]
-                                    md:pl-[10px] md:w-[10%]
+                                    md:pl-[10px] md:w-[10%] 
             '>
                 <FaPaperPlane className='
                                             text-primary-900 text-[17px]    cursor-pointer 

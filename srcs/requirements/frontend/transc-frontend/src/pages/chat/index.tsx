@@ -6,8 +6,6 @@ import conversationData from './conversitionData';
 
 import { MdNotifications } from 'react-icons/md'
 
-import { FaPaperPlane } from 'react-icons/fa'
-import { HiUserGroup } from 'react-icons/hi'
 
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
@@ -17,6 +15,8 @@ import { useMediaQuery } from '@react-hook/media-query';
 export const Chat = () => {
     const currentState = useSelector((state: RootState) => state.toggle.isShoFriendListToggled);
     const isMdScreen = useMediaQuery('(min-width: 768px)');
+    const isLgScreen = useMediaQuery('(min-width: 1024px)');
+
     const conversation = conversationData.map(item => {
         return (
             <MessageBox
@@ -33,7 +33,9 @@ export const Chat = () => {
         <div className='md:flex md:justify-end'>
             <div className={`${!currentState ? "w-full h-full" : "hidden"}`}>
                 {/*---------------------------------------- Header for Md devices ---------------------------------------------------------------- */}
-                <div className={` ${isMdScreen ? "w-full  h-[10vh] bg-primary-100 flex items-center justify-between px-[34px]" : "hidden"}`}>
+                <div className={`   ${isMdScreen ? 
+                                    "w-full  h-[10vh] lg:h-[15vh] md:pl-[65px]  bg-primary-100 lg:bg-transparent flex items-center justify-between px-[34px]" 
+                                    : "hidden"}`}>
                     <div className='font-poppins text-[20px] font-semibold leading-5 tracking-normal text-primary-900'>
                         Bilal Ben Aouad
                     </div>
@@ -43,21 +45,29 @@ export const Chat = () => {
                 {/*-------------------------------------------------------------------------------------------------------------------------------- */}
 
                 {/*---------------------------------------- Chat Box------------------------------------------------------------------------------- */}
-                <div className='w-full h-[80vh]  overflow-auto no-scrollbar px-[23px] py-[15px] '>
+                <div className={`${!isLgScreen ? "w-full h-[80vh]  overflow-auto no-scrollbar px-[23px] py-[15px]" : "hidden"}`}>
                    
                     {conversation}
 
                 </div>
                 {/*--------------------------------------------------------------------------------------------------------------------------------- */}
 
-                <div className='w-full h-[10vh] bg-primary-100 flex items-center  '>
+                <div className={`${!isLgScreen ? "w-full h-[10vh] bg-primary-100 flex items-center" : "hidden"}`}>
 
                     <MessageInputBox />
                 </div>
-
+                <div className={`${isLgScreen ? "w-full h-[85vh]  flex justify-center" : "hidden"}`}>
+                    <div className='w-full h-full '>
+                        <div className='w-full h-[88%]  overflow-auto no-scrollbar px-[28px] py-[10px]'>
+                            {conversation}
+                        </div>
+                        <div className='w-[full] h-[12%] bg-gray-100 flex'>
+                            <MessageInputBox />
+                        </div>
+                    </div>
+                </div>
             </div>
             <ContactList />
-
         </div>
     )
 }
