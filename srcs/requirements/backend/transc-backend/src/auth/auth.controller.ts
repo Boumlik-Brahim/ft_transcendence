@@ -12,6 +12,7 @@ export class AuthController {
     @UseGuards(AuthGuard('42'))
     login(req: any) {
         req.user;
+        this.authService.valideUser(req);
         return "Secured Data";
     }
     
