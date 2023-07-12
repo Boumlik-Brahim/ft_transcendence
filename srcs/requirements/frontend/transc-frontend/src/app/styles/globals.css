@@ -1,0 +1,104 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+/* https://fonts.google.com/specimen/Quicksand */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+/* --------------------------------- GLOBAL --------------------------------- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  list-style: none;
+  /* border: 1px solid black; */
+}
+
+body {
+  position: relative;
+  font-family: 'Roboto', sans-serif;
+}
+
+.game_font{
+  font-family: 'Press Start 2P', cursive;
+  @apply text-primary text-[1.5rem];
+}
+
+.my_container{
+  @apply flex flex-1 flex-col items-center gap-[100px];
+  @apply py-[100px] px-[100px] overflow-scroll;
+}
+
+.status{
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: #03A900;
+  outline: 4px solid #3E3B6A;
+  border-radius: 50%;
+  left: 50px;
+  top: 50px;
+}
+
+/* --------------------------------- SIDEBAR -------------------------------- */
+.header {
+  @apply w-full h-[100px] z-10 bg-secondar;
+  @apply flex justify-around md:hidden;
+}
+
+.sidebarmd {
+  @apply bg-primary h-screen w-full pt-[100px] absolute z-[9] top-0;
+  @apply flex flex-col justify-around items-center md:hidden;
+}
+
+.sidebarlg {
+  @apply bg-primary h-screen w-[20%];
+  @apply md:flex flex-col justify-around items-center hidden lg:hidden;
+}
+
+.sidebarxl {
+  @apply bg-primary h-screen w-[25%];
+  @apply lg:flex flex-col justify-around items-center hidden;
+}
+
+.li_sidebar {
+  @apply bg-white rounded-full md:bg-transparent lg:bg-white ;
+  @apply flex items-center justify-center xs:justify-normal md:justify-center lg:justify-normal gap-[15px];
+  @apply font-medium text-center;
+  @apply xs:mb-[15px] mb-[10px];
+  @apply xs:pl-[25px] lg:pl-[25px] pl-0 md:pl-0 xs:p-[15px] lg:xs:p-[15px] py-[5px] md:p-0 md:py-0;
+  @apply w-[80px] xs:w-[250px] md:w-[100px] lg:w-[250px];
+}
+
+
+/* ------------------------------ ONLINEFRIEND ------------------------------ */
+.friend {
+  @apply bg-primary h-screen w-[25%] ;
+  @apply lg:flex flex-col items-center gap-[50px] hidden;
+  @apply p-[50px] pt-[100px];
+}
+
+/* --------------------------------- PROFILE -------------------------------- */
+.user{
+  @apply min-w-[100%] min-h-[550px];
+  @apply flex flex-col items-center justify-between;
+}
+
+.card{
+  @apply bg-white w-[120px] h-[120px] rounded-xl;
+  @apply flex justify-center items-center flex-col;
+  @apply text-lg text-primary;
+ }
+
+.lose_match{
+  border: 3px solid #FFEDEF;
+  background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(26,37,137,0) 0%, rgba(252,184,192,0.5046612394957983) 50%, rgba(0,212,255,0) 100%)
+ }
+
+.win_match{
+  border: 3px solid #C9FFC5;
+  background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(26,37,137,0) 0%, rgba(170,246,163,1) 50%, rgba(0,212,255,0) 100%);
+ }
