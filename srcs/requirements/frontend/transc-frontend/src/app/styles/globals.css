@@ -23,7 +23,7 @@ body {
 
 .game_font{
   font-family: 'Press Start 2P', cursive;
-  @apply text-primary text-[1.5rem];
+  @apply text-primary ;
 }
 
 .my_container{
