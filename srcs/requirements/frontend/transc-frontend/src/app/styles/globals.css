@@ -42,6 +42,25 @@ body {
   left: 50px;
   top: 50px;
 }
+.gradient
+{
+    border-radius: 2.5rem;
+    background: linear-gradient(223deg, rgba(255, 255, 255, 0.60) 0%, rgba(223, 221, 255, 0.60) 50.52%, rgba(255, 255, 255, 0.60) 100%);
+    backdrop-filter: blur(5.5px);
+    border: 2px solid #F0EFFF;
+}
+.gradient-bg
+{
+    background: linear-gradient(223deg, rgba(255, 255, 255, 0.60) 0%, rgba(223, 221, 255, 0.60) 50.52%, rgba(255, 255, 255, 0.60) 100%);
+    backdrop-filter: blur(5.5px);
+}
+.gradient_img
+{
+    background: linear-gradient(223deg, rgba(255, 255, 255, 0.60) 0%, rgba(177, 174, 232, 0.9) 50.52%, rgba(255, 255, 255, 0.60) 100%);
+    backdrop-filter: blur(5.5px);
+    border: 2px solid #F0EFFF;
+    border-radius: 50%;
+}
 
 /* --------------------------------- SIDEBAR -------------------------------- */
 .header {
