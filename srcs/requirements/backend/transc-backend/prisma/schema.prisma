@@ -29,8 +29,6 @@ model User {
   senders   DirectMessage[] @relation("sendeMessage")
   receivers DirectMessage[] @relation("receiveMessage")
   channel Channel[]
-  player  Game[]  @relation("player")
-  openent Game[]  @relation("openent")
 }
 
 model UserStat {
