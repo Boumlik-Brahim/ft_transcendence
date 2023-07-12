@@ -29,8 +29,6 @@ model User {
   senders   DirectMessage[] @relation("sendeMessage")
   receivers DirectMessage[] @relation("receiveMessage")
   channel Channel[]
-  player  Game[]  @relation("player")
-  openent Game[]  @relation("openent")
 }
 
 model UserStat {
@@ -127,19 +125,6 @@ model ChannelMessage {
   channelId String
   created_at  DateTime  @default(now())
   @@unique([memberId, channelId], name: "senderAndChannel")
-}
-
-//* ---------------------------------------------------------------------------------------------------------------------------- *//
-
-model Game {
-  id  String @id @default(uuid())
-  gameType  String
-  gameStat  String[]
-  created_at  DateTime  @default(now())
-  player  User  @relation("player", fields: [player1Id], references: [id])
-  player1Id String
-  openent User  @relation("openent", fields: [player2Id], references: [id])
-  player2Id String
 }
 
 //* ---------------------------------------------------------------------------------------------------------------------------- *//
