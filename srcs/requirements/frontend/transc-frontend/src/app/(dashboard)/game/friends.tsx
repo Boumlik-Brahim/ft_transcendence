@@ -31,10 +31,10 @@ const Friends = ({ _name, setName } : Props) => {
     console.log(namesfilter)
 
   return (
-    <div className='mt-1 '>
+    <div className='mt-4 bg-primary rounded-xl w-[252px] m-auto'>
         {
             namesfilter?.map(({name}, index) => (
-                <div className='flex m-auto p-1 bg-primary w-[252px] h-[62px] cursor-pointer' key={index} onClick={() => setName("")}>
+                <div className='flex m-auto p-1 w-[252px] h-[62px] cursor-pointer' key={index} onClick={() => setName("")}>
                     <div className={`w-full flex items-center m-2 justify-between ${ namesfilter.length === index + 1 ? '' : 'border-b-[1px]'} `}>
                         <div className=' flex items-center gap-2 text-white'>
                             <div className='h-[30px] w-[30px] bg-slate-200 rounded-full'>
