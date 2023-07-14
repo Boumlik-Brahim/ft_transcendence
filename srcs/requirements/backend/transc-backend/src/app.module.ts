@@ -9,8 +9,8 @@ import { ChannelModule } from './channel/channel.module';
 import { GameModule } from './game/game.module';
 
 @Module({
-  // imports: [PrismaModule, GameModule, ChatModule, ChannelModule, AuthModule, UsersModule],
-  imports: [PrismaModule, GameModule, ChatModule, ChannelModule, UsersModule],
+  imports: [PrismaModule, GameModule, ChatModule, ChannelModule, AuthModule, UsersModule],
+  // imports: [PrismaModule, GameModule, ChatModule, ChannelModule, UsersModule],
   controllers: [AppController],
   providers: [AppService],
 })
