@@ -12,13 +12,35 @@ datasource db {
 
 //* ---------------------------------------------------------------------------------------------------------------------------- *//
 
+enum Status {
+  ONLINE
+  OFFLINE
+  INAGAME
+}
+
+enum ChannelType {
+  PUBLIC
+  PROTECTED
+  PRIVATE
+}
+
+enum Role {
+  OWNER
+  ADMIN
+  MEMBER
+  MUTED_MEMBER
+  BANNED_MEMBER
+}
+
+//* ---------------------------------------------------------------------------------------------------------------------------- *//
+
 model User {
   id  String @id @default(uuid())
   name  String?
   email String
   password  String
   Avatar  String?
-  Status  String
+  status  Status @default(ONLINE)
   created_at  DateTime?  @default(now())
   userStat  UserStat[]
   achievement Achievement[]
@@ -81,7 +103,7 @@ model DirectMessage {
 model Channel {
   id  String @id @default(uuid())
   channelName String
-  channelType String
+  channelType ChannelType @default(PUBLIC)
   channelPassword String?
   created_at  DateTime  @default(now())
   updated_at  DateTime  @updatedAt
@@ -98,11 +120,9 @@ model ChannelMember {
   channel Channel @relation("channelMember", fields: [channelId], references: [id])
   channelId String
   sender  ChannelMessage[]  @relation("senderRelation")
-  isAdmin Boolean @default(false)
-  isBanned Boolean @default(false)
-  bannedTime DateTime
-  isMuted Boolean @default(false)
-  mutedTime DateTime
+  role Role @default(MEMBER)
+  bannedTime DateTime?
+  mutedTime DateTime?
   created_at  DateTime  @default(now())
   @@unique([userId, channelId], name: "userAndChannel")
 }
