@@ -6,7 +6,15 @@ import { SideLinks } from '@/../constant'
 import { useState } from 'react';
 import { close_b, logo_b, logo_w, logout_b, logout_w, menu_b, notification_b } from '../public';
 
+import { useDispatch, useSelector } from 'react-redux'; 
+import { createChannelOn, createChannelOff } from '../src/app/store/reducer';
+import { RootState } from '../src/app/store/store';
+
+
+
+
 function Sidebar() {
+    const isCreateChannelOn = useSelector((state: RootState) => state.createChannelToggle);
     const [toggle, setToggle] = useState(true);
     return (
         <>
@@ -25,7 +33,7 @@ function Sidebar() {
             
             {
                 !toggle && (
-                    <nav className='sidebarmd'>
+                    <nav className='sidebarmd '>
                         <ul>
                             { SideLinks.map((link, index) => (
                                 <li key={index} className='li_sidebar'>
@@ -46,7 +54,7 @@ function Sidebar() {
                     </nav>
                 )
             }
-            <nav className='sidebarlg'>
+            <nav className={`${!isCreateChannelOn.createChannelBtnToggled  ? "sidebarlg" : "hidden"}`}>
                 <div className='side_logo'>
                     <Image key='logo' src={logo_w} width={60} alt="logo" />
                 </div>
