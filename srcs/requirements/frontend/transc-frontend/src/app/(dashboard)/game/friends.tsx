@@ -2,10 +2,11 @@ import React from 'react'
 
 interface Props {
     _name : string,
-    setName : (params : string) => void
+    setName : (params : string) => void,
+    createGame : (params : boolean, invitedId : string) => void
 }
 
-const Friends = ({ _name, setName } : Props) => {
+const Friends = ({ _name, setName, createGame } : Props) => {
 
     const friends  = [
         {
@@ -28,7 +29,10 @@ const Friends = ({ _name, setName } : Props) => {
         },
     ];
     const namesfilter =  friends.filter(friend => friend.name.includes(_name) && _name !== '');
-    console.log(namesfilter)
+
+    const handleClick = (invitedId : string) => {
+
+    }
 
   return (
     <div className='mt-4 bg-primary rounded-xl w-[252px] m-auto'>

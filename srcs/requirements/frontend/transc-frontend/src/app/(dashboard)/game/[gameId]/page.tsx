@@ -1,10 +1,23 @@
 
-import React from 'react'
+'use client';
+
+import { useEffect } from 'react'
 import { avatar } from '../../../../../public'
 import Image from 'next/image'
+import { socket } from '../socket'
 import Canvas from './canva'
 
 const Page = () => {
+
+
+    // useEffect(() => {
+    //     socket.connect();
+
+    //     return () => {
+    //         socket.disconnect()
+    //     }
+    // }, [])
+
     return (
         <div className='w-full h-[100vh] flex justify-center items-center shadow-2xl shadow-black'>
             <div className='w-[1000px] lg:w-[900px]  lg:h-[700px] rotate-90 border-4 lg:rotate-0 rounded-xl overflow-hidden  shadow-2xl shadow-gray-400'>

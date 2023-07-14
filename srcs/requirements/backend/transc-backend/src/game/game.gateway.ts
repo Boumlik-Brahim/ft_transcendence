@@ -9,6 +9,7 @@ import { subscribe } from 'diagnostics_channel';
 
 
 @WebSocketGateway({
+  namespace : "game",
   cors : {
     origin : '*'
   }

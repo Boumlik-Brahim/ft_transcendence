@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import { GameEntity } from './entity/game.entity';
+import { GameEntity, Player } from './entity/game.entity';
 import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
@@ -10,7 +10,8 @@ export class GameService {
 
     constructor(private prisma : PrismaService) {}
     async createGame(data, client : any)  {
-        const { invitedId, creatorID, isRamdomOponent } = data;
+        const { invitedId, creatorId, isRamdomOponent } = data;
+        console.log('fode');
         if (!isRamdomOponent) {
             try {
                 const user = await this.prisma.user.findUnique({
@@ -22,28 +23,29 @@ export class GameService {
                     client.emit("error", "openent not find");
                     return; 
                 }
-                const game : GameEntity = this.getGameInitValue(creatorID, invitedId);
+                const game : GameEntity = this.getGameInitValue(creatorId, invitedId);
                 this.gameMap.set(game.id, game);
-                client.emit("newGame", game);
-                console.log(game);
+                client.emit("Success", {id : game.id});
             }
             catch (error) {
                 client.emit("error", error);
             }
         }
         else {
-            if (this.inTheQueue != null) {
-                const game : GameEntity = this.getGameInitValue(creatorID, null);
+            if (this.inTheQueue == null) {
+                const game : GameEntity = this.getGameInitValue(creatorId, '');
                 this.inTheQueue = game.id;
                 this.gameMap.set(game.id, game);
-                client.emit("newGame", game);
+                client.emit("Success", {id : game.id});
             }
             else {
                 const gameJoined : GameEntity = this.gameMap.get(this.inTheQueue);
+                if (creatorId === gameJoined.player1.id) return;
                 this.inTheQueue = null;
-                gameJoined .player2.id = creatorID;
+                gameJoined.player2.id = creatorId;
                 this.gameMap.set(gameJoined.id, gameJoined);
-                client.emit("newGame", gameJoined);
+                client.emit("Success", {id : gameJoined.id});
+
             }
         }
     }
