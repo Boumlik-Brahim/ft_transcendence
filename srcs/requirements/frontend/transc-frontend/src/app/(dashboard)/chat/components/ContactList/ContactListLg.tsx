@@ -1,10 +1,9 @@
 "use client"
 
 import Image from "next/image";
-import ContactSm from "../Contact/ContactMd";
+import ContactLg from "../Contact/ContactLg";
 import { contactFriendList, ContactFriend } from '../../TempData/contacts'
 
-import ContactMd from "../Contact/ContactMd";
 import { useState } from 'react';
 
 function ContactListMd() {
@@ -14,9 +13,10 @@ function ContactListMd() {
     };
     const contacts = contactFriendList.map((item: ContactFriend) => {
         return (
-            <ContactMd
+            <ContactLg
                 key={item.id}
                 id={item.id}
+                name={item.name}
                 unreadMessages={item.unreadMessages}
                 profilePicturePath={item.profilePicturePath}
                 activeButtonId={activeButtonId}
@@ -26,9 +26,12 @@ function ContactListMd() {
     });
 
     return (
-        <div className="h-full w-[25%] bg-primary flex items-center">
-            <div className="h-[90%] w-full  overflow-auto no-scrollbar pt-[58px]">
-               {contacts}
+        <div className="h-full w-[33.3%] bg-primary">
+            <div className="w-full h-[5%]  flex items-end pl-[28px]">
+                <h1 className="text-white text-[13px] font-poppins font-semibold">Contacts</h1>
+            </div>
+            <div className="w-full h-[85%]  pt-[40px]  overflow-auto no-scrollbar">
+                {contacts}
             </div>
         </div>
     );
