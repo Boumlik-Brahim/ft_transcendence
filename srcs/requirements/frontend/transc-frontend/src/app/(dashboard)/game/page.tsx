@@ -1,12 +1,12 @@
 'use client';
 import React, { useEffect, useState } from 'react'
-import Popup from './popup'
+import Popup from './waiting'
 import Player from './player';
 import Friends from './friends';
 import { OnlineFriends } from '../../../../constant';
 import Image from 'next/image';
 import { socket } from './socket';
-import { data } from 'autoprefixer';
+import { useRouter } from 'next/navigation';
 
 interface CreateGameType {
   invitedId? : string, 
@@ -15,37 +15,40 @@ interface CreateGameType {
 }
 
 const Game = () => {
-  const [isOpen, setClose] = useState<boolean>(false)
   const [oponentName, setOponentName] = useState<string>('');
-  const [isConnected, setIsconnected] = useState<boolean>(socket.connected);
-  const myId = "ddddd5555555";
+  const myId = '555433666666';
+  const router = useRouter();
 
-  const createGame = (isRamdomOponent : boolean, invitedId? : string) => {
+  const createGame = (isRamdomOponent : boolean, invitedId? : string) : void => {
+    if (!socket.connected) return ;
     const data : CreateGameType = {
       invitedId : invitedId,
       creatorId : myId,
       isRamdomOponent
     }
-    // if (isConnected) {
-      socket.emit('createGame', data);
-    // }
-    // else
-      console.log('fode');
+    console.log("ok")
+    socket.emit('createGame', data);
   }
 
   useEffect(() => {
     socket.connect();
+
+    socket.on('Success', data => {
+      console.log(data);
+      const { id } = data;
+      router.push(`/game/${id}`)
+    });
+
+    socket.on('error', data => {
+      console.log(data);
+    })
+  
     return () => {
+      socket.off('Success');
+      socket.off('error')
       socket.disconnect();
     }
   }, []);
-  
-  socket.on('Success', data => console.log(data));
-
-  const playAgainstRndom = () => {
-    console.log("ok")
-    createGame(true);
-  }
 
   return (
       <div className='flex items-start justify-center lg:gap-2 w-full h-[100vh]'>
@@ -54,7 +57,7 @@ const Game = () => {
           <div className='md:flex items-sart justify-center gap-2 m-auto'>
             <div className='flex flex-col-reverse md:flex-col'>
               <Player playerId={1} inputValue={oponentName} setInputValue={setOponentName} />
-              <button className='border-2 gradient-bg shadow-xl ml-auto mr-auto md:mr-0 text-primary text-[20px] p-2 w-[268px] h-[61px] rounded-[40px] md:ml-4 mt-10 hover:bg-primary ease-in duration-300 hover:text-white hover:border-none' onClick={playAgainstRndom}>
+              <button className='border-2 gradient-bg shadow-xl ml-auto mr-auto md:mr-0 text-primary text-[20px] p-2 w-[268px] h-[61px] rounded-[40px] md:ml-4 mt-10 hover:bg-primary ease-in duration-300 hover:text-white hover:border-none' onClick={() => createGame(true)}>
                 Random player
               </button>
             </div>
@@ -84,7 +87,6 @@ const Game = () => {
             </div>
           </div>
         </div>
-        <Popup isOpen={isOpen} setClose={setClose}></Popup>
       </div>
 
   )

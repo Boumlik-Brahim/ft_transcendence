@@ -14,7 +14,7 @@ export interface GameEntity {
     playerSpeed : number,
     scoreLimit : number,
     ball_speed : number,
-    gameStatus : null | 'waiting' | 'started' | 'finished' | 'canceled' | 'inThequeue',
+    gameStatus : null | 'waiting' | 'started' | 'finished' | 'canceled',
     winner : null | String
 }
 

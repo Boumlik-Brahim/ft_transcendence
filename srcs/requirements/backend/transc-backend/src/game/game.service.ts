@@ -40,7 +40,7 @@ export class GameService {
             }
             else {
                 const gameJoined : GameEntity = this.gameMap.get(this.inTheQueue);
-                if (creatorId === gameJoined.player1.id) return;
+                // if (creatorId === gameJoined.player1.id) return;
                 this.inTheQueue = null;
                 gameJoined.player2.id = creatorId;
                 this.gameMap.set(gameJoined.id, gameJoined);
@@ -50,13 +50,10 @@ export class GameService {
         }
     }
 
-    // async findGameInTheQueue(level : string) : string {
-
-    // }
-
-    async joinGame(userId : string, gameID : string, client : any, server : any) {
+    async joinGame(userId : string, gameId : string, client : any, server : any) {
         try {
-            const game = this.gameMap.get(gameID);
+            const game = this.gameMap.get(gameId);
+            console.log(game);
             if (!game) {
                 client.emit("error", "This game does not exist");
                 return;
@@ -65,10 +62,13 @@ export class GameService {
                 client.emit("error", "Permission denied");
                 return;
             }
-            client.join(gameID);
+            client.join(gameId);
+            client.emit('gameSate', {state : game.gameStatus});
             const nbrClientRequire = 2;
-            const rooms = server.sockets.adapter.rooms.get(gameID);
+            const rooms = server.adapter.rooms.get(gameId)
             if (rooms && rooms.size === nbrClientRequire) {
+                game.gameStatus = 'started';
+                server.to(gameId).emit('gameSate', {state : game.gameStatus});
                 this.gameLoop(game, server);
             }
         }
@@ -173,8 +173,8 @@ export class GameService {
             this.updatePaddle(game);
             this.gameLogique(game);
             this.istheGameEnd(game, id);
-            server.to(game.id).emit("value", game);
-        }, 160);
+            server.to(game.id).emit("gameData", game);
+        }, 1000 / 60);
     }
 
     ArrowUp(gameId : String, playerId : String) {
@@ -225,29 +225,29 @@ export class GameService {
         const _id = uuidv4();
         const newGameValue : GameEntity =  {
             id : _id,
-            W_screen : 860,
-            H_screen : 400,
-            ball_x : 430,
-            ball_y : 200,
-            radius : 10,
-            vx : 10 * ballDirectionX,
-            vy : 10,
+            W_screen : 250,
+            H_screen : 100,
+            ball_x : 125,
+            ball_y : 50,
+            radius : 2,
+            vx : 5 * ballDirectionX,
+            vy : 5,
             player1 : {
                 id : player1Id,
-                paddleX : 20,
-                paddleY : 40,
+                paddleX : 0,
+                paddleY : 80,
                 score : 0
             },
             player2 : {
                 id : player2Id,
-                paddleX : 840,
+                paddleX : 0,
                 paddleY : 40,
                 score : 0
             },
-            w_paddle : 25,
-            h_paddle : 200,
+            w_paddle : 5,
+            h_paddle : 20,
             playerSpeed : 2,
-            scoreLimit : 11,
+            scoreLimit : 10,
             ball_speed : 2,
             gameStatus : "waiting",
             winner : null
