@@ -1,7 +1,7 @@
 version: '3.7'
 
 volumes:
-  database_volume:
+  database_volume: 
 
 services:
   database:
