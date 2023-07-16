@@ -37,6 +37,7 @@ export class GameGateway {
 
   @SubscribeMessage('joinGame')
   async joinGame(@MessageBody() data: JoinGameDto, @ConnectedSocket() client: Socket) {
+    if (!data) return;
     const { gameId, userId } = data;
     if (gameId && userId ) {
       await this.gameService.joinGame(userId, gameId, client, this.server);
@@ -46,9 +47,9 @@ export class GameGateway {
     }
   }
 
-  @SubscribeMessage('ArrowDown')
+  @SubscribeMessage('ArrowRight')
   keyDown(@MessageBody() data: JoinGameDto, @ConnectedSocket() client: Socket) {
-    console.log("ArrowDown");
+    if (!data) return; 
     const { gameId, userId } = data;
     if (gameId && userId) 
     {
@@ -56,19 +57,14 @@ export class GameGateway {
     }
   }
 
-  @SubscribeMessage('ArrowUp')
+  @SubscribeMessage('ArrowLeft')
   keyUp(@MessageBody() data: JoinGameDto, @ConnectedSocket() client: Socket) {
-    console.log("ArrowUp");
+    if (!data) return; 
     const { gameId, userId } = data;
     if (gameId && userId) 
     {
       this.gameService.ArrowUp(gameId, userId);
     }
-  }
-
-  @SubscribeMessage('keyPress')
-  keyPress(@ConnectedSocket() client: Socket) {
-
   }
 
   @SubscribeMessage('quitGame')

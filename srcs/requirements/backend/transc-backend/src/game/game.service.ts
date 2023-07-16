@@ -66,11 +66,11 @@ export class GameService {
             client.emit('gameSate', {state : game.gameStatus});
             const nbrClientRequire = 2;
             const rooms = server.adapter.rooms.get(gameId)
-            if (rooms && rooms.size === nbrClientRequire) {
+            // if (rooms && rooms.size === nbrClientRequire) {
                 game.gameStatus = 'started';
                 server.to(gameId).emit('gameSate', {state : game.gameStatus});
                 this.gameLoop(game, server);
-            }
+            // }
         }
         catch (error) {
             console.log(error);
@@ -80,8 +80,8 @@ export class GameService {
 
     gameLogique(gameValue : GameEntity) {
         this.collision(gameValue)
-        gameValue.ball_x += (gameValue.vx * gameValue.ball_speed);
-        gameValue.ball_y += (gameValue.vy * gameValue.ball_speed);
+        gameValue.ball_x += (gameValue.vx );
+        gameValue.ball_y += (gameValue.vy );
     }
 
     paddleCollisionAngle(ball_y : number, paddle_y : number, paddle_middle : number) : number {
@@ -156,12 +156,12 @@ export class GameService {
             }
             else if (ball_left < 0) {
                 gameValue.player2.score += 1;
-                if (gameValue.player2.score === gameValue.scoreLimit)
-                {
-                    gameValue.gameStatus = 'finished';
-                    gameValue.winner = gameValue.player2.id;
-                    gameValue.ball_speed = 20;
-                }
+                // if (gameValue.player2.score === gameValue.scoreLimit)
+                // {
+                //     gameValue.gameStatus = 'finished';
+                //     gameValue.winner = gameValue.player2.id;
+                //     gameValue.ball_speed = 20;
+                // }
             }
         }
         else if (ball_bottom >= H_screen || ball_top <= 0)
@@ -179,16 +179,15 @@ export class GameService {
 
     ArrowUp(gameId : String, playerId : String) {
         const game : GameEntity = this.gameMap.get(gameId);
-        const speed = 1;
         if (game) {
             if (playerId === game.player1.id) {
                 if (game.player1.paddleY > 0)
-                    game.player1.paddleY -= speed;
+                    game.player1.paddleY -= game.playerSpeed;
                 this.gameMap.set(gameId, game);
             }
             else if (playerId === game.player2.id) {
                 if (game.player2.paddleY > 0)
-                    game.player2.paddleY -= speed;
+                    game.player2.paddleY -= game.playerSpeed;
                 this.gameMap.set(gameId, game);
             }
         }
@@ -199,12 +198,12 @@ export class GameService {
         if (game) {
             if (playerId === game.player1.id) {
                 if (game.player1.paddleY + game.h_paddle < game.H_screen)
-                game.player1.paddleY += 1;
+                game.player1.paddleY += game.playerSpeed;
                 this.gameMap.set(gameId, game)   
             }
             if (playerId === game.player2.id) {
                 if (game.player2.paddleY + game.h_paddle < game.H_screen)
-                game.player2.paddleY += 1;
+                game.player2.paddleY += game.playerSpeed;
                 this.gameMap.set(gameId, game)
             }
         }
@@ -221,7 +220,7 @@ export class GameService {
     }
 
     getGameInitValue(player1Id : String, player2Id : String) : GameEntity {
-        const ballDirectionX : number = Math.round(Math.random()) === 1 ? -1 : 1;
+        // const ballDirectionX : number = Math.round(Math.random()) === 1 ? -1 : 1;
         const _id = uuidv4();
         const newGameValue : GameEntity =  {
             id : _id,
@@ -230,23 +229,23 @@ export class GameService {
             ball_x : 125,
             ball_y : 50,
             radius : 2,
-            vx : 5 * ballDirectionX,
-            vy : 5,
+            vx : 1 ,
+            vy : 1,
             player1 : {
                 id : player1Id,
-                paddleX : 0,
-                paddleY : 80,
+                paddleX : 2,
+                paddleY : 0,
                 score : 0
             },
             player2 : {
                 id : player2Id,
-                paddleX : 0,
-                paddleY : 40,
+                paddleX : 248,
+                paddleY : 80,
                 score : 0
             },
             w_paddle : 5,
             h_paddle : 20,
-            playerSpeed : 2,
+            playerSpeed : 4,
             scoreLimit : 10,
             ball_speed : 2,
             gameStatus : "waiting",
