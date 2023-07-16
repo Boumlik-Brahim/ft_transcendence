@@ -1,43 +1,43 @@
 version: '3.7'
 
 volumes:
-  database_volume: 
+  database_volume:
 
 services:
-  database:
-    image: postgres
-    container_name: database
-    ports:
-      - "5432:5432"
-    restart: always
-    env_file:
-      - .env
-    volumes:
-      - database_volume:/var/lib/postgresql/data
+  # database:
+  #   image: postgres
+  #   container_name: database
+  #   ports:
+  #     - "5432:5432"
+  #   restart: always
+  #   env_file:
+  #     - .env
+  #   volumes:
+  #     - database_volume:/var/lib/postgresql/data
 
-  pgAdmin:
-    image: dpage/pgadmin4
-    container_name: pgAdmin
-    ports:
-      - "5050:80"
-    restart: always
-    env_file:
-      - .env
+  # pgAdmin:
+  #   image: dpage/pgadmin4
+  #   container_name: pgAdmin
+  #   ports:
+  #     - "5050:80"
+  #   restart: always
+  #   env_file:
+  #     - .env
 
-  backend:
-    image: backend
-    build: ./requirements/backend
-    container_name: backend
-    ports:
-      - "3000:3000"
-      - "5555:5555"
-    restart: always
-    depends_on:
-      - database
-    env_file:
-      - .env
-    volumes:
-      - ./requirements/backend/transc-backend:/usr/src/app
+  # backend:
+  #   image: backend
+  #   build: ./requirements/backend
+  #   container_name: backend
+  #   ports:
+  #     - "3000:3000"
+  #     - "5555:5555"
+  #   restart: always
+  #   depends_on:
+  #     - database
+  #   env_file:
+  #     - .env
+  #   volumes:
+  #     - ./requirements/backend/transc-backend:/usr/src/app
 
   frontend:
     image: frontend
@@ -46,8 +46,8 @@ services:
     ports:
       - "5173:5173"
     restart: always
-    depends_on:
-      - backend
+    # depends_on:
+    #   - backend
     env_file:
       - .env
     volumes:

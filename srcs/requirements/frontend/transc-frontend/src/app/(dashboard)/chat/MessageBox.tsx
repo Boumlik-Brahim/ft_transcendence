@@ -1,4 +1,3 @@
-"use client"
 import Image from "next/image";
 import { OnlineFriends } from "../../../../constant"
 import {conversation} from "./TempData/conversation"

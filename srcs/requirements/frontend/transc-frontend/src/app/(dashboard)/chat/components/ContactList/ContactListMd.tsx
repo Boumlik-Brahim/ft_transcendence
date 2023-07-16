@@ -27,7 +27,7 @@ function ContactListMd() {
 
     return (
         <div className="h-full w-[25%] bg-primary flex items-center">
-            <div className="h-[90%] w-full  overflow-auto no-scrollbar pt-[58px]">
+            <div className="h-[90%] w-full  overflow-auto no-scrollbar ">
                {contacts}
             </div>
         </div>
