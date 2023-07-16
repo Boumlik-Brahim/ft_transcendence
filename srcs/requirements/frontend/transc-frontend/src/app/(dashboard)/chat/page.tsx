@@ -5,188 +5,112 @@ import { conversation } from "./TempData/conversation"
 import MessageBox from "./MessageBox";
 import ContactListSm from "./components/ContactList/ContactListSm";
 import ContactListMd from "./components/ContactList/ContactListMd";
+import ContactListLg from "./components/ContactList/ContactListLg";
+
 import Header from "./components/others/Header";
 import { useMediaQuery } from 'react-responsive';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { show, hide } from '../../store/reducer';
 import { RootState } from '../../store/store';
+import { useEffect , useState} from "react";
+
+import axios from "axios";
+import dynamic from "next/dynamic";
+
+
+interface Message {
+    id: string;
+    content: string;
+    created_at: string;
+    senderId: string;
+    recieverId: string;
+  }
+  
 
 function Page() {
     const isMdScreen = useMediaQuery({ minWidth: 768 });
-    const isContactListHidden = useSelector((state: RootState) => state.toggleShowContactList);
-    const conversations = conversation.map(item => {
+    const isLgScreen = useMediaQuery({ minWidth: 1200 });
+   
+    const [isMdScreenState, setIsMdScreen] = useState(false);
+    const [isLgScreenState, setIsLgScreen] = useState(false);
+    useEffect(() => {
+        setIsMdScreen(isMdScreen);
+        setIsLgScreen(isLgScreen);
+      }, [isMdScreen, isLgScreen]);
+
+
+    const [messages, setMessages] = useState<Message[]>([]);
+    useEffect(() => {
+        async function fetchMessages() {
+          try {
+            const response = await axios.get<Message[]>('http://localhost:3000/chat?senderId=4526e24e-23be-11ee-be56-0242ac120002&receiverId=ee10f6ea-23bb-11ee-be56-0242ac120002');
+            setMessages(response.data);
+            console.log(messages);
+          } catch (error) {
+            console.error(error);
+          }
+        }
+        fetchMessages();
+      }, []);
+
+      const conversations = messages.map(item => {
         return (
             <MessageBox
                 key={item.id}
                 userId={item.id}
-                messageContent={item.messageContent}
-                date={item.date}
-                time={item.time}
-                profilePicture={item.profilePicture}
-                user={item.user}
+                messageContent={item.content}
+                date={item.created_at}
+                time={'15:20'}
+                profilePicture={"bben-aou.jpeg"}
+                user={"Bilal Ben Aouad"}
             />
+
         )
     });
+
+
+    const isContactListHidden = useSelector((state: RootState) => state.toggleShowContactList);
+    // const conversations = conversation.map(item => {
+    //     return (
+    //         <MessageBox
+    //             key={item.id}
+    //             userId={item.id}
+    //             messageContent={item.messageContent}
+    //             date={item.date}
+    //             time={item.time}
+    //             profilePicture={item.profilePicture}
+    //             user={item.user}
+    //         />
+
+    //     )
+    // });
+
+
+    
 
     return (
         <div className="w-full h-[85vh] md:h-screen flex">
             <div className={`${!isContactListHidden.showContactListToggled ? "w-full h-full " : "hidden"} `}>
 
-                {isMdScreen && <Header
-                    ContactName="Bilal Ben Aouad"
+                {isMdScreenState && <Header 
+                    ContactName = { "Channel"}
                 />}
+              
+
                 <div className="w-full h-[85%] bg-sender pl-[20px]  pr-[15px] py-[15px] overflow-auto no-scrollbar  md:h-[80%]">
                     {conversations}
                 </div>
                 <MessageInputBox />
             </div>
-            {/* <ContactListSm />
-            {isMdScreen && <ContactListMd/>} */}
-            <div className="h-full w-[33.3%] bg-primary">
-                <div className="w-full h-[5%] bg-green-500 flex items-end pl-[28px]">
-                    <h1 className="text-white text-[13px] font-poppins font-semibold">Contacts</h1>
-                </div>
-                <div className="w-full h-[85%] bg-red-400 pt-[14px] overflow-auto">
-                    <div className="w-full h-[56px] bg-yellow-500 flex items-center pl-[42px]">
-                        <div className=" h-full w-[186px] flex items-center ">
-                            {/* <div className="w-[41px] h-[41px] bg-cyan-600 rounded-full "></div> */}
-                            <Image src={`/chatAvatars/bben-aou.jpeg`} alt="profile" width={41} height={41} className="rounded-full" />
-
-                            <div className="w-[130px] h-full  ml-[15px] flex items-center truncate">
-                                <span className="text-white text-[15px] font-poppins font-medium">
-                                    Bilal Ben Aouad
-                                </span>
-                            </div>
-                        </div>
-                        <div className="w-[23px] h-[23px] bg-red-500 rounded-full flex justify-center items-center ml-[3px] text-white text-xs font-medium">
-                            5
-                        </div>
-                    </div>
-
-
-                    <div className="w-full h-[56px] bg-yellow-500 flex items-center pl-[42px]">
-                        <div className=" h-full w-[186px] flex items-center ">
-                            {/* <div className="w-[41px] h-[41px] bg-cyan-600 rounded-full "></div> */}
-                            <Image src={`/chatAvatars/bben-aou.jpeg`} alt="profile" width={41} height={41} className="rounded-full" />
-
-                            <div className="w-[130px] h-full  ml-[15px] flex items-center truncate">
-                                <span className="text-white text-[15px] font-poppins font-medium">
-                                    Bilal Ben Aouad
-                                </span>
-                            </div>
-                        </div>
-                        <div className="w-[23px] h-[23px] bg-red-500 rounded-full flex justify-center items-center ml-[3px] text-white text-xs font-medium">
-                            5
-                        </div>
-                    </div>
-                    <div className="w-full h-[56px] bg-yellow-500 flex items-center pl-[42px]">
-                        <div className=" h-full w-[186px] flex items-center ">
-                            {/* <div className="w-[41px] h-[41px] bg-cyan-600 rounded-full "></div> */}
-                            <Image src={`/chatAvatars/bben-aou.jpeg`} alt="profile" width={41} height={41} className="rounded-full" />
-
-                            <div className="w-[130px] h-full  ml-[15px] flex items-center truncate">
-                                <span className="text-white text-[15px] font-poppins font-medium">
-                                    Bilal Ben Aouad
-                                </span>
-                            </div>
-                        </div>
-                        <div className="w-[23px] h-[23px] bg-red-500 rounded-full flex justify-center items-center ml-[3px] text-white text-xs font-medium">
-                            5
-                        </div>
-                    </div>
-                    <div className="w-full h-[56px] bg-yellow-500 flex items-center pl-[42px]">
-                        <div className=" h-full w-[186px] flex items-center ">
-                            {/* <div className="w-[41px] h-[41px] bg-cyan-600 rounded-full "></div> */}
-                            <Image src={`/chatAvatars/bben-aou.jpeg`} alt="profile" width={41} height={41} className="rounded-full" />
-
-                            <div className="w-[130px] h-full  ml-[15px] flex items-center truncate">
-                                <span className="text-white text-[15px] font-poppins font-medium">
-                                    Bilal Ben Aouad
-                                </span>
-                            </div>
-                        </div>
-                        <div className="w-[23px] h-[23px] bg-red-500 rounded-full flex justify-center items-center ml-[3px] text-white text-xs font-medium">
-                            5
-                        </div>
-                    </div>
-                    <div className="w-full h-[56px] bg-yellow-500 flex items-center pl-[42px]">
-                        <div className=" h-full w-[186px] flex items-center ">
-                            {/* <div className="w-[41px] h-[41px] bg-cyan-600 rounded-full "></div> */}
-                            <Image src={`/chatAvatars/bben-aou.jpeg`} alt="profile" width={41} height={41} className="rounded-full" />
-
-                            <div className="w-[130px] h-full  ml-[15px] flex items-center truncate">
-                                <span className="text-white text-[15px] font-poppins font-medium">
-                                    Bilal Ben Aouad
-                                </span>
-                            </div>
-                        </div>
-                        <div className="w-[23px] h-[23px] bg-red-500 rounded-full flex justify-center items-center ml-[3px] text-white text-xs font-medium">
-                            5
-                        </div>
-                    </div><div className="w-full h-[56px] bg-yellow-500 flex items-center pl-[42px]">
-                        <div className=" h-full w-[186px] flex items-center ">
-                            {/* <div className="w-[41px] h-[41px] bg-cyan-600 rounded-full "></div> */}
-                            <Image src={`/chatAvatars/bben-aou.jpeg`} alt="profile" width={41} height={41} className="rounded-full" />
-
-                            <div className="w-[130px] h-full  ml-[15px] flex items-center truncate">
-                                <span className="text-white text-[15px] font-poppins font-medium">
-                                    Bilal Ben Aouad
-                                </span>
-                            </div>
-                        </div>
-                        <div className="w-[23px] h-[23px] bg-red-500 rounded-full flex justify-center items-center ml-[3px] text-white text-xs font-medium">
-                            5
-                        </div>
-                    </div><div className="w-full h-[56px] bg-yellow-500 flex items-center pl-[42px]">
-                        <div className=" h-full w-[186px] flex items-center ">
-                            {/* <div className="w-[41px] h-[41px] bg-cyan-600 rounded-full "></div> */}
-                            <Image src={`/chatAvatars/bben-aou.jpeg`} alt="profile" width={41} height={41} className="rounded-full" />
-
-                            <div className="w-[130px] h-full  ml-[15px] flex items-center truncate">
-                                <span className="text-white text-[15px] font-poppins font-medium">
-                                    Bilal Ben Aouad
-                                </span>
-                            </div>
-                        </div>
-                        <div className="w-[23px] h-[23px] bg-red-500 rounded-full flex justify-center items-center ml-[3px] text-white text-xs font-medium">
-                            5
-                        </div>
-                    </div><div className="w-full h-[56px] bg-yellow-500 flex items-center pl-[42px]">
-                        <div className=" h-full w-[186px] flex items-center ">
-                            {/* <div className="w-[41px] h-[41px] bg-cyan-600 rounded-full "></div> */}
-                            <Image src={`/chatAvatars/bben-aou.jpeg`} alt="profile" width={41} height={41} className="rounded-full" />
-
-                            <div className="w-[130px] h-full  ml-[15px] flex items-center truncate">
-                                <span className="text-white text-[15px] font-poppins font-medium">
-                                    Bilal Ben Aouad
-                                </span>
-                            </div>
-                        </div>
-                        <div className="w-[23px] h-[23px] bg-red-500 rounded-full flex justify-center items-center ml-[3px] text-white text-xs font-medium">
-                            5
-                        </div>
-                    </div><div className="w-full h-[56px] bg-yellow-500 flex items-center pl-[42px]">
-                        <div className=" h-full w-[186px] flex items-center ">
-                            {/* <div className="w-[41px] h-[41px] bg-cyan-600 rounded-full "></div> */}
-                            <Image src={`/chatAvatars/bben-aou.jpeg`} alt="profile" width={41} height={41} className="rounded-full" />
-
-                            <div className="w-[130px] h-full  ml-[15px] flex items-center truncate">
-                                <span className="text-white text-[15px] font-poppins font-medium">
-                                    Bilal Ben Aouad
-                                </span>
-                            </div>
-                        </div>
-                        <div className="w-[23px] h-[23px] bg-red-500 rounded-full flex justify-center items-center ml-[3px] text-white text-xs font-medium">
-                            5
-                        </div>
-                    </div>
-
-
-                </div>
-
-            </div>
+            <ContactListSm />
+          
+            {isLgScreenState  && <ContactListLg/>}
+            
+            {(isMdScreenState && !isLgScreenState) && <ContactListMd/>}
+           
         </div>
     );
 }
 export default Page;
+// export default dynamic (() => Promise.resolve(Page), {ssr: false})

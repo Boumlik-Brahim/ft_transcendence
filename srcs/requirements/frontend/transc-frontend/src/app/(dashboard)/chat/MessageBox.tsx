@@ -1,12 +1,15 @@
+"use client"
 import Image from "next/image";
 import { OnlineFriends } from "../../../../constant"
 import {conversation} from "./TempData/conversation"
 
-
+import { format } from 'date-fns';
 
 function MessageBox({userId, messageContent, date, time, profilePicture, user}:
 {
-    userId: number,
+    // userId: number,
+    userId: string,
+
     messageContent: string,
     date: string,
     time: string,
@@ -24,6 +27,14 @@ function MessageBox({userId, messageContent, date, time, profilePicture, user}:
         bg_color = "bg-send";
         position = "items-end md:mr-[25px]";
     }
+
+
+    // const { dateO } = date;
+    const utcDateString = date
+    const dateToConv = new Date(utcDateString);
+    const localDateString = dateToConv.toLocaleDateString();
+    const localTimeString = dateToConv.toLocaleTimeString();
+
 return(
 
     <div className={`flex flex-col ${position} mb-[28px] pr-[13px]`}>
@@ -37,10 +48,12 @@ return(
                 </div>
                 <div className='flex items-center text-[8px] font-poppins font-normal tracking-wider ml-[5px] text-date md:text-[9px]'>
                     <div className=' mr-[3px] lg:ml-[5px]'>
-                        {date}
+                        {/* {date} */}
+                        {localDateString}
                     </div>
                     <div>
-                        {time}
+                        {/* {time} */}
+                        {localTimeString}
                     </div>
                 </div>
             </div>
