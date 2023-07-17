@@ -3,6 +3,8 @@ import { AuthService } from "./auth.service";
 import { AuthDto } from "./dto/auth.dto"
 import { Response } from "express";
 import { AuthGuard } from "@nestjs/passport";
+import { JwtPayload } from "./type/jwt-payload.type"
+// import { Request } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -10,15 +12,15 @@ export class AuthController {
 
     @Get()
     @UseGuards(AuthGuard('42'))
-    login(req: any) {
-        req.user;
-        this.authService.valideUser(req);
-        return "Secured Data";
-    }
+    login() {}
     
     @Get('callback')
     @UseGuards(AuthGuard('42'))
-    callback(@Req() req: any) {
-        return this.login(req)
+    async callback(@Req() req: any, @Res() res: any) {
+        let user = await this.authService.valideUser(req);
+        const payload: JwtPayload = {id: req.user.id, email: req.user.email};
+        const token = await this.authService.signToken(payload);
+        res.cookie('accessToken', token);
+        return res.redirect('http://localhost:3000/')
     }
 }

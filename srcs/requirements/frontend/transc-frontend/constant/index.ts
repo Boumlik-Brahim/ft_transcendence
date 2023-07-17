@@ -17,7 +17,7 @@ export const SideLinks = [
     { name: "channels", icon_b: channels_b, icon_w: channels_w },
     { name: "friends", icon_b: friends_b, icon_w: friends_w },
     { name: "setting", icon_b: setting_b, icon_w: setting_w },
-    { name: "play", icon_b: play_b, icon_w: play_w },
+    { name: "game", icon_b: play_b, icon_w: play_w },
 ]
 
 export const OnlineFriends = [
@@ -58,3 +58,5 @@ export const leaderboard_list = [
     {id: 4, name: "haji zaki", point:"100",avarat: avatar},
     {id: 4, name: "haji zaki", point:"100",avarat: avatar},
 ]
+
+export const PlayerFake = { name: "Oussama Belkhadir", avarat: avatar, status: "online", date : 'August, 7/23' }

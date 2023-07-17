@@ -18,6 +18,7 @@ import forbidden_b from "./forbidden_b.svg";
 import forbidden_r from "./forbidden_r.svg";
 import game_b from "./game_b.svg";
 import send_b from "./send_b.svg";
+import contacts_b from "./contacts_b.svg";
 
 
 import logo_w from "./logo_w.svg";
@@ -40,6 +41,8 @@ import winner from "./winner.png";
 import bulr_c1 from "./blur_color_1.svg";
 import bulr_c2 from "./blur_color_2.svg";
 import bulr_c3 from "./blur_color_3.svg";
+import question from "./question.png"
+import GIF from './wait.gif'
 
 
 
@@ -79,8 +82,9 @@ export {
   forbidden_r,
   game_b,
   send_b,
-
+  question,
   logo_w,
+  GIF,
   profile_w,
   leaderboard_w,
   achivements_w,
@@ -100,6 +104,7 @@ export {
   bulr_c1,
   bulr_c2,
   bulr_c3,
+
 };
 
 
