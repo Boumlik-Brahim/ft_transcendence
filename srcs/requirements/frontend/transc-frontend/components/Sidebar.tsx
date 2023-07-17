@@ -28,7 +28,7 @@ function Sidebar() {
 
                 <Image key='menu' src={logo_b} alt="menu" className='xs:w-[50px] w-[40px]' />
                 
-                <Image key='menu' src={notification_b} alt="menu" className='xs:w-[40px] w-[30px]' />
+                <Image key='menu2' src={notification_b} alt="menu" className='xs:w-[40px] w-[30px]' />
             </div>
             
             {
@@ -77,7 +77,7 @@ function Sidebar() {
                 </div>
                 <ul>
                     {SideLinks.map((link,index) => (
-                        <Link href={link.name}>
+                        <Link href={link.name}  key={index}>
                             <li key={index} className='li_sidebar'>
                                     
                                 <Image key={link.name} src={link.icon_b} width={30}  alt={link.name} />
