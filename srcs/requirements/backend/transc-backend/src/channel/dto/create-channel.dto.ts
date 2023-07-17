@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { ChannelType } from "@prisma/client";
+import { IsEnum, IsNotEmpty, IsOptional, IsString } from "class-validator";
 
 export class CreateChannelDto {
 
@@ -9,9 +10,8 @@ export class CreateChannelDto {
     channelName: string;
 
     @ApiProperty()
-    @IsString()
-    @IsNotEmpty()
-    channelType: string;
+    @IsEnum(ChannelType)
+    channelType: ChannelType;
 
     @ApiProperty()
     @IsString()

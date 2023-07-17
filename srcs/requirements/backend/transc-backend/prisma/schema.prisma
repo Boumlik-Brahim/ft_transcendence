@@ -12,14 +12,40 @@ datasource db {
 
 //* ---------------------------------------------------------------------------------------------------------------------------- *//
 
+enum FriendShipStatus {
+  PENDING
+  ACCEPTED
+}
+
+enum Status {
+  ONLINE
+  OFFLINE
+  INAGAME
+}
+
+enum ChannelType {
+  PUBLIC
+  PROTECTED
+  PRIVATE
+}
+
+enum Role {
+  OWNER
+  ADMIN
+  MEMBER
+  MUTED_MEMBER
+  BANNED_MEMBER
+}
+
+//* ---------------------------------------------------------------------------------------------------------------------------- *//
+
 model User {
   id  String @id @default(uuid())
   name  String?
   email String @unique
   IntraId String @unique
   Avatar  String?
-  Status  String
-  created_at  DateTime?  @default(now())
+  status  Status @default(ONLINE)
   userStat  UserStat[]
   achievement Achievement[]
   userThatBlock BlockedUser[] @relation("Bloking")
@@ -29,6 +55,8 @@ model User {
   senders   DirectMessage[] @relation("sendeMessage")
   receivers DirectMessage[] @relation("receiveMessage")
   channel Channel[]
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
 }
 
 model UserStat {
@@ -37,43 +65,46 @@ model UserStat {
   lossesNumbr  Int
   rate  Int
   user  User  @relation(fields: [userId], references: [id])
-  userId  String
+  userId  String @unique
+  created_at  DateTime  @default(now())
 }
 
 model Achievement {
   id  String @id @default(uuid())
   achievement String
-  created_at  DateTime  @default(now())
   user  User @relation(fields: [userId], references: [id])
-  userId  String
+  userId  String @unique
+  created_at  DateTime  @default(now())
 }
 
 model BlockedUser {
   id  String @id @default(uuid())
   userThatBlock User @relation("Bloking", fields: [userId], references: [id])
-  userId  String
+  userId  String @unique
   blockedUser User  @relation("blocked", fields: [blockedUserId], references: [id])
   blockedUserId String
+  created_at  DateTime  @default(now())
 }
 
 model Friend {
   id  String @id @default(uuid())
-  created_at  DateTime  @default(now())
-  friendShipStatus String[]
+  friendShipStatus FriendShipStatus
   user  User  @relation("user", fields: [userId], references: [id])
   userId  String
   friend  User  @relation("friend", fields: [friendId], references: [id])
   friendId  String
+  created_at  DateTime  @default(now())
+  @@unique([userId, friendId], name: "userAndFriend")
 }
 
 model DirectMessage {
   id  String @id @default(uuid())
   content String
-  created_at  DateTime  @default(now())
   sender  User  @relation("sendeMessage", fields: [senderId], references: [id])
   senderId String
   reciever  User  @relation("receiveMessage", fields: [recieverId], references: [id])
   recieverId  String
+  created_at  DateTime  @default(now())
 }
 
 //* ---------------------------------------------------------------------------------------------------------------------------- *//
@@ -81,7 +112,7 @@ model DirectMessage {
 model Channel {
   id  String @id @default(uuid())
   channelName String
-  channelType String
+  channelType ChannelType @default(PUBLIC)
   channelPassword String?
   created_at  DateTime  @default(now())
   updated_at  DateTime  @updatedAt
@@ -98,11 +129,9 @@ model ChannelMember {
   channel Channel @relation("channelMember", fields: [channelId], references: [id])
   channelId String
   sender  ChannelMessage[]  @relation("senderRelation")
-  isAdmin Boolean @default(false)
-  isBanned Boolean @default(false)
-  bannedTime DateTime
-  isMuted Boolean @default(false)
-  mutedTime DateTime
+  role Role @default(MEMBER)
+  bannedTime DateTime?
+  mutedTime DateTime?
   created_at  DateTime  @default(now())
   @@unique([userId, channelId], name: "userAndChannel")
 }
