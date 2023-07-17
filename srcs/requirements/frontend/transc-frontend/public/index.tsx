@@ -35,6 +35,8 @@ import avatar from "./fake/avatar.png";
 import bulr_c1 from "./blur_color_1.svg";
 import bulr_c2 from "./blur_color_2.svg";
 import bulr_c3 from "./blur_color_3.svg";
+import question from "./question.png"
+import GIF from './wait.gif'
 
 
 export {
@@ -51,8 +53,9 @@ export {
   menu_b,
   close_b,
   message_b,
-  
+  question,
   logo_w,
+  GIF,
   profile_w,
   leaderboard_w,
   achivements_w,

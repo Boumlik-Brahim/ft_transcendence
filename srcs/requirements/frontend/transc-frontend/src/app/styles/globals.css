@@ -24,7 +24,7 @@ body {
 
 .game_font{
   font-family: 'Press Start 2P', cursive;
-  @apply text-primary text-[1.5rem];
+  @apply text-primary ;
 }
 
 .my_container{
@@ -42,6 +42,25 @@ body {
   border-radius: 50%;
   left: 50px;
   top: 50px;
+}
+.gradient
+{
+    border-radius: 2.5rem;
+    background: linear-gradient(223deg, rgba(255, 255, 255, 0.60) 0%, rgba(223, 221, 255, 0.60) 50.52%, rgba(255, 255, 255, 0.60) 100%);
+    backdrop-filter: blur(5.5px);
+    border: 2px solid #F0EFFF;
+}
+.gradient-bg
+{
+    background: linear-gradient(223deg, rgba(255, 255, 255, 0.60) 0%, rgba(223, 221, 255, 0.60) 50.52%, rgba(255, 255, 255, 0.60) 100%);
+    backdrop-filter: blur(5.5px);
+}
+.gradient_img
+{
+    background: linear-gradient(223deg, rgba(255, 255, 255, 0.60) 0%, rgba(177, 174, 232, 0.9) 50.52%, rgba(255, 255, 255, 0.60) 100%);
+    backdrop-filter: blur(5.5px);
+    border: 2px solid #F0EFFF;
+    border-radius: 50%;
 }
 
 /* --------------------------------- SIDEBAR -------------------------------- */
@@ -104,13 +123,10 @@ body {
   background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(26,37,137,0) 0%, rgba(170,246,163,1) 50%, rgba(0,212,255,0) 100%);
  }
 
- 
-
  input:checked ~ .dot {
   transform: translateX(100%);
   background-color: #48bb78;
 }
-
 
 .btn-background{
   background-image: linear-gradient(180.03deg, #8f8cb8 12.68%, #9693c3 95.55%), linear-gradient(203.98deg, rgba(255, 255, 255, 0.256) 10.98%, rgba(223, 221, 255, 0.6) 49.12%, rgba(255, 255, 255, 0.6) 95.28%);
