@@ -7,7 +7,7 @@ import { CreateChatDto } from '../dto/create-chat.dto';
 
 @WebSocketGateway( {
   cors: { 
-    origin: 'http://localhost:5173',
+    origin: '*',
   },
 })
 

@@ -12,6 +12,9 @@ import notification_b from "./notification_b.svg";
 import menu_b from "./menu_b.svg";
 import close_b from "./close_b.svg";
 import message_b from "./message_b.svg";
+import send_b from "./send_b.svg"
+import contacts_b from "./contacts_b.svg"
+
 
 import logo_w from "./logo_w.svg";
 import profile_w from "./profile_w.svg";
@@ -68,6 +71,7 @@ export {
   bulr_c1,
   bulr_c2,
   bulr_c3,
+
 };
 
 
