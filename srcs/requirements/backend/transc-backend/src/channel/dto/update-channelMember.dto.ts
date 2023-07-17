@@ -1,30 +1,23 @@
 import { PartialType } from '@nestjs/swagger';
 import { CreateChannelMemberDto } from './create-channelMember.dto';
 import { ApiProperty } from "@nestjs/swagger";
-import { IsBoolean, IsDate, IsDateString, IsNotEmpty } from "class-validator";
+import { IsBoolean, IsEnum, IsDateString, IsNotEmpty, IsOptional } from "class-validator";
+import { Role } from '@prisma/client';
 
 export class UpdateChannelMemberDto extends PartialType(CreateChannelMemberDto) {
 
     @ApiProperty()
-    @IsBoolean()
-    isAdmin: boolean;
-
-    @ApiProperty()
-    @IsBoolean()
-    isBanned: boolean;
+    @IsEnum(Role)
+    role: Role;
 
     @ApiProperty()
     @IsDateString()
-    @IsNotEmpty()
+    @IsOptional()
     bannedTime: Date;
-
-    @ApiProperty()
-    @IsBoolean()
-    isMuted: boolean;
-
+    
     @ApiProperty()
     @IsDateString()
-    @IsNotEmpty()
+    @IsOptional()
     mutedTime: Date;
 
 }
