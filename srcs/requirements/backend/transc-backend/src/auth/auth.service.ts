@@ -1,10 +1,12 @@
 import { Injectable } from "@nestjs/common";
 import { UsersService } from "src/users/users.service";
-import { PrismaClient } from '@prisma/client';
+import { PrismaService } from 'prisma/prisma.service';
+import { JwtPayload } from "./type/jwt-payload.type"
+import { JwtService } from "@nestjs/jwt";
+import { JWT_SECRET } from "../utils/constants";
+// import * as cookieParser from 'cookie-parser';
 // import { AuthDto } from "./dto/auth.dto";
 // import * as bcrypt from 'bcryptjs';
-// import { JwtService } from "@nestjs/jwt";
-// import { JWT_SECRET } from "../utils/constants";
 // import { Response } from "express";
 // import { ConfigService } from '@nestjs/config';
 // import { HttpClient } from '@nestjs/common';
@@ -12,13 +14,27 @@ import { PrismaClient } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
-    constructor (private userService: UsersService) {}
-
+    constructor ( private userService: UsersService,
+                    private prisma: PrismaService,
+                    private jwt: JwtService) {}
+                    
     async valideUser(req: any) {
-        // console.log(req.user.id);
-        let user = this.userService.findOne(req.user.id);
-        console.log(user);
-        return ;
+        let user = await this.userService.findOneWithMail(req.user.email);
+        if (user)
+            return user;
+        const newUser = await this.prisma.user.create({
+            data: {
+                name: req.user.username,
+                email: req.user.email,
+                IntraId: req.user.id,
+                status: 'ONLINE',
+            },
+        })
+        return newUser;
+    }
+    
+    async signToken(payload: JwtPayload) {
+        return await this.jwt.signAsync(payload, {secret: JWT_SECRET});
     }
 
     // constructor(private prisma: PrismaService, private jwt: JwtService) {} 
@@ -80,9 +96,4 @@ export class AuthService {
     //     return await bcrypt.compare(args.password, args.hash);
     // }
 
-    // async signToken(args: {id: number, email: string}) {
-    //     const payload = args;
-
-    //     return this.jwt.signAsync(payload, {secret: JWT_SECRET});
-    // }
 }

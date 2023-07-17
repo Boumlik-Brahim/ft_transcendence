@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsBoolean, IsDate, IsDateString, IsNotEmpty, IsString } from "class-validator";
+import { IsBoolean, IsDateString, IsEnum, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { Role } from "@prisma/client";
 
 export class CreateChannelMemberDto {
 
@@ -14,25 +15,17 @@ export class CreateChannelMemberDto {
     channelId: string;
 
     @ApiProperty()
-    @IsBoolean()
-    isAdmin: boolean;
-
-    @ApiProperty()
-    @IsBoolean()
-    isBanned: boolean;
-
+    @IsEnum(Role)
+    role: Role;
+    
     @ApiProperty()
     @IsDateString()
-    @IsNotEmpty()
+    @IsOptional()
     bannedTime: Date;
-
-    @ApiProperty()
-    @IsBoolean()
-    isMuted: boolean;
-
+    
     @ApiProperty()
     @IsDateString()
-    @IsNotEmpty()
+    @IsOptional()
     mutedTime: Date;
 
 }

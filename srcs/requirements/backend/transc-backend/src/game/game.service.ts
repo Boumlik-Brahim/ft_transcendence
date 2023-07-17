@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import { GameEntity } from './entity/game.entity';
+import { GameEntity, Player } from './entity/game.entity';
 import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
@@ -10,7 +10,7 @@ export class GameService {
 
     constructor(private prisma : PrismaService) {}
     async createGame(data, client : any)  {
-        const { invitedId, creatorID, isRamdomOponent } = data;
+        const { invitedId, creatorId, isRamdomOponent } = data;
         if (!isRamdomOponent) {
             try {
                 const user = await this.prisma.user.findUnique({
@@ -22,39 +22,37 @@ export class GameService {
                     client.emit("error", "openent not find");
                     return; 
                 }
-                const game : GameEntity = this.getGameInitValue(creatorID, invitedId);
+                const game : GameEntity = this.getGameInitValue(creatorId, invitedId);
                 this.gameMap.set(game.id, game);
-                client.emit("newGame", game);
-                console.log(game);
+                client.emit("Success", {id : game.id});
             }
             catch (error) {
                 client.emit("error", error);
             }
         }
         else {
-            if (this.inTheQueue != null) {
-                const game : GameEntity = this.getGameInitValue(creatorID, null);
+            if (this.inTheQueue == null) {
+                const game : GameEntity = this.getGameInitValue(creatorId, '');
                 this.inTheQueue = game.id;
                 this.gameMap.set(game.id, game);
-                client.emit("newGame", game);
+                client.emit("Success", {id : game.id});
             }
             else {
                 const gameJoined : GameEntity = this.gameMap.get(this.inTheQueue);
+                // if (creatorId === gameJoined.player1.id) return;
                 this.inTheQueue = null;
-                gameJoined .player2.id = creatorID;
+                gameJoined.player2.id = creatorId;
                 this.gameMap.set(gameJoined.id, gameJoined);
-                client.emit("newGame", gameJoined);
+                client.emit("Success", {id : gameJoined.id});
+
             }
         }
     }
 
-    // async findGameInTheQueue(level : string) : string {
-
-    // }
-
-    async joinGame(userId : string, gameID : string, client : any, server : any) {
+    async joinGame(userId : string, gameId : string, client : any, server : any) {
         try {
-            const game = this.gameMap.get(gameID);
+            const game = this.gameMap.get(gameId);
+            console.log(game);
             if (!game) {
                 client.emit("error", "This game does not exist");
                 return;
@@ -63,10 +61,13 @@ export class GameService {
                 client.emit("error", "Permission denied");
                 return;
             }
-            client.join(gameID);
+            client.join(gameId);
+            client.emit('gameSate', {state : game.gameStatus});
             const nbrClientRequire = 2;
-            const rooms = server.sockets.adapter.rooms.get(gameID);
+            const rooms = server.adapter.rooms.get(gameId)
             if (rooms && rooms.size === nbrClientRequire) {
+                game.gameStatus = 'started';
+                server.to(gameId).emit('gameSate', {state : game.gameStatus});
                 this.gameLoop(game, server);
             }
         }
@@ -78,8 +79,8 @@ export class GameService {
 
     gameLogique(gameValue : GameEntity) {
         this.collision(gameValue)
-        gameValue.ball_x += (gameValue.vx * gameValue.ball_speed);
-        gameValue.ball_y += (gameValue.vy * gameValue.ball_speed);
+        gameValue.ball_x += (gameValue.vx );
+        gameValue.ball_y += (gameValue.vy );
     }
 
     paddleCollisionAngle(ball_y : number, paddle_y : number, paddle_middle : number) : number {
@@ -117,7 +118,7 @@ export class GameService {
 
         if (ball_left <= paddle1_surface && ball_bottom > paddle1_top && ball_top < paddle1_bottom)
         {
-            gameValue.ball_speed += 0.2;
+            gameValue.ball_speed += 0.5;
             gameValue.vx *= -1; 
             // const angle = this.paddleCollisionAngle(ball_y, paddle1_top, paddle_middle);
             // gameValue.vx = gameValue.ball_speed * Math.cos(angle);
@@ -128,7 +129,7 @@ export class GameService {
         }
         else if (ball_right >= paddle2_surface && ball_bottom > paddle2_top && ball_top < paddle2_bottom)
         {
-            gameValue.ball_speed += 0.2;
+            gameValue.ball_speed += 0.5;
             gameValue.vx *= -1;
             // const angle = this.paddleCollisionAngle(ball_y, paddle2_top, paddle_middle);
             // gameValue.vx = gameValue.ball_speed * Math.cos(angle);
@@ -154,12 +155,12 @@ export class GameService {
             }
             else if (ball_left < 0) {
                 gameValue.player2.score += 1;
-                if (gameValue.player2.score === gameValue.scoreLimit)
-                {
-                    gameValue.gameStatus = 'finished';
-                    gameValue.winner = gameValue.player2.id;
-                    gameValue.ball_speed = 20;
-                }
+                // if (gameValue.player2.score === gameValue.scoreLimit)
+                // {
+                //     gameValue.gameStatus = 'finished';
+                //     gameValue.winner = gameValue.player2.id;
+                //     gameValue.ball_speed = 20;
+                // }
             }
         }
         else if (ball_bottom >= H_screen || ball_top <= 0)
@@ -171,22 +172,21 @@ export class GameService {
             this.updatePaddle(game);
             this.gameLogique(game);
             this.istheGameEnd(game, id);
-            server.to(game.id).emit("value", game);
-        }, 160);
+            server.to(game.id).emit("gameData", game);
+        }, 1000 / 60);
     }
 
     ArrowUp(gameId : String, playerId : String) {
         const game : GameEntity = this.gameMap.get(gameId);
-        const speed = 1;
         if (game) {
             if (playerId === game.player1.id) {
                 if (game.player1.paddleY > 0)
-                    game.player1.paddleY -= speed;
+                    game.player1.paddleY -= game.playerSpeed;
                 this.gameMap.set(gameId, game);
             }
             else if (playerId === game.player2.id) {
                 if (game.player2.paddleY > 0)
-                    game.player2.paddleY -= speed;
+                    game.player2.paddleY -= game.playerSpeed;
                 this.gameMap.set(gameId, game);
             }
         }
@@ -197,12 +197,12 @@ export class GameService {
         if (game) {
             if (playerId === game.player1.id) {
                 if (game.player1.paddleY + game.h_paddle < game.H_screen)
-                game.player1.paddleY += 1;
+                game.player1.paddleY += game.playerSpeed;
                 this.gameMap.set(gameId, game)   
             }
             if (playerId === game.player2.id) {
                 if (game.player2.paddleY + game.h_paddle < game.H_screen)
-                game.player2.paddleY += 1;
+                game.player2.paddleY += game.playerSpeed;
                 this.gameMap.set(gameId, game)
             }
         }
@@ -219,33 +219,33 @@ export class GameService {
     }
 
     getGameInitValue(player1Id : String, player2Id : String) : GameEntity {
-        const ballDirectionX : number = Math.round(Math.random()) === 1 ? -1 : 1;
+        // const ballDirectionX : number = Math.round(Math.random()) === 1 ? -1 : 1;
         const _id = uuidv4();
         const newGameValue : GameEntity =  {
             id : _id,
-            W_screen : 860,
-            H_screen : 400,
-            ball_x : 430,
-            ball_y : 200,
-            radius : 10,
-            vx : 10 * ballDirectionX,
-            vy : 10,
+            W_screen : 250,
+            H_screen : 100,
+            ball_x : 125,
+            ball_y : 50,
+            radius : 2,
+            vx : 1 ,
+            vy : 1,
             player1 : {
                 id : player1Id,
-                paddleX : 20,
-                paddleY : 40,
+                paddleX : 2,
+                paddleY : 0,
                 score : 0
             },
             player2 : {
                 id : player2Id,
-                paddleX : 840,
-                paddleY : 40,
+                paddleX : 248,
+                paddleY : 80,
                 score : 0
             },
-            w_paddle : 25,
-            h_paddle : 200,
-            playerSpeed : 2,
-            scoreLimit : 11,
+            w_paddle : 5,
+            h_paddle : 20,
+            playerSpeed : 4,
+            scoreLimit : 10,
             ball_speed : 2,
             gameStatus : "waiting",
             winner : null
