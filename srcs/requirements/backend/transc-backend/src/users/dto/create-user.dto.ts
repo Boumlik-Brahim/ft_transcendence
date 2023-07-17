@@ -17,7 +17,7 @@ export class CreateUserDto {
     @ApiProperty()
     @IsString()
     @IsNotEmpty()
-    password: string
+    IntraId: string
     
     @ApiProperty()
     @IsString()
