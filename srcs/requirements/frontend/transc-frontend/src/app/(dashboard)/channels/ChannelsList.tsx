@@ -27,15 +27,15 @@ function ChannelsList() {
           );
         });
     return (
-        <div className={`${!isCreateChannelOn.createChannelBtnToggled ? "flex-1  w-full h-full" : "hidden"} `}>
-        <div className="w-full h-1/2  px-[22px]">
+        <div className={`${!isCreateChannelOn.createChannelBtnToggled ? "flex-1  w-full h-full " : "hidden"} `}>
+        <div className="w-full h-1/2  px-[22px] ">
 
           <ChannelBarInfo
             title="My channels"
             btnVisibility=""
           />
 
-          <div className="w-full h-[82%] overflow-auto py-[7px] px-[2px]">
+          <div className="w-full h-[82%] overflow-auto no-scrollbar  py-[7px] px-[2px] lg:py-[10px] lg:px-[48px]">
             {/*----------------------------------------- channel info box ------------------------------------------------------------------------------------------------------------- */}
             {channels}
             {/*-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- */}
@@ -47,7 +47,7 @@ function ChannelsList() {
             title="general"
             btnVisibility="hidden"
           />
-          <div className="w-full h-[81%] overflow-auto pt-[7px]  px-[2px]">
+          <div className="w-full h-[81%] overflow-auto  no-scrollbar pt-[7px]  px-[2px]  lg:py-[10px] lg:px-[48px]">
 
             {/*----------------------------------------- channel info box ------------------------------------------------------------------------------------------------------------- */}
             {channels}

@@ -13,18 +13,18 @@ function ChannelBarInfo({ title, btnVisibility }: { title: string, btnVisibility
 
     return (
         <>
-            <div className="w-full h-[20%]  py-[28px] px-[10px]  flex items-center justify-between">
-                <span className="font-poppins text-xs text-primary font-bold tracking-wider uppercase">
+            <div className="w-full h-[20%]  py-[28px] px-[10px]  flex items-center justify-between lg:px-[48px]">
+                <span className="font-poppins text-xs text-primary font-bold tracking-wider uppercase lg:text-[14px]">
                     {title}
                 </span>
                 <button
-                    className={`w-[60px] h-[25px] rounded-full  bg-primary font-poppins ${btnVisibility} text-white text-[9px] font-semibold  flex items-center justify-center md:w-[62px] md:h-[27px]`}
+                    className={`w-[60px] h-[25px] rounded-full  bg-primary font-poppins ${btnVisibility} text-white text-[9px] font-semibold  flex items-center justify-center md:w-[62px] md:h-[27px] lg:w-[67px] lg:h-[32px]`}
                     onClick={handleCreateChannelToggleOn}
                 >
                     create
                 </button>
             </div>
-            <hr className="border-[1px] border-primary mt-[-10px]" />
+            <hr className="border-[1px] border-primary mt-[-10px] lg:mt-[-25px] xl:mt-[-35px] lg:mx-[48px]" />
         </>
 
     )
