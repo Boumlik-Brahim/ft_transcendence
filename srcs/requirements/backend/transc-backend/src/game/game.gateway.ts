@@ -9,6 +9,7 @@ import { subscribe } from 'diagnostics_channel';
 
 
 @WebSocketGateway({
+  namespace : "game",
   cors : {
     origin : '*'
   }
@@ -34,45 +35,36 @@ export class GameGateway {
     this.gameService.createGame(data, client);
   }
 
-  joinAQue(@MessageBody() data: JoinGameDto, @ConnectedSocket() client: Socket) {
-
-  }
-
   @SubscribeMessage('joinGame')
   async joinGame(@MessageBody() data: JoinGameDto, @ConnectedSocket() client: Socket) {
-    const { gameID, userId } = data;
-    if (gameID && userId ) {
-      await this.gameService.joinGame(userId, gameID, client, this.server);
-      console.log("sorti")
+    if (!data) return;
+    const { gameId, userId } = data;
+    if (gameId && userId ) {
+      await this.gameService.joinGame(userId, gameId, client, this.server);
     }
     else {
       client.emit('error', "Bad request");
     }
   }
 
-  @SubscribeMessage('ArrowDown')
+  @SubscribeMessage('ArrowRight')
   keyDown(@MessageBody() data: JoinGameDto, @ConnectedSocket() client: Socket) {
-    console.log("ArrowDown");
-    const { gameID, userId } = data;
-    if (gameID && userId) 
+    if (!data) return; 
+    const { gameId, userId } = data;
+    if (gameId && userId) 
     {
-      this.gameService.ArrowDown(gameID, userId);
+      this.gameService.ArrowDown(gameId, userId);
     }
   }
 
-  @SubscribeMessage('ArrowUp')
+  @SubscribeMessage('ArrowLeft')
   keyUp(@MessageBody() data: JoinGameDto, @ConnectedSocket() client: Socket) {
-    console.log("ArrowUp");
-    const { gameID, userId } = data;
-    if (gameID && userId) 
+    if (!data) return; 
+    const { gameId, userId } = data;
+    if (gameId && userId) 
     {
-      this.gameService.ArrowUp(gameID, userId);
+      this.gameService.ArrowUp(gameId, userId);
     }
-  }
-
-  @SubscribeMessage('keyPress')
-  keyPress(@ConnectedSocket() client: Socket) {
-
   }
 
   @SubscribeMessage('quitGame')

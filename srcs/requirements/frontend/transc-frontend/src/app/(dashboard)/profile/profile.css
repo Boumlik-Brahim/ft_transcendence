@@ -1,0 +1,33 @@
+
+.card {
+    @apply xs:h-[100px] h-[60px] rounded-xl;
+    @apply flex justify-center items-center flex-col flex-1;
+    @apply text-xs text-primary;
+}
+
+.card_friend {
+    @apply xs:h-[60px] md:h-[70px] h-[50px] rounded-xl p-[10px] xs:p-0;
+    @apply flex justify-center items-center flex-col flex-1;
+    @apply cursor-pointer;
+}
+
+.lose {
+    /* background: linear-gradient(90deg, rgba(2, 0, 36, 1) 0%, rgba(26, 37, 137, 0) 0%, rgba(252, 184, 192, 0.5046612394957983) 50%, rgba(0, 212, 255, 0) 100%); */
+    @apply border-[2px] border-[#FFEDEF];
+    @apply bg-gradient-to-r from-white via-red-100 to-white;
+}
+
+.win {
+    /* background: linear-gradient(90deg, rgba(2, 0, 36, 1) 0%, rgba(26, 37, 137, 0) 0%, rgba(170, 246, 163, 1) 50%, rgba(0, 212, 255, 0) 100%); */
+    @apply border-[2px] border-[#e7ffe6];
+    @apply bg-gradient-to-r from-white via-green-100 to-white;
+}
+
+.history_score{
+    @apply text-xs md:text-lg w-[40px] h-[40px] md:w-[60px] md:h-[60px] rounded-full bg-white flex justify-center items-center;
+}
+
+.history{
+    @apply flex justify-between items-center rounded-full;
+    @apply w-full h-[80px] px-[15px] md:h-[100px];
+}

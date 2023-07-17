@@ -15,6 +15,15 @@ export class UsersService {
   constructor(private prisma: PrismaService) {}
 
   //* --------------------------------------------------------------userServices---------------------------------------------------------- *//
+  
+  async findOneWithMail(email: string): Promise<any>{
+    return await this.prisma.user.findUnique({ 
+      where: {
+        email: email,
+      }
+    })
+  }
+  
   async createUser(createUserDto: CreateUserDto): Promise<User> {
     return this.prisma.user.create({ data: createUserDto })
     .catch (error => {

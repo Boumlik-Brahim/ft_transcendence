@@ -8,7 +8,7 @@ import { CreateKickedMemberDto } from '../dto/create-kickedMember.dto';
 
 @WebSocketGateway({
   cors: {
-    origin: 'http://localhost:5173'
+    origin: '*'
   },
 })
 
