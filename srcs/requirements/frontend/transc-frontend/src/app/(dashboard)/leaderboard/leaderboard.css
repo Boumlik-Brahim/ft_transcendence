@@ -1,0 +1,11 @@
+
+.topthree{
+    @apply md:flex items-end hidden ; 
+    @apply h-[250px] w-full max-w-[700px];
+}
+
+.topuser{
+    @apply flex flex-col items-center justify-center gap-[20px];
+    @apply w-full;
+    @apply font-bold;
+}

@@ -13,7 +13,6 @@
   padding: 0;
   box-sizing: border-box;
   list-style: none;
-  /* border: 1px solid black; */
 }
 
 body {
@@ -21,14 +20,23 @@ body {
   font-family: 'Roboto', sans-serif;
 }
 
-.game_font{
+.title{
   font-family: 'Press Start 2P', cursive;
-  @apply text-primary text-[1.5rem];
+  @apply text-primary text-lg w-[200px] xs:w-full;
 }
 
+.wrapper {
+  @apply flex flex-col items-center justify-between gap-[20px] xs:gap-[40px] w-[80%] mb-[5rem];
+}
+
+/* .game_font{
+  font-family: 'Press Start 2P', cursive;
+  @apply text-primary;
+} */
+
 .my_container{
-  @apply flex flex-1 flex-col items-center gap-[100px];
-  @apply py-[100px] px-[100px] overflow-scroll;
+  @apply flex flex-1 flex-col items-center;
+  @apply py-[100px] overflow-scroll;
 }
 
 .status{
@@ -43,14 +51,43 @@ body {
   top: 50px;
 }
 
+.gradients{
+  border-radius: 2.5rem; 
+  background: linear-gradient(223deg, rgba(255, 255, 255, 0.60) 0%, rgba(223, 221, 255, 0.60) 50.52%, rgba(255, 255, 255, 0.60) 100%);
+  backdrop-filter: blur(5.5px);
+  border: 2px solid #F0EFFF;
+}
+
+.achievement {
+  @apply border-dashed rounded-full border-[3px];
+  @apply flex justify-center items-center;
+  @apply h-[100px] w-[150px];
+  @apply p-[2.6rem] xs:p-[1rem];
+}
+
+.achievement_yes {
+  @apply border-primary xs:w-[100px];
+}
+
+.achievement_not {
+  @apply border-gray-400 xs:w-[200px] opacity-70;
+}
+
+
 /* --------------------------------- SIDEBAR -------------------------------- */
 .header {
-  @apply w-full h-[100px] z-10 bg-secondar;
+  @apply w-full min-w-[200px] h-[15vh] z-10 bg-secondary;
   @apply flex justify-around md:hidden;
 }
 
+.layouts{
+  @apply w-full h-[85vh] md:h-screen flex;
+}
+
 .sidebarmd {
-  @apply bg-primary h-screen w-full pt-[100px] absolute z-[9] top-0;
+  /* @apply bg-primary h-screen w-full min-w-[200px] min-h-[100px] pt-[15px] absolute z-[9] top-0; */
+  @apply absolute z-10 mt-[15vh];
+  @apply bg-primary h-[85vh] w-full min-w-[200px];
   @apply flex flex-col justify-around items-center md:hidden;
 }
 
@@ -71,6 +108,7 @@ body {
   @apply xs:mb-[15px] mb-[10px];
   @apply xs:pl-[25px] lg:pl-[25px] pl-0 md:pl-0 xs:p-[15px] lg:xs:p-[15px] py-[5px] md:p-0 md:py-0;
   @apply w-[80px] xs:w-[250px] md:w-[100px] lg:w-[250px];
+  @apply hover:bg-gradient-to-br from-[#fff] via-[#DFDDFF]/40 to-[#fff];
 }
 
 
@@ -82,23 +120,9 @@ body {
 }
 
 /* --------------------------------- PROFILE -------------------------------- */
-.user{
-  @apply min-w-[100%] min-h-[550px];
-  @apply flex flex-col items-center justify-between;
-}
 
-.card{
-  @apply bg-white w-[120px] h-[120px] rounded-xl;
-  @apply flex justify-center items-center flex-col;
-  @apply text-lg text-primary;
- }
 
-.lose_match{
-  border: 3px solid #FFEDEF;
-  background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(26,37,137,0) 0%, rgba(252,184,192,0.5046612394957983) 50%, rgba(0,212,255,0) 100%)
- }
 
-.win_match{
-  border: 3px solid #C9FFC5;
-  background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(26,37,137,0) 0%, rgba(170,246,163,1) 50%, rgba(0,212,255,0) 100%);
- }
+
+
+
