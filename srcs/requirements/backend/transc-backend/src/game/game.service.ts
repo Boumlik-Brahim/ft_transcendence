@@ -11,7 +11,6 @@ export class GameService {
     constructor(private prisma : PrismaService) {}
     async createGame(data, client : any)  {
         const { invitedId, creatorId, isRamdomOponent } = data;
-        console.log('fode');
         if (!isRamdomOponent) {
             try {
                 const user = await this.prisma.user.findUnique({
@@ -66,11 +65,11 @@ export class GameService {
             client.emit('gameSate', {state : game.gameStatus});
             const nbrClientRequire = 2;
             const rooms = server.adapter.rooms.get(gameId)
-            // if (rooms && rooms.size === nbrClientRequire) {
+            if (rooms && rooms.size === nbrClientRequire) {
                 game.gameStatus = 'started';
                 server.to(gameId).emit('gameSate', {state : game.gameStatus});
                 this.gameLoop(game, server);
-            // }
+            }
         }
         catch (error) {
             console.log(error);
@@ -119,7 +118,7 @@ export class GameService {
 
         if (ball_left <= paddle1_surface && ball_bottom > paddle1_top && ball_top < paddle1_bottom)
         {
-            gameValue.ball_speed += 0.2;
+            gameValue.ball_speed += 0.5;
             gameValue.vx *= -1; 
             // const angle = this.paddleCollisionAngle(ball_y, paddle1_top, paddle_middle);
             // gameValue.vx = gameValue.ball_speed * Math.cos(angle);
@@ -130,7 +129,7 @@ export class GameService {
         }
         else if (ball_right >= paddle2_surface && ball_bottom > paddle2_top && ball_top < paddle2_bottom)
         {
-            gameValue.ball_speed += 0.2;
+            gameValue.ball_speed += 0.5;
             gameValue.vx *= -1;
             // const angle = this.paddleCollisionAngle(ball_y, paddle2_top, paddle_middle);
             // gameValue.vx = gameValue.ball_speed * Math.cos(angle);

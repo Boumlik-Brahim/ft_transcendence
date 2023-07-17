@@ -48,6 +48,13 @@ const Canvas = ({ gameData } : PropsType) => {
     context.fill();
   };
 
+  const writeScore = (context : any, x : number, score1 : number) => {
+    context.font = "30px Arial";
+    const text = score1.toString();
+    const y = 2;
+    context.fillText(text, x, y);
+  }
+
   const drawMiddleLine = (context : any, w : number, h : number) => {
     context.beginPath();
     context.moveTo(w / 2, 0);
@@ -74,11 +81,14 @@ const Canvas = ({ gameData } : PropsType) => {
     const player2_X = convertValueX(gameData.player2.paddleX, w, gameData.W_screen);
     const player2_Y = convertValueX(gameData.player2.paddleY, h, gameData.H_screen);
     const paddleH = convertValueX(gameData.h_paddle, h, gameData.H_screen);
+    const score1 = gameData.player1.score;
+    const score2 = gameData.player2.score;
 
     drawMiddleLine(context, w, h);
     drawBall(context, radius, ballX, bally)
     drawPaddle(context, player1_X, player1_Y, paddleH);
     drawPaddle(context, player2_X, player2_Y, paddleH);
+    // writeScore(context, w / 2 - 40, score1);
   }
 
   useEffect(() => {
