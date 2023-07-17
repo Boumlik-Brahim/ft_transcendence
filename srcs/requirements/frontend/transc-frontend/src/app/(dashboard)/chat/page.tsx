@@ -44,9 +44,9 @@ function Page() {
     useEffect(() => {
         async function fetchMessages() {
           try {
-            const response = await axios.get<Message[]>('http://localhost:3000/chat?senderId=ee10f6ea-23bb-11ee-be56-0242ac120002&receiverId=4526e24e-23be-11ee-be56-0242ac120002');
+            const response = await axios.get<Message[]>('http://localhost:3000/chat?senderId=4526e24e-23be-11ee-be56-0242ac120002&receiverId=ee10f6ea-23bb-11ee-be56-0242ac120002');
             setMessages(response.data);
-            console.log(messages);
+            // console.log(response);
           } catch (error) {
             console.error(error);
           }
