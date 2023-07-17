@@ -103,11 +103,12 @@ export class ChannelService {
       });
     });
   }
-  
+    
   async findAllChannelMembers(channelId: string): Promise<ChannelMember[]> {
     return this.prisma.channelMember.findMany({
       where: {
-        channelId
+        channelId,
+        role: 'MEMBER'
       },
       orderBy: {
         created_at: 'asc',
@@ -324,11 +325,45 @@ export class ChannelService {
   }
   //* ----------------------------------------------------------channelMessageServices---------------------------------------------------- *//
 
+  async createChannelOwner(ownerId: string, channelId: string): Promise<ChannelMember> {
+    return this.prisma.channelMember.create({
+      data: {
+        userId: ownerId,
+        channelId: channelId,
+        role: 'OWNER'
+      },
+    })
+    .catch (error => {
+      throw new HttpException({
+        status: HttpStatus.BAD_REQUEST,
+        error: 'BadRequestException',
+      }, HttpStatus.BAD_REQUEST, {
+        cause: error
+      });
+    });
+  }
+
+  async findChannelOwner(): Promise<ChannelMember> {
+    return this.prisma.channelMember.findFirst({
+      where: {
+        role: 'OWNER',
+      },
+    })
+    .catch (error => {
+      throw new HttpException({
+        status: HttpStatus.NOT_FOUND,
+        error: 'NotFoundException',
+      }, HttpStatus.NOT_FOUND, {
+        cause: error
+      });
+    });
+  }
+
   async findAllChannelAdmins(channelId: string): Promise<ChannelMember[]> {
     return this.prisma.channelMember.findMany({
       where: {
         channelId,
-        isAdmin: true
+        role: 'ADMIN'
       },
       orderBy: {
         created_at: 'asc',
@@ -348,7 +383,7 @@ export class ChannelService {
     return this.prisma.channelMember.findMany({
       where: {
         channelId,
-        isBanned: true
+        role: 'BANNED_MEMBER'
       },
       orderBy: {
         created_at: 'asc',
@@ -368,7 +403,7 @@ export class ChannelService {
     return this.prisma.channelMember.findMany({
       where: {
         channelId,
-        isMuted: true
+        role: 'MUTED_MEMBER'
       },
       orderBy: {
         created_at: 'asc',

@@ -9,6 +9,10 @@ import { AuthDto } from "../dto/auth.dto";
 export class IntraStrategy extends PassportStrategy(Strategy, '42') {
     
     constructor(private configService: ConfigService) {
+        console.log("lol")
+        console.log(configService.get('CLIENT_ID'));
+        console.log(configService.get('SECRET'));
+        console.log(configService.get('REDIRECT_URI'));
         super({
             clientID: configService.get('CLIENT_ID'),
             clientSecret: configService.get('SECRET'),
@@ -26,7 +30,7 @@ export class IntraStrategy extends PassportStrategy(Strategy, '42') {
         const user: AuthDto = {
             username: username,
             email: emails.value,
-            id: id,
+            id: id.toString(),
         }
         done(null, user);
     }
