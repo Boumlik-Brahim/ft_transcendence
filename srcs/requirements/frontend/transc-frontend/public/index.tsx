@@ -12,8 +12,13 @@ import notification_b from "./notification_b.svg";
 import menu_b from "./menu_b.svg";
 import close_b from "./close_b.svg";
 import message_b from "./message_b.svg";
-import send_b from "./send_b.svg"
-import contacts_b from "./contacts_b.svg"
+import adduser_b from "./adduser_b.svg";
+import deleteuser_b from "./deleteuser_b.svg";
+import forbidden_b from "./forbidden_b.svg";
+import forbidden_r from "./forbidden_r.svg";
+import game_b from "./game_b.svg";
+import send_b from "./send_b.svg";
+import contacts_b from "./contacts_b.svg";
 
 
 import logo_w from "./logo_w.svg";
@@ -26,53 +31,19 @@ import setting_w from "./setting_w.svg";
 import play_w from "./play_w.svg";
 import logout_w from "./logout_w.svg";
 import notification_w from "./notification_w.svg";
-import menu_w from "./menu_W.svg";
+import menu_w from "./menu_w.svg";
 import close_w from "./close_w.svg";
 import message_w from "./message_w.svg";
 import search_w from "./search_w.svg";
 
 import avatar from "./fake/avatar.png";
+import winner from "./winner.png";
 import bulr_c1 from "./blur_color_1.svg";
 import bulr_c2 from "./blur_color_2.svg";
 import bulr_c3 from "./blur_color_3.svg";
+import question from "./question.png"
+import GIF from './wait.gif'
 
-
-export {
-  logo_b,
-  profile_b,
-  leaderboard_b,
-  achivements_b,
-  channels_b,
-  friends_b,
-  setting_b,
-  play_b,
-  logout_b,
-  notification_b,
-  menu_b,
-  close_b,
-  message_b,
-  
-  logo_w,
-  profile_w,
-  leaderboard_w,
-  achivements_w,
-  channels_w,
-  friends_w,
-  setting_w,
-  play_w,
-  logout_w,
-  notification_w,
-  menu_w,
-  close_w,
-  message_w,
-  search_w,
-
-  avatar,
-  bulr_c1,
-  bulr_c2,
-  bulr_c3,
-
-};
 
 
 import challenge_13_persons from "./achivements/challenge_13_persons.gif";
@@ -90,6 +61,52 @@ import send_13_messages from "./achivements/send_13_messages.gif";
 import send_1337_messages from "./achivements/send_1337_messages.gif";
 import send_message from "./achivements/send_message.gif";
 import create_a_channel from "./achivements/create_a_channel.gif";
+
+export {
+  logo_b,
+  profile_b,
+  leaderboard_b,
+  achivements_b,
+  channels_b,
+  friends_b,
+  setting_b,
+  play_b,
+  logout_b,
+  notification_b,
+  menu_b,
+  close_b,
+  message_b,
+  adduser_b,
+  deleteuser_b,
+  forbidden_b,
+  forbidden_r,
+  game_b,
+  send_b,
+  question,
+  logo_w,
+  GIF,
+  profile_w,
+  leaderboard_w,
+  achivements_w,
+  channels_w,
+  friends_w,
+  setting_w,
+  play_w,
+  logout_w,
+  notification_w,
+  menu_w,
+  close_w,
+  message_w,
+  search_w,
+
+  avatar,
+  winner,
+  bulr_c1,
+  bulr_c2,
+  bulr_c3,
+
+};
+
 
 export const achievements = [
   challenge_13_persons,
