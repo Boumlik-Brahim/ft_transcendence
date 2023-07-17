@@ -7,6 +7,7 @@ import Image from 'next/image'
 import { socket } from '../socket'
 import Canvas from './canva'
 import Waiting from '../waiting';
+import { cookies } from 'next/dist/client/components/headers';
 
 
 
@@ -37,12 +38,14 @@ export interface Player {
     score : number
 }
 
+console.log(cookies)
+
 
 const Page = ( {params} : any) => {
     const [error, setError] = useState<string | undefined>();
     const [gameSate, setGameSate] = useState<string | undefined>();
     const [gameData, setGameData] = useState<GameEntity | undefined>();
-    const userId = '555433666666'
+    const userId = document.cookie === '' ? '55555555555' : document.cookie;
     const id = params.gameId;
 
 

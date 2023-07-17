@@ -13,7 +13,7 @@ export class GameService {
         const { invitedId, creatorId, isRamdomOponent } = data;
         if (!isRamdomOponent) {
             try {
-                const user = await this.prisma.user.findUnique({
+                const user =  this.prisma.user.findUnique({
                     where : {
                         id : invitedId
                     }
@@ -39,7 +39,7 @@ export class GameService {
             }
             else {
                 const gameJoined : GameEntity = this.gameMap.get(this.inTheQueue);
-                // if (creatorId === gameJoined.player1.id) return;
+                if (creatorId === gameJoined.player1.id) return;
                 this.inTheQueue = null;
                 gameJoined.player2.id = creatorId;
                 this.gameMap.set(gameJoined.id, gameJoined);

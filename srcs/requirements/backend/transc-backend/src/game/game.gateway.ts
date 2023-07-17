@@ -40,7 +40,7 @@ export class GameGateway {
     if (!data) return;
     const { gameId, userId } = data;
     if (gameId && userId ) {
-      await this.gameService.joinGame(userId, gameId, client, this.server);
+       this.gameService.joinGame(userId, gameId, client, this.server);
     }
     else {
       client.emit('error', "Bad request");

@@ -16,7 +16,7 @@ interface CreateGameType {
 
 const Game = () => {
   const [oponentName, setOponentName] = useState<string>('');
-  const myId = '555433666666';
+  const myId = document.cookie === '' ? '55555555555' : document.cookie;
   const router = useRouter();
 
   const createGame = (isRamdomOponent : boolean, invitedId? : string) : void => {
