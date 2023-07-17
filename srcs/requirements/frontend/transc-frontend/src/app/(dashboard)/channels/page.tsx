@@ -9,7 +9,6 @@ import { channelsData, channelProps } from './TempData/channelsData'
 import ChannelsList from "./ChannelsList";
 
 function page() {
-
   const channels = channelsData.map((channel: channelProps) => {
     return (
       <ChannelBoxInfo

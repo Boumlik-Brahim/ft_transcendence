@@ -27,4 +27,36 @@ export const OnlineFriends = [
     { id: 4, name: "Oussama Belkhadir", avarat: avatar, status: "online" },
 ]
 
+export const history_game = [
+    {id: 1, oppenet: "mustafa rajawi", status:"win",avarat: avatar},
+    {id: 2, oppenet: "ahmed boghtat", status:"lose",avarat: avatar},
+    {id: 3, oppenet: "simo msfiwi", status:"win",avarat: avatar},
+    {id: 3, oppenet: "haji zaki", status:"win",avarat: avatar},
+]
+
+export const leaderboard_list = [
+    {id: 1, name: "mustafa rajawi", point:"100",avarat: avatar},
+    {id: 2, name: "ahmed boghtat", point:"100",avarat: avatar},
+    {id: 3, name: "simo msfiwi", point:"100",avarat: avatar},
+    {id: 4, name: "haji zaki", point:"100",avarat: avatar},
+    {id: 4, name: "haji zaki", point:"100",avarat: avatar},
+    {id: 4, name: "haji zaki", point:"100",avarat: avatar},
+    {id: 4, name: "haji zaki", point:"100",avarat: avatar},
+    {id: 4, name: "haji zaki", point:"100",avarat: avatar},
+    {id: 4, name: "haji zaki", point:"100",avarat: avatar},
+    {id: 4, name: "haji zaki", point:"100",avarat: avatar},
+    {id: 4, name: "haji zaki", point:"100",avarat: avatar},
+    {id: 4, name: "haji zaki", point:"100",avarat: avatar},
+    {id: 4, name: "haji zaki", point:"100",avarat: avatar},
+    {id: 4, name: "haji zaki", point:"100",avarat: avatar},
+    {id: 4, name: "haji zaki", point:"100",avarat: avatar},
+    {id: 4, name: "haji zaki", point:"100",avarat: avatar},
+    {id: 4, name: "haji zaki", point:"100",avarat: avatar},
+    {id: 4, name: "haji zaki", point:"100",avarat: avatar},
+    {id: 4, name: "haji zaki", point:"100",avarat: avatar},
+    {id: 4, name: "haji zaki", point:"100",avarat: avatar},
+    {id: 4, name: "haji zaki", point:"100",avarat: avatar},
+    {id: 4, name: "haji zaki", point:"100",avarat: avatar},
+]
+
 export const PlayerFake = { name: "Oussama Belkhadir", avarat: avatar, status: "online", date : 'August, 7/23' }
