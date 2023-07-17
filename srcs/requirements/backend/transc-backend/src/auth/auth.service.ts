@@ -19,7 +19,7 @@ export class AuthService {
                     private jwt: JwtService) {}
                     
     async valideUser(req: any) {
-        let user = await this.userService.findOne(req.user.email);
+        let user = await this.userService.findOneWithMail(req.user.email);
         if (user)
             return user;
         const newUser = await this.prisma.user.create({
@@ -27,7 +27,7 @@ export class AuthService {
                 name: req.user.username,
                 email: req.user.email,
                 IntraId: req.user.id,
-                Status: 'online',
+                status: 'ONLINE',
             },
         })
         return newUser;
