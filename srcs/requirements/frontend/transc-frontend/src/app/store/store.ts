@@ -3,13 +3,14 @@ import { configureStore } from "@reduxjs/toolkit"
 
 
 
-import { createChannelToggleReducer, togglePrivateReducer,toggleShowContactListReducer } from './reducer';
+import { createChannelToggleReducer, createChannelPopUpToggleReducer, togglePrivateReducer,toggleShowContactListReducer } from './reducer';
 
 
 
 const store = configureStore({
   reducer: {
     createChannelToggle: createChannelToggleReducer,
+    createChannelPopUpToggle: createChannelPopUpToggleReducer,
     togglePrivate: togglePrivateReducer,
     toggleShowContactList: toggleShowContactListReducer,
   },

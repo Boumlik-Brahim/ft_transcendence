@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 interface ToggleState {
     
     createChannelBtnToggled: boolean;
+    createChannelPopUpToggled: boolean;
     privateToggled: boolean;
     showContactListToggled: boolean;
    
@@ -11,6 +12,7 @@ interface ToggleState {
 const initialState: ToggleState = {
     
     createChannelBtnToggled: false,
+    createChannelPopUpToggled:false,
     privateToggled: false,
     showContactListToggled: false,
    
@@ -56,9 +58,25 @@ const toggleShowContactListSlice = createSlice({
     },
 });
 
+const toggleCreateChannelPopUpSlice = createSlice({
+    name: 'toggleCreateChannelPopUp',
+    initialState,
+    reducers: {
+        createChannelPopUpOn: (state) => {
+            state.createChannelPopUpToggled = !state.createChannelPopUpToggled;
+        },
+        createChannelPopUpOff: (state) => {
+            state.createChannelPopUpToggled = false;
+        },
+    },
+});
 
 export const createChannelToggleReducer = toggleCreateChannelSlice.reducer;
 export const { createChannelOn, createChannelOff } = toggleCreateChannelSlice.actions;
+
+export const createChannelPopUpToggleReducer = toggleCreateChannelPopUpSlice.reducer;
+export const { createChannelPopUpOn, createChannelPopUpOff } = toggleCreateChannelPopUpSlice.actions;
+
 export const togglePrivateReducer = togglePrivateSlice.reducer;
 export const { prvChannelOn, prvChannelOff } = togglePrivateSlice.actions;
 

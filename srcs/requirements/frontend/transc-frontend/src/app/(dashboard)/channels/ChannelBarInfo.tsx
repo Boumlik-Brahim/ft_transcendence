@@ -1,16 +1,44 @@
 "use client"
 
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { createChannelOn } from '../../store/reducer';
 
 import { RootState } from '../../store/store';
 
-function ChannelBarInfo({ title, btnVisibility }: { title: string, btnVisibility: string }) {
-    const dispatch = useDispatch();
-    const handleCreateChannelToggleOn = () => {
-        dispatch(createChannelOn());
-    }
+import { useMediaQuery } from 'react-responsive';
+import { useEffect, useState } from "react";
+import { createChannelPopUpOn, createChannelPopUpOff } from '../../store/reducer';
 
+
+
+function ChannelBarInfo({ title, btnVisibility }: { title: string, btnVisibility: string }) {
+
+    const isMdScreen = useMediaQuery({ minWidth: 768 });
+    const isLgScreen = useMediaQuery({ minWidth: 1200 });
+
+    const [isMdScreenState, setIsMdScreen] = useState(false);
+    const [isLgScreenState, setIsLgScreen] = useState(false);
+    useEffect(() => {
+        setIsMdScreen(isMdScreen);
+        setIsLgScreen(isLgScreen);
+    }, [isMdScreen, isLgScreen]);
+
+    const dispatch = useDispatch();
+    const currentPopUpStatus = useSelector((state: RootState) => state.createChannelPopUpToggle);
+
+    const handleCreateChannelToggleOn = () => {
+        const rs = isLgScreenState;
+        switch (rs) {
+            case true:
+                dispatch(createChannelPopUpOn());
+                break;
+            case false:
+                dispatch(createChannelOn());
+                break;
+            default:
+                dispatch(createChannelOn());
+        }
+    }
     return (
         <>
             <div className="w-full h-[20%]  py-[28px] px-[10px]  flex items-center justify-between lg:px-[48px]">
@@ -29,5 +57,6 @@ function ChannelBarInfo({ title, btnVisibility }: { title: string, btnVisibility
 
     )
 };
+
 
 export default ChannelBarInfo;
