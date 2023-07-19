@@ -1,23 +1,44 @@
 "use client"
+import Image from "next/image";
+import MessageInputChannelBox from "./MessageInputChannelBox";
+import RoomMessageBox from "./RoomMessageBox";
+import ChannelMembersListPage from "./ChannelMembersListPage";
+
+import { useSelector } from 'react-redux';
+import { ShowChannelMembers, HideChannelMembers } from '@/app/store/reducer';
+import { RootState } from '@/app/store/store';
+
 
 function Page() {
+    const isShowChannelMembersOn = useSelector((state: RootState) => state.toggleShowChannelMembers);
     return (
         <div className="w-full h-[85vh] md:h-screen flex ">
-            <div className="w-full h-full bg-red-500">
-                <div className="w-full h-[85%] bg-green-500 overflow-auto">
+            <div className={`${!isShowChannelMembersOn.showChannelMembersToggled ? "w-full h-full" : "hidden"}`}>
+                <div className="w-full h-[85%] py-[10px] overflow-auto">
 
-                    <div className="w-[90%] h-[110px] bg-white mx-[5%] flex">
-                        <div className="w-[10%]">
-                            <div className="w-[51px] h-[51px] bg-slate-600 rounded-full"></div>
-                        </div>
-                        <div className="w-[90%] h-[59px] bg-orange-500"></div>
-                    </div>
+                    <RoomMessageBox
+                        userId={1}
+                        userName="Bilal Ben Aouad"
+                        profilePic="bben-aou.jpeg"
+                        date="08/06/2023 09:19"
+                        messageContent="Hello everyone !"
+                    />
 
+                    <RoomMessageBox
+                        userId={1}
+                        userName="brahim alami"
+                        profilePic="profile1.jpeg"
+                        date="08/06/2023 09:19"
+                        messageContent="first message in room *_*"
+                    />
 
                 </div>
-                <div className="w-full h-[15%] bg-black"></div>
+                <MessageInputChannelBox />
             </div>
+
+            <ChannelMembersListPage />
         </div>
+
     )
 }
 export default Page;

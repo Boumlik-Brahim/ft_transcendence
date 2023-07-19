@@ -6,6 +6,7 @@ interface ToggleState {
     createChannelPopUpToggled: boolean;
     privateToggled: boolean;
     showContactListToggled: boolean;
+    showChannelMembersToggled:boolean;
    
 }
 
@@ -15,6 +16,7 @@ const initialState: ToggleState = {
     createChannelPopUpToggled:false,
     privateToggled: false,
     showContactListToggled: false,
+    showChannelMembersToggled: false,
    
 };
 
@@ -71,6 +73,19 @@ const toggleCreateChannelPopUpSlice = createSlice({
     },
 });
 
+const toggleShowChannelMembersSlice = createSlice({
+    name: 'ShowChannelMembers',
+    initialState,
+    reducers: {
+        ShowChannelMembers: (state) => {
+            state.showChannelMembersToggled = !state.showChannelMembersToggled;
+        },
+        HideChannelMembers: (state) => {
+            state.showChannelMembersToggled = false;
+        },
+    },
+});
+
 export const createChannelToggleReducer = toggleCreateChannelSlice.reducer;
 export const { createChannelOn, createChannelOff } = toggleCreateChannelSlice.actions;
 
@@ -81,4 +96,7 @@ export const togglePrivateReducer = togglePrivateSlice.reducer;
 export const { prvChannelOn, prvChannelOff } = togglePrivateSlice.actions;
 
 export const toggleShowContactListReducer = toggleShowContactListSlice.reducer;
-export const { show, hide } = toggleShowContactListSlice .actions;
+export const { show, hide } = toggleShowContactListSlice.actions;
+
+export const toggleShowChannelMembersReducer = toggleShowChannelMembersSlice.reducer;
+export const { ShowChannelMembers, HideChannelMembers } = toggleShowChannelMembersSlice.actions;
