@@ -104,6 +104,8 @@ model DirectMessage {
   senderId String
   reciever  User  @relation("receiveMessage", fields: [recieverId], references: [id])
   recieverId  String
+  roomId  String
+  seen Boolean @default(false)
   created_at  DateTime  @default(now())
 }
 
