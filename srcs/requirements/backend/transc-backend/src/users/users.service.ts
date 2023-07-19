@@ -51,6 +51,33 @@ export class UsersService {
       });
     });
   }
+
+  async findAllUsersReceivers(senderID: string): Promise<User[]> {
+    return this.prisma.user.findMany({
+      where: {
+        receivers: {
+          some: {
+            senderId: senderID
+          }
+        },   
+      },
+      // include: {
+      //   receivers: {
+      //     orderBy: {
+      //       created_at: 'asc'
+      //     }
+      //   }
+      // }
+    })
+    .catch (error => {
+      throw new HttpException({
+        status: HttpStatus.NOT_FOUND,
+        error: 'NotFoundException',
+      }, HttpStatus.NOT_FOUND, {
+        cause: error
+      });
+    });
+  }
   
   async findOne(id: string): Promise<User> {
     return this.prisma.user.findUniqueOrThrow({
