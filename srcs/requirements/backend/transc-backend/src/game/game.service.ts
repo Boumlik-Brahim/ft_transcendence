@@ -39,7 +39,7 @@ export class GameService {
             }
             else {
                 const gameJoined : GameEntity = this.gameMap.get(this.inTheQueue);
-                if (creatorId === gameJoined.player1.id) return;
+                // if (creatorId === gameJoined.player1.id) return;
                 this.inTheQueue = null;
                 gameJoined.player2.id = creatorId;
                 this.gameMap.set(gameJoined.id, gameJoined);
@@ -79,8 +79,8 @@ export class GameService {
 
     gameLogique(gameValue : GameEntity) {
         this.collision(gameValue)
-        gameValue.ball_x += (gameValue.vx );
-        gameValue.ball_y += (gameValue.vy );
+        gameValue.ball_x += (gameValue.vx);
+        gameValue.ball_y += (gameValue.vy);
     }
 
     paddleCollisionAngle(ball_y : number, paddle_y : number, paddle_middle : number) : number {
@@ -99,6 +99,7 @@ export class GameService {
             radius,
             ball_y,
             player1,
+            w_paddle,
             player2,
             h_paddle,
         } = gameValue;
@@ -109,7 +110,7 @@ export class GameService {
         const ball_bottom = ball_y + radius;
 
         const paddle_middle = h_paddle / 2;
-        const paddle1_surface = player1.paddleX;
+        const paddle1_surface = player1.paddleX + w_paddle;
         const paddle2_surface = player2.paddleX;
         const paddle1_bottom = player1.paddleY + h_paddle;
         const paddle2_bottom = player2.paddleY + h_paddle;
@@ -118,39 +119,40 @@ export class GameService {
 
         if (ball_left <= paddle1_surface && ball_bottom > paddle1_top && ball_top < paddle1_bottom)
         {
-            gameValue.ball_speed += 0.5;
-            gameValue.vx *= -1; 
-            // const angle = this.paddleCollisionAngle(ball_y, paddle1_top, paddle_middle);
-            // gameValue.vx = gameValue.ball_speed * Math.cos(angle);
-            // gameValue.vy = gameValue.ball_speed * Math.sin(angle);
-            // if (gameValue.vx < 0)
-            // {
-            // }
+            gameValue.ball_speed += 0.2;
+            const angle = this.paddleCollisionAngle(ball_y, paddle1_top, paddle_middle);
+            gameValue.vx = gameValue.ball_speed * Math.cos(angle);
+            gameValue.vy = gameValue.ball_speed * Math.sin(angle);
+            if (gameValue.vx < 0)
+            {
+                gameValue.vx *= -1; 
+            }
         }
         else if (ball_right >= paddle2_surface && ball_bottom > paddle2_top && ball_top < paddle2_bottom)
         {
-            gameValue.ball_speed += 0.5;
-            gameValue.vx *= -1;
-            // const angle = this.paddleCollisionAngle(ball_y, paddle2_top, paddle_middle);
-            // gameValue.vx = gameValue.ball_speed * Math.cos(angle);
-            // gameValue.vy = gameValue.ball_speed * Math.sin(angle);
-            // if (gameValue.vx > 0)
-            // {
-            // }
+            gameValue.ball_speed += 0.2;
+            const angle = this.paddleCollisionAngle(ball_y, paddle2_top, paddle_middle);
+            gameValue.vx = gameValue.ball_speed * Math.cos(angle);
+            gameValue.vy = gameValue.ball_speed * Math.sin(angle);
+            if (gameValue.vx > 0)
+            {
+                gameValue.vx *= -1;
+            }
         }  
         else if (ball_right > W_screen || ball_left < 0)
         {
+            gameValue.ball_speed = 1;
             gameValue.vx *= -1;
             gameValue.ball_x = W_screen / 2;
             gameValue.ball_y = H_screen / 2;
             if (ball_right > W_screen) {
                 gameValue.player1.score += 1;
-                if (gameValue.player1.score === gameValue.scoreLimit)
-                {
-                    gameValue.gameStatus = 'finished';
-                    gameValue.winner = gameValue.player1.id;
-                    gameValue.ball_speed = 20;
-                }
+                // if (gameValue.player1.score === gameValue.scoreLimit)
+                // {
+                //     gameValue.gameStatus = 'finished';
+                //     gameValue.winner = gameValue.player1.id;
+                //     gameValue.ball_speed = 20;
+                // }
 
             }
             else if (ball_left < 0) {
@@ -164,7 +166,10 @@ export class GameService {
             }
         }
         else if (ball_bottom >= H_screen || ball_top <= 0)
+        {
             gameValue.vy *= -1;
+            gameValue.ball_speed = 1;
+        }
     }
     
     gameLoop(game : GameEntity, server : any) {
@@ -227,24 +232,24 @@ export class GameService {
             H_screen : 100,
             ball_x : 125,
             ball_y : 50,
-            radius : 2,
+            radius : 4,
             vx : 1 ,
             vy : 1,
             player1 : {
                 id : player1Id,
-                paddleX : 2,
+                paddleX : 10,
                 paddleY : 0,
                 score : 0
             },
             player2 : {
                 id : player2Id,
-                paddleX : 248,
+                paddleX : 230,
                 paddleY : 80,
                 score : 0
             },
-            w_paddle : 5,
+            w_paddle : 10,
             h_paddle : 20,
-            playerSpeed : 4,
+            playerSpeed : 8,
             scoreLimit : 10,
             ball_speed : 2,
             gameStatus : "waiting",

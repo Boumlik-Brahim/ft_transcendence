@@ -49,23 +49,29 @@ const Canvas = ({ gameData } : PropsType) => {
   };
 
   const writeScore = (context : any, x : number, score1 : number) => {
-    context.font = "30px Arial";
+    context.font = "14px Arial";
+    context.textAlign = 'center'
+    context.globalAlpha = 0.3
     const text = score1.toString();
-    const y = 2;
+    const y = 20;
     context.fillText(text, x, y);
   }
 
   const drawMiddleLine = (context : any, w : number, h : number) => {
+    context.strokeStyle = "white"
+    context.lineWidth = 4;
+    context.setLineDash([5, 3])
     context.beginPath();
     context.moveTo(w / 2, 0);
     context.lineTo(w/2, h);
     context.stroke();
   }
   
-  const drawPaddle = (context : any, x : number, y : number, h : number) => {
+  const drawPaddle = (context : any, x : number, y : number, h : number, w : number) => {
     context.beginPath();
-    context.moveTo(x, y);
-    context.lineTo(x, h + y);
+    context.fillStyle = "#3E3B6A"
+    context.setLineDash([0, 0])
+    context.fillRect(x, y, w, h);
     context.stroke();
   }
 
@@ -75,6 +81,7 @@ const Canvas = ({ gameData } : PropsType) => {
     if (!gameData) return ;
     const ballX = convertValueX(gameData.ball_x, w, gameData.W_screen);
     const bally = convertValueX(gameData.ball_y, h, gameData.H_screen);
+    const w_paddle = convertValueX(gameData.w_paddle, w, gameData.W_screen);
     const radius = gameData.radius;
     const player1_X = convertValueX(gameData.player1.paddleX, w, gameData.W_screen);
     const player1_Y = convertValueX(gameData.player1.paddleY, h, gameData.H_screen);
@@ -86,9 +93,11 @@ const Canvas = ({ gameData } : PropsType) => {
 
     drawMiddleLine(context, w, h);
     drawBall(context, radius, ballX, bally)
-    drawPaddle(context, player1_X, player1_Y, paddleH);
-    drawPaddle(context, player2_X, player2_Y, paddleH);
-    // writeScore(context, w / 2 - 40, score1);
+    drawPaddle(context, player1_X, player1_Y, paddleH, w_paddle);
+    drawPaddle(context, player2_X, player2_Y, paddleH, w_paddle);
+    writeScore(context, w / 2 - 40, score1);
+    writeScore(context, w / 2 + 40, score2);
+    context.globalAlpha = 1
   }
 
   useEffect(() => {
@@ -105,7 +114,7 @@ const Canvas = ({ gameData } : PropsType) => {
   }, [gameData]);
 
   return (
-    <canvas ref={canvasRef} className=' border-4 w-full h-full '></canvas>
+    <canvas ref={canvasRef} className='border-[4px] border-white w-full h-full rounded-lg shadow-2xl'></canvas>
   );
 }
 

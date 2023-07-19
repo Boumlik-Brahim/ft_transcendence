@@ -84,11 +84,12 @@ const Page = ( {params} : any) => {
 
     if (error) <div> { error } </div>
     return (
-        <div className='w-full h-[100vh]'>
+        <div className='layouts'>
             {
                 (gameSate === 'started') && (
-                    <div className='w-full h-[100vh] flex justify-center items-center'>
-                        <div className={`w-[100%] md:w-[80%]`}>
+                    <div className='flex flex-1 w-full justify-center items-center bg-[#E8E8E8]'>
+                        <div className={`min-w-[65vh] md:min-w-[50vh] h-[85vw]  md:h-[80vw] p-2 md:w-[50vh] lg:h-[50vw] lg:w-[60vw] ${ userId === gameData?.player1.id ? "rotate-[-90deg]" : "rotate-90"} 
+                         md:rotate-0 xl:h-[80vh] xl:w-[55vw]`}>
                             <Canvas gameData={gameData}></Canvas>
                         </div>
                     </div>
@@ -97,6 +98,7 @@ const Page = ( {params} : any) => {
             {
                 (gameSate === 'waiting') && <Waiting></Waiting>
             }
+            {/* <button>Leave</button> */}
         </div>
     )
 }
