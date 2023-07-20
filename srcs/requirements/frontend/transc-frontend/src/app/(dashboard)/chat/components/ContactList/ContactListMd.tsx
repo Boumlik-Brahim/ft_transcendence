@@ -12,16 +12,19 @@ import { useState ,useEffect} from 'react';
 import axios from "axios";
 
 interface Pic{
-    albumId: number,
-    id: number,
-    title: string,
-    url: string,
-    thumbnailUrl: string
+    id: string
+    name: string
+    email: string
+    IntraId: string
+    Avatar: string
+    status: string
+    created_at: string
+    updated_at : string
 }
 
 function ContactListMd() {
-    const [activeButtonId, setActiveButtonId] = useState<number | null>(null);
-    const handleButtonClick = (buttonId: number) => {
+    const [activeButtonId, setActiveButtonId] = useState<string | null>(null);
+    const handleButtonClick = (buttonId: string) => {
         setActiveButtonId(buttonId);
     };
 
@@ -31,23 +34,24 @@ function ContactListMd() {
     useEffect(() => {
         async function fetchPic() {
           try {
-            const response = await axios.get<Pic[]>('https://jsonplaceholder.typicode.com/albums/1/photos');
+            const response = await axios.get<Pic[]>('http://localhost:3000/chat?senderId=77236f21-1255-4b65-bc60-578d037d0270&receiverId=9cbc6c2f-284c-47fb-9e36-7129e491b416');
             setPic(response.data);
+            console.log(response.data);
           } catch (error) {
             console.error(error);
           }
         }
         fetchPic();
-      }, []);
+      }, [] );
 
 
-    const contacts = pic.map((item) => {
+    const contacts = pic.map((contact) => {
         return (
             <ContactMd
-                key={item.id}
-                id={item.id}
-                unreadMessages={item.id}
-                profilePicturePath={item.url}
+                key={contact.id}
+                id={contact.id}
+                unreadMessages={1}
+                profilePicturePath={contact.Avatar}
                 activeButtonId={activeButtonId}
                 onClick={handleButtonClick}
             />

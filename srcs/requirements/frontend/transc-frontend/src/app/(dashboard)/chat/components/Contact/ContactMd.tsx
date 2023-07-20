@@ -1,13 +1,12 @@
 "use client"
 
 import Image from "next/image";
-
 interface Props {
-    id: number;
+    id: string;
     profilePicturePath: string;
     unreadMessages: number;
-    activeButtonId: number | null;
-    onClick: (buttonId: number) => void;
+    activeButtonId: string | null;
+    onClick: (buttonId: string) => void;
 
 }
 
@@ -16,6 +15,7 @@ function ContactMd({ id, unreadMessages, profilePicturePath,activeButtonId, onCl
     const handleClick = () => {
         onClick(id);
       };
+
     return (
         
                 <div className={`${"w-full h-[93px]  flex items-center justify-center cursor-pointer"} ${isActive ? "bg-white rounded-r-full":"bg-transparent" } `} onClick={handleClick}>

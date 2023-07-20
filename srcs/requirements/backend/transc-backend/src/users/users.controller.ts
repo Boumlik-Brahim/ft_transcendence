@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { Achievement, BlockedUser, Friend, User, UserStat } from '@prisma/client';
 import { ApiTags } from '@nestjs/swagger';
@@ -29,7 +30,7 @@ export class UsersController {
     return users;
   }
 
-  @Get(':senderID')
+  @Get(':senderID/receiver')
   async findAllUsersReceivers(@Param('senderID') senderID: string): Promise<User[]> {
     const users = await this.usersService.findAllUsersReceivers(senderID);
     return users;

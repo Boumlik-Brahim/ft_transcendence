@@ -26,6 +26,17 @@ interface Message {
     senderId: string;
     recieverId: string;
   }
+
+  interface Pic {
+    id: string
+    name: string
+    email: string
+    IntraId: string
+    Avatar: string
+    status: string
+    created_at: string
+    updated_at: string
+}
   
 
 function Page() {
@@ -44,7 +55,7 @@ function Page() {
     useEffect(() => {
         async function fetchMessages() {
           try {
-            const response = await axios.get<Message[]>('http://localhost:3000/chat?senderId=4526e24e-23be-11ee-be56-0242ac120002&receiverId=ee10f6ea-23bb-11ee-be56-0242ac120002');
+            const response = await axios.get<Message[]>('http://localhost:3000/chat?senderId=bc875f3b-d1be-44ab-bb1f-9c58aff0b451&receiverId=58c5953f-90a5-40c6-9b48-a0b62aacf654');
             setMessages(response.data);
             // console.log(response);
           } catch (error) {
@@ -54,16 +65,19 @@ function Page() {
         fetchMessages();
       }, []);
 
+
+
+
+
+
       const conversations = messages.map(item => {
         return (
             <MessageBox
                 key={item.id}
-                userId={item.id}
+                userId={item.recieverId}
                 messageContent={item.content}
                 date={item.created_at}
                 time={'15:20'}
-                profilePicture={"bben-aou.jpeg"}
-                user={"Bilal Ben Aouad"}
             />
 
         )
