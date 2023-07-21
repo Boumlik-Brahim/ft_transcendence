@@ -7,6 +7,13 @@ import { contactFriendList, ContactFriend } from '../../TempData/contacts'
 import { useState, useEffect } from 'react';
 import axios from "axios";
 
+
+
+import { useSelector, useDispatch } from 'react-redux';
+import { setCurrentUser, setOtherUser } from '@/app/store/reducer';
+import { RootState } from '@/app/store/store';
+
+
 interface Contact {
     id: string
     name: string
@@ -22,12 +29,27 @@ interface Contact {
 
 function ContactListMd() {
     const [activeButtonId, setActiveButtonId] = useState<string | null>(null);
+    const [changeUserId, setChangeUserId] = useState<string | null>(null);
+
+    const currentUserId = useSelector((state: RootState) => state.EditUserIdsSlice.currentUserId);
+    const dispatch = useDispatch();
+
     const handleButtonClick = (buttonId: string) => {
+
         setActiveButtonId(buttonId);
+        // setChangeUserId(buttonId);
+        dispatch(setCurrentUser(buttonId));
+
+
     };
 
+    useEffect(() => {
+        console.log("new user clicked : ",  changeUserId);
+    }, [changeUserId])
 
+    
     const [cont, setCont] = useState<Contact[]>([]);
+
     useEffect(() => {
         async function fetchContact() {
             try {

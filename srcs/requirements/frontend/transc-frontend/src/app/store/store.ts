@@ -3,7 +3,7 @@ import { configureStore } from "@reduxjs/toolkit"
 
 
 
-import { createChannelToggleReducer, createChannelPopUpToggleReducer, togglePrivateReducer,toggleShowContactListReducer,toggleShowChannelMembersReducer } from './reducer';
+import { createChannelToggleReducer, createChannelPopUpToggleReducer, togglePrivateReducer,toggleShowContactListReducer,toggleShowChannelMembersReducer , EditUserIdsReducer} from './reducer';
 
 
 
@@ -14,6 +14,7 @@ const store = configureStore({
     togglePrivate: togglePrivateReducer,
     toggleShowContactList: toggleShowContactListReducer,
     toggleShowChannelMembers: toggleShowChannelMembersReducer,
+    EditUserIdsSlice: EditUserIdsReducer,
   },
 });
 const currentState = store.getState();

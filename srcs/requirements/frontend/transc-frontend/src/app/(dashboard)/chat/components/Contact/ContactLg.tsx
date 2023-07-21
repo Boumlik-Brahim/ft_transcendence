@@ -1,6 +1,11 @@
 "use client"
 
 import Image from "next/image";
+
+import { useSelector, useDispatch } from 'react-redux';
+import { setCurrentUser, setOtherUser } from '@/app/store/reducer';
+import { RootState } from '@/app/store/store';
+import { useEffect } from "react";
 interface Props {
     id: string;
     name: string;
@@ -13,11 +18,20 @@ interface Props {
 
 function ContactLg({ id, name, unreadMessages, profilePicturePath,activeButtonId, onClick }: Props) {
     const isActive = activeButtonId === id;
+    
+    const currentUserId = useSelector((state: RootState) => state.EditUserIdsSlice.currentUserId);
+    const dispatch = useDispatch();
+
     const handleClick = () => {
+        // console.log("profile ID : ",id);
         onClick(id);
-      };
+        dispatch(setOtherUser(id));
+        // console.log("new user clicked : ", i, " : ", currentUserId);
+    };
+    
+    
     return (
-        <div className={`${"w-full h-[56px]  flex items-center justify-between  mb-[10px] cursor-pointer"} ${isActive ? "bg-white   rounded-r-full":"bg-transparent" }`} onClick={handleClick}>
+        <div  className={`${"w-full h-[56px]  flex items-center justify-between  mb-[10px] cursor-pointer"} ${isActive ? "bg-white   rounded-r-full":"bg-transparent" }`} onClick={handleClick}>
             <div className="w-[80%] h-full pl-[28px] flex items-center">
                 <Image src={`${profilePicturePath}`} alt="profile" width={41} height={41} className="rounded-full w-[41px] h-[41px] bg-center	bg-cover" />
                 <div className="w-[130px] h-full  ml-[15px] flex items-center truncate">

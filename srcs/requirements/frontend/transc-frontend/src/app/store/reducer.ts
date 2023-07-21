@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice,PayloadAction } from "@reduxjs/toolkit";
 
 interface ToggleState {
     
@@ -9,6 +9,15 @@ interface ToggleState {
     showChannelMembersToggled:boolean;
    
 }
+interface EditUsersState {
+    currentUserId: string;
+    otherUserId: string;
+  }
+
+  const userInitialState: EditUsersState = {
+    currentUserId: '5e56a41b-3354-4529-940c-c2a3e4f54bff',
+    otherUserId: '',
+  };
 
 const initialState: ToggleState = {
     
@@ -86,6 +95,22 @@ const toggleShowChannelMembersSlice = createSlice({
     },
 });
 
+
+
+const EditUserIdsSlice = createSlice({
+    name: 'user',
+    initialState: userInitialState,
+    reducers: {
+      setCurrentUser: (state, action: PayloadAction<string>) => {
+        state.currentUserId = action.payload;
+      },
+      setOtherUser: (state, action: PayloadAction<string>) => {
+        state.otherUserId = action.payload;
+      },
+    },
+  });
+
+
 export const createChannelToggleReducer = toggleCreateChannelSlice.reducer;
 export const { createChannelOn, createChannelOff } = toggleCreateChannelSlice.actions;
 
@@ -100,3 +125,7 @@ export const { show, hide } = toggleShowContactListSlice.actions;
 
 export const toggleShowChannelMembersReducer = toggleShowChannelMembersSlice.reducer;
 export const { ShowChannelMembers, HideChannelMembers } = toggleShowChannelMembersSlice.actions;
+
+
+export const EditUserIdsReducer = EditUserIdsSlice.reducer;
+export const { setCurrentUser, setOtherUser } = EditUserIdsSlice.actions;

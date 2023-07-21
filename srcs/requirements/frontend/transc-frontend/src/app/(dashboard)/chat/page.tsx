@@ -18,6 +18,13 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 
+
+import { setCurrentUser, setOtherUser } from '@/app/store/reducer';
+
+
+
+
+
 interface Message {
   id: string;
   content: string;
@@ -50,24 +57,29 @@ function Page() {
   }, [isMdScreen, isLgScreen]);
 
 
+
+  const [path, setPath] = useState("");
+
+  const currentUserId = useSelector((state: RootState) => state.EditUserIdsSlice.otherUserId);
+
+
+ console.log(currentUserId)
+
+
   const [messages, setMessages] = useState<Message[]>([]);
   useEffect(() => {
     async function fetchMessages() {
       try {
-        const response = await axios.get<Message[]>('http://localhost:3000/chat?senderId=3a6a1980-de2a-4553-bc23-9f0b717d7700&receiverId=5e56a41b-3354-4529-940c-c2a3e4f54bff');
+        const response = await axios.get<Message[]>(`http://localhost:3000/chat?senderId=${currentUserId}&receiverId=5e56a41b-3354-4529-940c-c2a3e4f54bff`);
+  
         setMessages(response.data);
-        console.log(response);
+
       } catch (error) {
         console.error(error);
       }
     }
     fetchMessages();
-  }, []);
-
-
-
-
-
+  }, [currentUserId]);
 
   const conversations = messages.map(item => {
     return (
