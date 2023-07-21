@@ -14,44 +14,37 @@ interface User {
     created_at: string
     updated_at: string
 }
-// import { format } from 'date-fns';
 
-function MessageBox({ userId, messageContent, date, time }:
-    {
-        // userId: number,
-        userId: string,
+interface Props {
+    userId: string,
+    messageContent: string,
+    date: string,
+}
 
-        messageContent: string,
-        date: string,
-        time: string,
-       
-    }
-) {
+function MessageBox({ userId, messageContent, date }: Props) {
 
     const [user, setUser] = useState<User[]>([]);
     const [userName, setUserName] = useState<User>();
     const [isMounted, setIsMounted] = useState(false)
     const link = `http://localhost:3000/users/${userId}`
-    // console.log("Ids : " ,userId);
     useEffect(() => {
         async function fetchUser() {
             try {
                 const response = await axios.get<User>(link);
                 setUserName(response.data);
                 setIsMounted(true);
-               
+
             } catch (error) {
                 console.error(error);
             }
         }
         fetchUser();
-    },[link]);
-    
-isMounted && console.log("user name = ", userName?.name, "userId = ", userName?.id )
+    }, [link]);
+
 
     let bg_color = "";
     let position = "";
-    if (userName?.name === "user2") {
+    if (userName?.name === "Bilal Ben Aouad") {
         bg_color = "bg-receive"
         position = "items-start md:ml-[25px]"
     }
@@ -61,7 +54,6 @@ isMounted && console.log("user name = ", userName?.name, "userId = ", userName?.
     }
 
 
-    // const { dateO } = date;
     const utcDateString = date
     const dateToConv = new Date(utcDateString);
     const localDateString = dateToConv.toLocaleDateString();
@@ -71,7 +63,7 @@ isMounted && console.log("user name = ", userName?.name, "userId = ", userName?.
 
         <div className={`flex flex-col ${position} mb-[28px] pr-[13px]`}>
             <div className='relative  w-[280px]  min-h-[30px] md:w-[300px] lg:w-[340px] '>
-                <Image src={`${userName?.Avatar}`} width={40} height={40} alt="avatar" className="absolute  w-[40px] h-[40px] rounded-full md:w-[43] md:h-[43]" />
+                <Image src={`${userName ? userName?.Avatar : "https://cdn.pixabay.com/photo/2017/07/03/09/54/dog-2467149_1280.jpg"}`} width={40} height={40} alt="avatar" className="absolute  w-[40px] h-[40px] rounded-full md:w-[43] md:h-[43]" />
 
 
                 <div className='w-full h-[24px]  flex pl-[46px]'>
@@ -80,11 +72,9 @@ isMounted && console.log("user name = ", userName?.name, "userId = ", userName?.
                     </div>
                     <div className='flex items-center text-[8px] font-poppins font-normal tracking-wider ml-[5px] text-date md:text-[9px]'>
                         <div className=' mr-[3px] lg:ml-[5px]'>
-                            {/* {date} */}
                             {localDateString}
                         </div>
                         <div>
-                            {/* {time} */}
                             {localTimeString}
                         </div>
                     </div>

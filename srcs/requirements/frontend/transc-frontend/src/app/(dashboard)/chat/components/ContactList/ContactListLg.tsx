@@ -7,7 +7,7 @@ import { contactFriendList, ContactFriend } from '../../TempData/contacts'
 import { useState, useEffect } from 'react';
 import axios from "axios";
 
-interface Pic {
+interface Contact {
     id: string
     name: string
     email: string
@@ -27,21 +27,20 @@ function ContactListMd() {
     };
 
 
-    const [cont, setCont] = useState<Pic[]>([]);
+    const [cont, setCont] = useState<Contact[]>([]);
     useEffect(() => {
-        async function fetchPic() {
+        async function fetchContact() {
             try {
-                const response = await axios.get<Pic[]>('http://localhost:3000/users/58c5953f-90a5-40c6-9b48-a0b62aacf654/receiver');
+                const response = await axios.get<Contact[]>('http://localhost:3000/users/5e56a41b-3354-4529-940c-c2a3e4f54bff/receiver');
                 setCont(response.data);
-                console.log("test",cont);
             } catch (error) {
                 console.error(error);
             }
         }
-        fetchPic();
-    },[]);
+        fetchContact();
+    }, []);
 
-    
+
     const contacts = cont.map((contact) => {
         return (
             <ContactLg
@@ -57,24 +56,6 @@ function ContactListMd() {
     });
 
 
-
-
-
-
-
-    // const contacts = contactFriendList.map((item: ContactFriend) => {
-    //     return (
-    //         <ContactLg
-    //             key={item.id}
-    //             id={item.id}
-    //             name={item.name}
-    //             unreadMessages={item.unreadMessages}
-    //             profilePicturePath={item.profilePicturePath}
-    //             activeButtonId={activeButtonId}
-    //             onClick={handleButtonClick}
-    //         />
-    //     );
-    // });
 
     return (
         <div className="h-full w-[33.3%] bg-primary">

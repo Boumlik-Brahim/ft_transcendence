@@ -19,7 +19,7 @@ function ContactLg({ id, name, unreadMessages, profilePicturePath,activeButtonId
     return (
         <div className={`${"w-full h-[56px]  flex items-center justify-between  mb-[10px] cursor-pointer"} ${isActive ? "bg-white   rounded-r-full":"bg-transparent" }`} onClick={handleClick}>
             <div className="w-[80%] h-full pl-[28px] flex items-center">
-                <Image src={`${profilePicturePath}`} alt="profile" width={41} height={41} className="rounded-full" />
+                <Image src={`${profilePicturePath}`} alt="profile" width={41} height={41} className="rounded-full w-[41px] h-[41px] bg-center	bg-cover" />
                 <div className="w-[130px] h-full  ml-[15px] flex items-center truncate">
                     <span className={`${" text-[15px] font-poppins font-medium"}  ${isActive ? "text-primary":"text-white" }`}>
                        {name}
