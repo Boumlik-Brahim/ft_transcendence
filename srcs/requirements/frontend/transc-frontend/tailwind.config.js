@@ -35,6 +35,7 @@ module.exports = {
     fontFamily: {
       'poppins' : ['"Poppins"', 'sans-serif'],
       'press': '"Press Start 2P"',
+      'roboto': '"Roboto Mono"'
     },
   },
   plugins: [],
