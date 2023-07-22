@@ -7,7 +7,7 @@ import { CreateChatDto } from '../dto/create-chat.dto';
 
 @WebSocketGateway( {
   cors: { 
-    origin: '*',
+    origin: 'http://localhost:5173/chat',
   },
 })
 
@@ -41,33 +41,33 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     .forEach((id) => {
       socket.leave(id);
     });
-
+    
     if (!socket.rooms.has(hasshedRoomName)){
       socket.join(hasshedRoomName);
     }
-
+    
     console.log('Array from');
     console.log(Array.from(socket.rooms));
     this.logger.log(`joinRoom: ${socket.id} joined ${hasshedRoomName}`);
     this.server.to(hasshedRoomName).emit('joined', 'khuna joina');
     // await this.chatService.createChat(payload);
   }
-
+  
   @SubscribeMessage('message')
   async handleEvent(@MessageBody() payload: CreateChatDto, @ConnectedSocket() socket: Socket): Promise<void> {
+    // const roomID = [payload.senderId, payload.recieverId].sort().join('-');
+    // const hasshedRoomName = createHash('sha256').update(roomID).digest('hex');
+    const hasshedRoomName = await this.chatService.generateHashedRommId(payload.senderId, payload.recieverId);
+    console.log(`hashedRoomName===> ${hasshedRoomName}`);
+
     console.log(Array.from(socket.rooms));
-    // const receiver = this.usersService.findOne(payload.recieverId);
-    // if ((await receiver).status === 'ONLINE')
-    // {
-    //   /*emit to the room and save to database */
-    // }else{
-    //   /*save to database */
-    // }
-    Array.from(socket.rooms)
-    .filter((id) => id !== socket.id)
-    .forEach((id) => {
-      this.server.to(id).emit('onMessage', payload);
-    });
+    
+    if (!socket.rooms.has(hasshedRoomName)){
+      socket.join(hasshedRoomName);
+      this.logger.log(`joinRoom: ${socket.id} joined ${hasshedRoomName}`);
+    }
+
+    this.server.to(hasshedRoomName).emit('sendmessage', payload.content);
     await this.chatService.createChat(payload);
   }
 
