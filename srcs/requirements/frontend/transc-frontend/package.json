@@ -16,6 +16,7 @@
     "autoprefixer": "10.4.14",
     "axios": "^1.4.0",
     "bufferutil": "^4.0.7",
+    "cookies-next": "^2.1.2",
     "engine.io-client": "^6.5.1",
     "eslint": "8.44.0",
     "eslint-config-next": "13.4.9",

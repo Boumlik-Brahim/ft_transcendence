@@ -7,6 +7,7 @@ import { OnlineFriends } from '../../../../constant';
 import Image from 'next/image';
 import { socket } from './socket';
 import { useRouter } from 'next/navigation';
+import { getCookie } from 'cookies-next';
 
 interface CreateGameType {
   invitedId? : string, 
@@ -16,18 +17,25 @@ interface CreateGameType {
 
 const Game = () => {
   const [oponentName, setOponentName] = useState<string>('');
-  const myId = document.cookie === '' ? '55555555555' : document.cookie;
+  const [oponentId, setIOponnentId] = useState<string>();
+  const [isRamdom, setIsramdom] = useState<boolean>(true);
+  const myId : string = getCookie('id') as string;
   const router = useRouter();
 
-  const createGame = (isRamdomOponent : boolean, invitedId? : string) : void => {
+
+  console.log(typeof(getCookie('id')), 'type')
+
+  const createGame = (isRamdomOponent : boolean) : void => {
     if (!socket.connected) return ;
-    const data : CreateGameType = {
-      invitedId : invitedId,
-      creatorId : myId,
-      isRamdomOponent
+    if (myId) {
+      const data : CreateGameType = {
+        invitedId : oponentId,
+        creatorId : myId,
+        isRamdomOponent
+      }
+      console.log("ok")
+      socket.emit('createGame', data);
     }
-    console.log("ok")
-    socket.emit('createGame', data);
   }
 
   useEffect(() => {
@@ -50,22 +58,28 @@ const Game = () => {
     }
   }, []);
 
+
   return (
       <div className='flex items-start justify-center lg:gap-2 w-full h-[100vh]'>
-        <div className='mt-5 h-full w-full lg:w-[70%]'>
+        <div className='mt-5 h-auto w-full flex flex-col items-center justify-center lg:w-[70%] '>
           <h1 className='text-[30px] text-center text-primary m-10 font-bold game_font'>Play</h1>
           <div className='md:flex items-sart justify-center gap-2 m-auto'>
             <div className='flex flex-col-reverse md:flex-col'>
-              <Player playerId={1} inputValue={oponentName} setInputValue={setOponentName} />
-              <button className='border-2 gradient-bg shadow-xl ml-auto mr-auto md:mr-0 text-primary text-[20px] p-2 w-[268px] h-[61px] rounded-[40px] md:ml-4 mt-10 hover:bg-primary ease-in duration-300 hover:text-white hover:border-none' onClick={() => createGame(true)}>
-                Random player
-              </button>
+              <Player playerId={myId}  inputValue={oponentName} setInputValue={setOponentName} />
             </div>
             <div className='flex flex-col'>
-              <Player inputValue={oponentName} setInputValue={setOponentName}/>
-              <Friends _name={oponentName} setName={setOponentName} createGame={createGame} />
+              <Player  playerId={oponentId} inputValue={oponentName} setInputValue={setOponentName}/>
+              <Friends _name={oponentName} setName={setOponentName} setIsRandom={setIsramdom} setOponent={setIOponnentId}/>
             </div>
           </div>
+          {
+            oponentName === '' ? (
+              <button className='border-2 gradient-bg shadow-xl ml-auto mr-auto md:mr-0 text-primary text-[20px] p-2 w-[268px] h-[61px] rounded-[40px] md:ml-4 mt-10 hover:bg-primary ease-in duration-300 hover:text-white hover:border-none' onClick={() => createGame(isRamdom)}>
+                { isRamdom ?  "Random player" : "Send Him Invitation" }
+              </button>
+            )
+            : (<></>)
+          }
         </div>
         <div className='w-[30%] h-full hidden lg:flex justify-center items-center '>
           <div className='h-[90%] m-2 border w-[400px] rounded-[40px] gradient-bg p-4 '>

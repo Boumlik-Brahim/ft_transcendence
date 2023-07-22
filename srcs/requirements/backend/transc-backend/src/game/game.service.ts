@@ -39,7 +39,7 @@ export class GameService {
             }
             else {
                 const gameJoined : GameEntity = this.gameMap.get(this.inTheQueue);
-                // if (creatorId === gameJoined.player1.id) return;
+                if (creatorId === gameJoined.player1.id) return;
                 this.inTheQueue = null;
                 gameJoined.player2.id = creatorId;
                 this.gameMap.set(gameJoined.id, gameJoined);
@@ -120,24 +120,24 @@ export class GameService {
         if (ball_left <= paddle1_surface && ball_bottom > paddle1_top && ball_top < paddle1_bottom)
         {
             gameValue.ball_speed += 0.2;
-            const angle = this.paddleCollisionAngle(ball_y, paddle1_top, paddle_middle);
-            gameValue.vx = gameValue.ball_speed * Math.cos(angle);
-            gameValue.vy = gameValue.ball_speed * Math.sin(angle);
-            if (gameValue.vx < 0)
-            {
-                gameValue.vx *= -1; 
-            }
+            gameValue.vx *= -1; 
+            // const angle = this.paddleCollisionAngle(ball_y, paddle1_top, paddle_middle);
+            // gameValue.vx = gameValue.ball_speed * Math.cos(angle);
+            // gameValue.vy = gameValue.ball_speed * Math.sin(angle);
+            // if (gameValue.vx < 0)
+            // {
+            // }
         }
         else if (ball_right >= paddle2_surface && ball_bottom > paddle2_top && ball_top < paddle2_bottom)
         {
+            gameValue.vx *= -1;
             gameValue.ball_speed += 0.2;
-            const angle = this.paddleCollisionAngle(ball_y, paddle2_top, paddle_middle);
-            gameValue.vx = gameValue.ball_speed * Math.cos(angle);
-            gameValue.vy = gameValue.ball_speed * Math.sin(angle);
-            if (gameValue.vx > 0)
-            {
-                gameValue.vx *= -1;
-            }
+            // const angle = this.paddleCollisionAngle(ball_y, paddle2_top, paddle_middle);
+            // gameValue.vx = gameValue.ball_speed * Math.cos(angle);
+            // gameValue.vy = gameValue.ball_speed * Math.sin(angle);
+            // if (gameValue.vx > 0)
+            // {
+            // }
         }  
         else if (ball_right > W_screen || ball_left < 0)
         {
@@ -147,22 +147,22 @@ export class GameService {
             gameValue.ball_y = H_screen / 2;
             if (ball_right > W_screen) {
                 gameValue.player1.score += 1;
-                // if (gameValue.player1.score === gameValue.scoreLimit)
-                // {
-                //     gameValue.gameStatus = 'finished';
-                //     gameValue.winner = gameValue.player1.id;
-                //     gameValue.ball_speed = 20;
-                // }
+                gameValue.ball_speed = 20;
+                if (gameValue.player1.score === gameValue.scoreLimit)
+                {
+                    gameValue.gameStatus = 'finished';
+                    gameValue.winner = gameValue.player1.id;
+                }
 
             }
             else if (ball_left < 0) {
                 gameValue.player2.score += 1;
-                // if (gameValue.player2.score === gameValue.scoreLimit)
-                // {
-                //     gameValue.gameStatus = 'finished';
-                //     gameValue.winner = gameValue.player2.id;
-                //     gameValue.ball_speed = 20;
-                // }
+                gameValue.ball_speed = 20;
+                if (gameValue.player2.score === gameValue.scoreLimit)
+                {
+                    gameValue.gameStatus = 'finished';
+                    gameValue.winner = gameValue.player2.id;
+                }
             }
         }
         else if (ball_bottom >= H_screen || ball_top <= 0)
@@ -176,8 +176,8 @@ export class GameService {
         const id = setInterval(() => {
             this.updatePaddle(game);
             this.gameLogique(game);
-            this.istheGameEnd(game, id);
             server.to(game.id).emit("gameData", game);
+            this.istheGameEnd(game, id);
         }, 1000 / 60);
     }
 

@@ -114,7 +114,7 @@ const Canvas = ({ gameData } : PropsType) => {
   }, [gameData]);
 
   return (
-    <canvas ref={canvasRef} className='border-[4px] border-white w-full h-full rounded-lg shadow-2xl'></canvas>
+    <canvas ref={canvasRef} className='border-white w-full h-full rounded-lg '></canvas>
   );
 }
 

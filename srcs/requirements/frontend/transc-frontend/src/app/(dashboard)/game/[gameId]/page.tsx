@@ -7,7 +7,7 @@ import Image from 'next/image'
 import { socket } from '../socket'
 import Canvas from './canva'
 import Waiting from '../waiting';
-import { cookies } from 'next/dist/client/components/headers';
+import { getCookie } from 'cookies-next';
 
 
 
@@ -38,16 +38,15 @@ export interface Player {
     score : number
 }
 
-console.log(cookies)
-
 
 const Page = ( {params} : any) => {
     const [error, setError] = useState<string | undefined>();
     const [gameSate, setGameSate] = useState<string | undefined>();
     const [gameData, setGameData] = useState<GameEntity | undefined>();
-    const userId = document.cookie === '' ? '55555555555' : document.cookie;
+    const userId = getCookie('id');
     const id = params.gameId;
 
+    console.log(gameSate, 5);
 
     useEffect(() => {
 
@@ -83,13 +82,31 @@ const Page = ( {params} : any) => {
       }, []);
 
     if (error) <div> { error } </div>
+    console.log(gameSate);
     return (
         <div className='layouts'>
             {
                 (gameSate === 'started') && (
-                    <div className='flex flex-1 w-full justify-center items-center bg-[#E8E8E8]'>
-                        <div className={`min-w-[65vh] md:min-w-[50vh] h-[85vw]  md:h-[80vw] p-2 md:w-[50vh] lg:h-[50vw] lg:w-[60vw] ${ userId === gameData?.player1.id ? "rotate-[-90deg]" : "rotate-90"} 
-                         md:rotate-0 xl:h-[80vh] xl:w-[55vw]`}>
+                    <div className='flex flex-col flex-1 w-full justify-center items-center bg-[#E8E8E8] '>
+                        <div className='
+                            md:min-w-[700px]  p-2 lg:w-[700px]
+                            border-2 border-white 
+                            hidden lg:flex justify-between items-center  bg-primary'>
+                            <div className='flex gap-3 items-center'>
+                                <div className='h-auto m-auto'>
+                                    <Image src={avatar} height='80' width='80' alt='no player' className='border-4 rounded-full' />
+                                </div>
+                                <h1 className='text-white text-[20px] font-[700]'>Player Name</h1>
+                            </div>
+                            <div className='flex gap-3 items-center'>
+                                <h1 className='text-white text-[20px] font-[700]'>Oponent Name</h1>
+                                <div className='h-auto m-auto'>
+                                    <Image src={avatar} height='80' width='80' alt='player'  className='border-4 rounded-full' />
+                                </div>
+                            </div>
+                        </div>
+                        <div className={`lg:min-w-[700px] md:max-w-[65vw] max-w-[95vw]  md:min-w-[50vw] h-[85vw] md:h-[50vh] pl-2 pr-2 pb-2 md:w-[50vh] border-2 border-white shadow-2xl lg:h-[600px] ${ userId === gameData?.player1.id ? "rotate-[-90deg]" : "rotate-90"} 
+                         md:rotate-0 `}>
                             <Canvas gameData={gameData}></Canvas>
                         </div>
                     </div>
@@ -98,25 +115,12 @@ const Page = ( {params} : any) => {
             {
                 (gameSate === 'waiting') && <Waiting></Waiting>
             }
-            {/* <button>Leave</button> */}
+            {
+                gameSate === ''
+            }
         </div>
     )
 }
 
 export default Page
 
-
-{/* <div className='h-[200px] w-[900px] m-0 p-10 hidden lg:flex justify-between items-center rotate-90 lg:rotate-0 bg-primary'>
-    <div className='flex gap-3 items-center'>
-        <div className='h-auto m-auto'>
-            <Image src={avatar} height='80' width='80' alt='no player' className='border-4 rounded-full' />
-        </div>
-        <h1 className='text-white text-[20px] font-[700]'>Player Name</h1>
-    </div>
-    <div className='flex gap-3 items-center'>
-        <h1 className='text-white text-[20px] font-[700]'>Oponent Name</h1>
-        <div className='h-auto m-auto'>
-            <Image src={avatar} height='80' width='80' alt='player'  className='border-4 rounded-full' />
-        </div>
-    </div>
-</div> */}
