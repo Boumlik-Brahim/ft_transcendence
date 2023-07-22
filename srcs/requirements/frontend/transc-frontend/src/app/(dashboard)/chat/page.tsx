@@ -13,11 +13,11 @@ import { useMediaQuery } from 'react-responsive';
 import { useDispatch, useSelector } from 'react-redux';
 import { show, hide } from '../../store/reducer';
 import { RootState } from '../../store/store';
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useReducer } from "react";
 
 import axios from "axios";
 
-
+import {io, Socket} from 'socket.io-client'
 
 import { setCurrentUser, setOtherUser } from '@/app/store/reducer';
 
@@ -60,18 +60,18 @@ function Page() {
 
   const [path, setPath] = useState("");
 
-  const currentUserId = useSelector((state: RootState) => state.EditUserIdsSlice.otherUserId);
+  const otherUserId = useSelector((state: RootState) => state.EditUserIdsSlice.otherUserId);
+  const currentUserId = useSelector((state: RootState) => state.EditUserIdsSlice.currentUserId);
+  const refreshStatus = useSelector((state: RootState) => state.refreshFetchMessagesSlice.refreshFetchMessages);
 
 
- console.log(currentUserId)
 
 
   const [messages, setMessages] = useState<Message[]>([]);
   useEffect(() => {
     async function fetchMessages() {
       try {
-        const response = await axios.get<Message[]>(`http://localhost:3000/chat?senderId=${currentUserId}&receiverId=5e56a41b-3354-4529-940c-c2a3e4f54bff`);
-  
+        const response = await axios.get<Message[]>(`http://localhost:3000/chat?senderId=${otherUserId}&receiverId=${currentUserId}`);
         setMessages(response.data);
 
       } catch (error) {
@@ -79,19 +79,40 @@ function Page() {
       }
     }
     fetchMessages();
-  }, [currentUserId]);
+  }, [currentUserId, otherUserId,refreshStatus]);
 
+
+  const autoScrollRef = useRef<HTMLDivElement>(null); 
+
+  useEffect(() => {
+    autoScrollRef.current?.scrollIntoView({behavior : "smooth"});
+  },[messages])
+  
   const conversations = messages.map(item => {
     return (
-      <MessageBox
-        key={item.id}
-        userId={item.senderId}
-        messageContent={item.content}
-        date={item.created_at}
-      />
+      <div key={item.id} ref={autoScrollRef} >
+
+        <MessageBox
+          key={item.id}
+          userId={item.senderId}
+          messageContent={item.content}
+          date={item.created_at}
+        />
+      </div>
 
     )
   });
+
+
+
+
+  // ---------------- socket.io----------------------
+  
+  const [socket, setSocket] = useState<Socket | null>(null);
+
+  useEffect(() => {
+      setSocket(io("ws://localhost:3000"))
+  },[])
 
 
   const isContactListHidden = useSelector((state: RootState) => state.toggleShowContactList);

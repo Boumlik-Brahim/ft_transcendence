@@ -12,6 +12,10 @@ import { useState, useEffect } from 'react';
 import axios from "axios";
 
 
+import { setCurrentUser, setOtherUser } from '@/app/store/reducer';
+
+
+
 interface Contact {
     id: string
     name: string
@@ -28,18 +32,20 @@ function ContactListSm() {
 
     const [cont, setCont] = useState<Contact[]>([]);
 
+    const currentUserId = useSelector((state: RootState) => state.EditUserIdsSlice.currentUserId);
+
+
     useEffect(() => {
         async function fetchContact() {
             try {
                 const response = await axios.get<Contact[]>('http://localhost:3000/users/5e56a41b-3354-4529-940c-c2a3e4f54bff/receiver');
                 setCont(response.data);
-                console.log("test", cont);
             } catch (error) {
                 console.error(error);
             }
         }
         fetchContact();
-    }, []);
+    }, [cont]);
 
     const contacts = cont.map((contact) => {
         return (

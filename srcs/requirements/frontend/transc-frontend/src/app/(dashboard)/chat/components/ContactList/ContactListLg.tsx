@@ -31,14 +31,16 @@ function ContactListMd() {
     const [activeButtonId, setActiveButtonId] = useState<string | null>(null);
     const [changeUserId, setChangeUserId] = useState<string | null>(null);
 
+    const otherUserId = useSelector((state: RootState) => state.EditUserIdsSlice.otherUserId);
     const currentUserId = useSelector((state: RootState) => state.EditUserIdsSlice.currentUserId);
+
     const dispatch = useDispatch();
 
     const handleButtonClick = (buttonId: string) => {
 
         setActiveButtonId(buttonId);
         // setChangeUserId(buttonId);
-        dispatch(setCurrentUser(buttonId));
+        dispatch(setOtherUser(buttonId));
 
 
     };
@@ -53,14 +55,14 @@ function ContactListMd() {
     useEffect(() => {
         async function fetchContact() {
             try {
-                const response = await axios.get<Contact[]>('http://localhost:3000/users/5e56a41b-3354-4529-940c-c2a3e4f54bff/receiver');
+                const response = await axios.get<Contact[]>(`http://localhost:3000/users/${currentUserId}/receiver`);
                 setCont(response.data);
             } catch (error) {
                 console.error(error);
             }
         }
         fetchContact();
-    }, []);
+    }, [currentUserId]);
 
 
     const contacts = cont.map((contact) => {

@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Logger } from '@nestjs/common';
 import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
@@ -26,7 +27,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   }
 
   handleConnection(client: Socket, ...args: any[]): void {
-    this.logger.log(`Client connected: ${client.id}`);
+    // this.logger.log(`Client connected: ${client.id}`);
+    console.log(" ----------- Client connected: --------------", client.id);
   }
 
   @SubscribeMessage('joinRoom')
@@ -34,7 +36,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     const { senderId, recieverId } = payload;
     const roomID = `${senderId}-${recieverId}`;
     const hasshedRoomName = createHash('sha256').update(roomID).digest('hex');
-    console.log(`hashedRoomName===> ${hasshedRoomName}`);
+    // console.log(`hashedRoomName===> ${hasshedRoomName}`);
     
     Array.from(socket.rooms)
     .filter((id) => id !== socket.id)
@@ -47,7 +49,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     }
 
     console.log('Array from');
-    console.log(Array.from(socket.rooms));
+    // console.log(Array.from(socket.rooms));
     this.logger.log(`joinRoom: ${socket.id} joined ${hasshedRoomName}`);
     this.server.to(hasshedRoomName).emit('joined', 'khuna joina');
     // await this.chatService.createChat(payload);
@@ -55,7 +57,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   @SubscribeMessage('message')
   async handleEvent(@MessageBody() payload: CreateChatDto, @ConnectedSocket() socket: Socket): Promise<void> {
-    console.log(Array.from(socket.rooms));
+    // console.log(Array.from(socket.rooms));
     // const receiver = this.usersService.findOne(payload.recieverId);
     // if ((await receiver).status === 'ONLINE')
     // {

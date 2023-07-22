@@ -2,12 +2,15 @@
 import Image from "next/image";
 
 import { useDispatch, useSelector } from 'react-redux';
-import { show, hide } from '../../store/reducer';
+import { show, hide, setRefreshOn } from '../../store/reducer';
 
 import { RootState } from '../../store/store';
 
 import { useState } from 'react';
 import axios from "axios";
+
+import { setCurrentUser, setOtherUser } from '@/app/store/reducer';
+
 
 interface MessageData {
     content: string;
@@ -20,7 +23,7 @@ function MessageInputBox() {
     const dispatch = useDispatch();
     const handleShowContactList = () => {
         dispatch(show());
-        console.log(isContactListHidden.showContactListToggled)
+        // console.log(isContactListHidden.showContactListToggled)
 
     }
 
@@ -29,12 +32,14 @@ function MessageInputBox() {
         setMessageContent(event.target.value);
     };
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (event: React.KeyboardEvent<HTMLInputElement>) => {
+        event.preventDefault();
         try {
             if (!message.content) {
                 return;
             }
             const response = await axios.post('http://localhost:3000/chat', message);
+            dispatch(setRefreshOn());
             // Clear the message input field after sending
             setMessage({ ...message, content: '' });
         } catch (error) {
@@ -42,28 +47,30 @@ function MessageInputBox() {
         }
     };
 
+    const otherUserId = useSelector((state: RootState) => state.EditUserIdsSlice.otherUserId);
+    const currentUserId = useSelector((state: RootState) => state.EditUserIdsSlice.currentUserId);
+
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setMessage({
             ...message,
-            [event.target.name]: event.target.value,
+            [event.target.name]: event.target.value, senderId: otherUserId, recieverId: currentUserId
         });
     };
 
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {
-            handleSubmit();
+            event.preventDefault();
+            handleSubmit(event);
         }
     };
 
 
 
-    const senderId = '3a6a1980-de2a-4553-bc23-9f0b717d7700';
-    const recieverId = '5e56a41b-3354-4529-940c-c2a3e4f54bff';
     const [message, setMessage] = useState<MessageData>({
         content: '',
-        senderId,
-        recieverId,
+        senderId: '',
+        recieverId: '',
     });
 
     return (
@@ -91,7 +98,7 @@ function MessageInputBox() {
             '>
 
                 <Image src={"./send_b.svg"} alt="send message" width={24} height={24} className="text-primary text-[17px]    cursor-pointer 
-                            md:text-[23px]" onClick={handleSubmit} />
+                            md:text-[23px]" onClick={(e) => {handleSubmit}} />
                 <Image src={"./contacts_b.svg"} alt="send message" width={24} height={24} className=" text-primary text-[20px] ml-2.5 cursor-pointer 
                             md:hidden" onClick={handleShowContactList} />
             </div>
