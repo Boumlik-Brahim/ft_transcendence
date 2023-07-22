@@ -28,9 +28,8 @@ export class ChatController {
     return chat;
   }
 
-  @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateChatDto: UpdateChatDto): Promise<DirectMessage> {
-    const updateChat = await this.chatService.updateChat(id, updateChatDto);
-    return updateChat;
+  @Patch(':senderId/:receiverId')
+  async update(@Query('senderId') senderId: string, @Query('receiverId') receiverId: string, @Body() updateChatDto: UpdateChatDto): Promise<void> {
+    await this.chatService.updateChat(senderId, receiverId , updateChatDto);
   }
 }
