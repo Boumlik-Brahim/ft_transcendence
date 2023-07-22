@@ -28,8 +28,8 @@ export class UsersController {
     const users = await this.usersService.findAll();
     return users;
   }
-
-  @Get(':senderID')
+  
+  @Get(':senderID/receivers')
   async findAllUsersReceivers(@Param('senderID') senderID: string): Promise<User[]> {
     const users = await this.usersService.findAllUsersReceivers(senderID);
     return users;
