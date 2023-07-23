@@ -10,6 +10,7 @@ import { useState } from 'react';
 import axios from "axios";
 
 import { setCurrentUser, setOtherUser } from '@/app/store/reducer';
+import { Socket } from "socket.io-client";
 
 
 interface MessageData {
@@ -18,7 +19,11 @@ interface MessageData {
     recieverId: string;
 }
 
-function MessageInputBox() {
+interface Props {
+    inputRef: any ;
+  }
+
+function MessageInputBox({ inputRef }: Props) {
     const isContactListHidden = useSelector((state: RootState) => state.toggleShowContactList);
     const dispatch = useDispatch();
     const handleShowContactList = () => {
@@ -27,6 +32,8 @@ function MessageInputBox() {
 
     }
 
+  
+
     const [messageContent, setMessageContent] = useState('');
     const handleMessageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setMessageContent(event.target.value);
@@ -34,6 +41,16 @@ function MessageInputBox() {
 
     const handleSubmit = async (event: React.KeyboardEvent<HTMLInputElement>) => {
         event.preventDefault();
+
+        inputRef.current.emit("sendMessage", {
+            senderId: currentUserId,
+            recieverId: otherUserId,
+            text: message.content,
+            
+          }
+          );
+
+          console.log("i'm inside the sendMessage")
         try {
             if (!message.content) {
                 return;

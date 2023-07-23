@@ -83,7 +83,6 @@ function Sidebar() {
                     {SideLinks.map((link,index) => (
                         <Link href={link.name}  key={index}>
                             <li key={index} className='li_sidebar'>
-                                    
                                 <Image key={link.name} src={link.icon_b} width={30}  alt={link.name} />
                                 <p className='text-primary hidden xs:flex'>
                                     {link.name}

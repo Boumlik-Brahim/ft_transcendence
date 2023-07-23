@@ -7,12 +7,18 @@ import Friendsbar from '../../../../components/Friendsbar'
 import './profile.css'
 import { OnlineFriends, history_game } from "../../../../constant";
 
+
 type user = {
   id: number;
   name: string;
 }
 
+
+
 function page() {
+
+  
+
   return (
     <div className='layouts'>
       <div className="my_container">
@@ -75,7 +81,7 @@ function page() {
           <ul className="flex flex-col w-full gap-[20px]">
             {
               history_game.map((history, index) => (
-                <li className={`history ${history.status}`}>
+                <li className={`history ${history.status}`} key={index}>
                   <div className="flex items-center gap-[10px] max-w-[100px]">
                     <Image src={history.avarat} className="w-[40px] md:w-[70px]" alt="avatar" />
                     <p className="font-medium text-xs md:text-lg text-primary ">{"Osama belkhadir"}</p>
@@ -96,4 +102,4 @@ function page() {
   )
 }
 
-export default page
+export default page;

@@ -18,6 +18,8 @@ import { useEffect, useState, useRef, useReducer } from "react";
 import axios from "axios";
 
 import {io, Socket} from 'socket.io-client'
+import Cookies from 'universal-cookie';
+
 
 import { setCurrentUser, setOtherUser } from '@/app/store/reducer';
 
@@ -45,6 +47,12 @@ interface Pic {
 }
 
 
+interface MessageData {
+  content: string;
+  senderId: string;
+  recieverId: string;
+}
+
 function Page() {
   const isMdScreen = useMediaQuery({ minWidth: 768 });
   const isLgScreen = useMediaQuery({ minWidth: 1200 });
@@ -61,12 +69,25 @@ function Page() {
   const [path, setPath] = useState("");
 
   const otherUserId = useSelector((state: RootState) => state.EditUserIdsSlice.otherUserId);
-  const currentUserId = useSelector((state: RootState) => state.EditUserIdsSlice.currentUserId);
+  // const currentUserId = useSelector((state: RootState) => state.EditUserIdsSlice.currentUserId);
+
+
+  
   const refreshStatus = useSelector((state: RootState) => state.refreshFetchMessagesSlice.refreshFetchMessages);
-
-
-
-
+  
+  const currentUserId = useSelector((state: RootState) => state.EditUserIdsSlice.currentUserId);
+  
+  //get userID from cookies 
+  const dispatch = useDispatch();
+  useEffect(() => {
+   const cookies = new Cookies();
+   const userIdFromCookie = cookies.get('id');
+  //  setCurrentUser(userIdFromCookie);
+  dispatch(setCurrentUser(userIdFromCookie));
+}, [dispatch]);
+  
+  
+  
   const [messages, setMessages] = useState<Message[]>([]);
   useEffect(() => {
     async function fetchMessages() {
@@ -88,6 +109,9 @@ function Page() {
     autoScrollRef.current?.scrollIntoView({behavior : "smooth"});
   },[messages])
   
+
+
+
   const conversations = messages.map(item => {
     return (
       <div key={item.id} ref={autoScrollRef} >
@@ -108,11 +132,48 @@ function Page() {
 
   // ---------------- socket.io----------------------
   
-  const [socket, setSocket] = useState<Socket | null>(null);
+//  console.log("the current userId state  : ",currentUserId);
+  const socket = useRef<Socket>();
+  const [arrivalMessage, setArrivalMessage] = useState<MessageData>();
 
   useEffect(() => {
-      setSocket(io("ws://localhost:3000"))
-  },[])
+    socket.current = io("ws://localhost:3000");
+    socket.current.on("getMessage", (data) => {
+      // setArrivalMessage({
+      //   senderId: data.senderId,
+      //   content: data.text,
+      //   recieverId : otherUserId,
+      // });
+      console.log("THE DATA SENDED FROM SOCKET : ", data);
+    });
+    
+
+  },[]);
+
+  // useEffect(() => {
+  //   console.log(" ---- here ---  : ",arrivalMessage)  
+  // }, [arrivalMessage]);
+
+
+  useEffect(() => {
+    socket.current?.emit("addUser", currentUserId);
+    console.log("test");
+    socket.current?.on("getUsers", (users) => {
+        console.log(users);
+    });
+   
+  }, [currentUserId]);
+  
+const clickMe = () =>{
+  socket.current?.emit("sendMessage", {
+    senderId: "df",
+    recieverId: "ds",
+    text: "sfygdf",
+    
+  }
+  );
+  console.log("i'm here ")
+}
 
 
   const isContactListHidden = useSelector((state: RootState) => state.toggleShowContactList);
@@ -129,8 +190,10 @@ function Page() {
 
         <div className="w-full h-[85%] bg-sender pl-[20px]  pr-[15px] py-[15px] overflow-auto no-scrollbar  md:h-[80%]">
           {conversations}
+          <button onClick={clickMe}> click me </button>
         </div>
-        <MessageInputBox />
+        <MessageInputBox 
+            inputRef={socket}/>
       </div>
       <ContactListSm />
 
@@ -142,3 +205,7 @@ function Page() {
   );
 }
 export default Page;
+
+function dispatch() {
+  throw new Error("Function not implemented.");
+}

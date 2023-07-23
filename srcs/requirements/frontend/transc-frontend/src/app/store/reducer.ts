@@ -16,8 +16,8 @@ interface EditUsersState {
   }
 
   const userInitialState: EditUsersState = {
-    currentUserId: '5e56a41b-3354-4529-940c-c2a3e4f54bff',
-    otherUserId: '',
+    currentUserId: "",
+    otherUserId: "b5a4140b-fff8-4c83-af00-378491243706",
   };
 
 const initialState: ToggleState = {

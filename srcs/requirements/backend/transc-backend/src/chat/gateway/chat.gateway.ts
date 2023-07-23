@@ -29,7 +29,45 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   handleConnection(client: Socket, ...args: any[]): void {
     // this.logger.log(`Client connected: ${client.id}`);
     console.log(" ----------- Client connected: --------------", client.id);
+    this.server.emit("test", "this is a socketIo test from nestJs to nextJs");
   }
+
+  private users: { userId: string; socketId: string }[] = [];
+  addUser(userId: string, socketId: string) {
+    if (!(this.users.some((user) => user.userId === userId) ) ) {
+      this.users.push({ userId, socketId });
+    }
+  }
+  getUser(userId: string) {
+    return this.users.find((user) => user.userId === userId);
+  }
+
+  @SubscribeMessage('addUser')
+  handleAddUser(client: Socket, userId: string) {
+    
+    userId && this.addUser(userId, client.id);
+    userId && this.server.emit('getUsers', this.users);
+  }
+  removeUser(socketId: string) {
+    this.users = this.users.filter((user) => user.socketId !== socketId);
+  }
+
+  @SubscribeMessage('sendMessage')
+  handleSendMessage(client: Socket, data: { senderId: string; receiverId: string; text: string }) {
+    const user = this.getUser(data.receiverId);
+    if (user) {
+      console.log(" USER DATA : ",user, " | MESSAGE DATA : ",data)
+      this.server.to(user.socketId).emit('getMessage', { senderId: data.senderId, text: data.text });
+    }
+  }
+
+
+  handleDisconnect(client: Socket) {
+    console.log(`Client disconnected: ${client.id}`);
+    this.removeUser(client.id);
+    this.server.emit('getUsers', this.users);
+  }
+
 
   @SubscribeMessage('joinRoom')
   handleJoinRoom(@MessageBody() payload: { senderId: string, recieverId: string }, @ConnectedSocket() socket: Socket): void {
@@ -73,7 +111,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     await this.chatService.createChat(payload);
   }
 
-  handleDisconnect(client: Socket): void {
-    this.logger.log(`Client disconnected: ${client.id}`);
-  }
+  // handleDisconnect(client: Socket): void {
+  //   this.logger.log(`Client disconnected: ${client.id}`);
+  // }
 }
