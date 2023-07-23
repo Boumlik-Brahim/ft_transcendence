@@ -79,8 +79,8 @@ export class GameService {
 
     gameLogique(gameValue : GameEntity) {
         this.collision(gameValue)
-        gameValue.ball_x += (gameValue.vx);
-        gameValue.ball_y += (gameValue.vy);
+        gameValue.ball_x += (gameValue.vx * gameValue.ball_speed);
+        gameValue.ball_y += (gameValue.vy * gameValue.ball_speed );
     }
 
     paddleCollisionAngle(ball_y : number, paddle_y : number, paddle_middle : number) : number {
@@ -120,24 +120,24 @@ export class GameService {
         if (ball_left <= paddle1_surface && ball_bottom > paddle1_top && ball_top < paddle1_bottom)
         {
             gameValue.ball_speed += 0.2;
-            gameValue.vx *= -1; 
-            // const angle = this.paddleCollisionAngle(ball_y, paddle1_top, paddle_middle);
-            // gameValue.vx = gameValue.ball_speed * Math.cos(angle);
-            // gameValue.vy = gameValue.ball_speed * Math.sin(angle);
-            // if (gameValue.vx < 0)
-            // {
-            // }
+            const angle = this.paddleCollisionAngle(ball_y, paddle1_top, paddle_middle);
+            gameValue.vx = gameValue.ball_speed * Math.cos(angle);
+            gameValue.vy = gameValue.ball_speed * Math.sin(angle);
+            if (gameValue.vx < 0)
+            {
+                gameValue.vx *= -1;
+            }
         }
         else if (ball_right >= paddle2_surface && ball_bottom > paddle2_top && ball_top < paddle2_bottom)
         {
-            gameValue.vx *= -1;
             gameValue.ball_speed += 0.2;
-            // const angle = this.paddleCollisionAngle(ball_y, paddle2_top, paddle_middle);
-            // gameValue.vx = gameValue.ball_speed * Math.cos(angle);
-            // gameValue.vy = gameValue.ball_speed * Math.sin(angle);
-            // if (gameValue.vx > 0)
-            // {
-            // }
+            const angle = this.paddleCollisionAngle(ball_y, paddle2_top, paddle_middle);
+            gameValue.vx = gameValue.ball_speed * Math.cos(angle);
+            gameValue.vy = gameValue.ball_speed * Math.sin(angle);
+            if (gameValue.vx > 0)
+            {
+                gameValue.vx *= -1;
+            }
         }  
         else if (ball_right > W_screen || ball_left < 0)
         {
@@ -147,7 +147,6 @@ export class GameService {
             gameValue.ball_y = H_screen / 2;
             if (ball_right > W_screen) {
                 gameValue.player1.score += 1;
-                gameValue.ball_speed = 20;
                 if (gameValue.player1.score === gameValue.scoreLimit)
                 {
                     gameValue.gameStatus = 'finished';
@@ -157,7 +156,6 @@ export class GameService {
             }
             else if (ball_left < 0) {
                 gameValue.player2.score += 1;
-                gameValue.ball_speed = 20;
                 if (gameValue.player2.score === gameValue.scoreLimit)
                 {
                     gameValue.gameStatus = 'finished';
@@ -177,7 +175,7 @@ export class GameService {
             this.updatePaddle(game);
             this.gameLogique(game);
             server.to(game.id).emit("gameData", game);
-            this.istheGameEnd(game, id);
+            this.istheGameEnd(game, id, server);
         }, 1000 / 60);
     }
 
@@ -251,17 +249,23 @@ export class GameService {
             h_paddle : 20,
             playerSpeed : 8,
             scoreLimit : 10,
-            ball_speed : 2,
+            ball_speed : 1,
             gameStatus : "waiting",
             winner : null
         }
         return newGameValue;
     }
 
-    istheGameEnd(game : GameEntity, intervalId) {
+    istheGameEnd(game : GameEntity, intervalId, server : any) {
         const { gameStatus } = game;
+
         if (gameStatus === 'finished' || gameStatus === 'canceled')
+        {
+            console.log('fode oulare')
+            server.to(game.id).emit('gameSate', {state : game.gameStatus});
+            this.gameMap.delete(game.id);
             clearInterval(intervalId);
+        }
     }
 
     // stopAgame(gameId : number) {

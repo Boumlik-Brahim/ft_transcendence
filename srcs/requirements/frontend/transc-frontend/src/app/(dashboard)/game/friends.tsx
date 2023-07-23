@@ -32,7 +32,7 @@ const Friends = ({ _name, setName, setIsRandom, setOponent } : Props) => {
     return (
         <div className='mt-4 bg-primary rounded-xl w-[252px] m-auto'>
             {
-                namesfilter?.map(({name, id}, index) => (
+                namesfilter ?.map(({name, id}, index) => (
                     <div className='flex m-auto p-1 w-[252px] h-[62px] cursor-pointer' key={index} onClick={() => handleClick(id)}>
                         <div className={`w-full flex items-center m-2 justify-between ${ namesfilter.length === index + 1 ? '' : 'border-b-[1px]'}`}>
                             <div className=' flex items-center gap-2 text-white'>

@@ -85,6 +85,7 @@ const Page = ( {params} : any) => {
     console.log(gameSate);
     return (
         <div className='layouts'>
+            <h1> {gameSate} </h1>
             {
                 (gameSate === 'started') && (
                     <div className='flex flex-col flex-1 w-full justify-center items-center bg-[#E8E8E8] '>
