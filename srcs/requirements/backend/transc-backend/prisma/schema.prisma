@@ -46,6 +46,7 @@ model User {
   IntraId String @unique
   Avatar  String?
   status  Status @default(ONLINE)
+  twoFa   Boolean @default(true)
   userStat  UserStat[]
   achievement Achievement[]
   userThatBlock BlockedUser[] @relation("Bloking")
