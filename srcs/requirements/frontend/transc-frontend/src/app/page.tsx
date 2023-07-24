@@ -11,14 +11,13 @@ export default function Page() {
     <>
       <section className="w-full h-[80vh] bg-gray-300">
         <div className="w-full h-[100%]">
-          <div className="w-full h-[100%] flex justify-center ">
+          <div className="w-full h-[100%] flex justify-center relative">
             <div className=" h-[80vh] w-[2px] border-[6px] border-dashed absolute"></div>
             <div
               className="
-              w-full h-[20%]  flex items-center justify-between pt-20 p-10 z-20
+              w-full h-[40px] flex items-center justify-between pt-20 p-10 z-20
               md:h-[30%] md:px-[15%]"
             >
-              {/* <div className="w-full h-full flex items-center justify-between pt-20 p-10"> */}
                 <Image
                   src={"/logo_b.svg"}
                   alt="logo"
@@ -34,16 +33,15 @@ export default function Page() {
                     login
                   </Link>
                 </div>
-              {/* </div> */}
             </div>
             <div
               className="
-              w-[390px] h-[20%] flex items-center justify-center absolute z-20
-              md:w-[651px] md:h-[18%] md:mt-[80px]"
+              top-[50%] flex items-center justify-center absolute z-20
+              md:top-[30%] md:w-[651px] md:h-[18%] md:mt-[80px]"
             >
               <h1
                 className="
-                w-[100%] h-[20%]  font-press text-[15px] text-center z-10 text-[#3E3B6A]
+                w-[100%] h-[40%]  font-press text-[15px] text-center z-10 text-[#3E3B6A]
                 md:text-[33px]"
               >
                 WELCOME TO THE MOST IMPRESSIVE TRANSCENDANCE IN THE WORLD
