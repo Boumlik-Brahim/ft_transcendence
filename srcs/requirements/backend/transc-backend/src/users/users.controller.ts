@@ -107,6 +107,19 @@ export class UsersController {
     return friend;
   }
   
+  @Get('/:userId/friendShip/:friendId')
+  async friendShip(@Param('userId') userId: string, @Param('friendId') friendId: string ): Promise<Friend[]> {
+    const friendShip = await this.usersService.friendShip(userId, friendId);
+    return friendShip;
+  }
+  
+  @Get('/:userId/pending')
+  async pendingStat(@Param('userId') userId: string): Promise<Friend[]> {
+    const friendShip = await this.usersService.pendingStat(userId);
+    console.log("first=c===>",friendShip)
+    return friendShip;
+  }
+  
   @Get('/:userId/friend')
   async findAllFriends(@Param('userId') userId: string): Promise<Friend[]> {
     const Friends = await this.usersService.findAllFriends(userId);

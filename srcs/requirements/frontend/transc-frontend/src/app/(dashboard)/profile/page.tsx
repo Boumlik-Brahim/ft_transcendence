@@ -8,12 +8,63 @@ import './profile.css'
 import { history_game } from "../../../../constant";
 import Search from "../../../../components/Search";
 import { useUserData } from "./utils";
+import { useEffect, useState } from "react";
+
+import { io } from 'socket.io-client';
+import axios from "axios";
+import { friendShip, users_int } from "../../../../interfaces";
 
 
-function page(id: string) {
+export const socket = io('http://localhost:3000', { transports: ['websocket'] });
 
-  id = '410d938b-6369-4af0-bc87-2fcab27c87c8';
+
+function page() {
+  /* --------------------------- get user ID + fetch -------------------------- */
+  const u = JSON.parse(sessionStorage.user);
+  const id = u.id;
   const user = useUserData(id);
+  /* ------------------------------------ - ----------------------------------- */
+
+
+  /* -------------------------- friend requset socket ------------------------- */
+  // const [notification, setNotification] = useState<string>("null");
+  useEffect(() => {
+    socket.on('friendRequest', (data) => {
+      setNotification("friendRequest")
+      console.log(`friendRequest`)
+    });
+    socket.on('friendCancel', () => {
+      setNotification("friendCancel")
+      console.log(`FfriendCancel`)
+      console.log("FfriendShips....", friendShips?.length)
+    });
+    return () => {
+      socket.off('friendRequest');
+    };
+  }, []);
+  /* ------------------------------------ - ----------------------------------- */
+
+
+  /* ----------------------- get pending friend request ----------------------- */
+  const [friendShips, setFriendShips] = useState<friendShip[]>();
+  
+  
+  useEffect(() => {
+    const fetchfriendShip = async () => {
+      try {
+        const response = await axios.get(`http://127.0.0.1:3000/users/${id}/pending`);
+        setFriendShips(response.data);
+      } catch (error) { console.log(error); }
+    }
+    fetchfriendShip();
+  }, []);
+  
+  useEffect(() => {
+    const fetched = friendShips;
+    console.log("fetched >>> ", fetched)
+  }, [friendShips, id])
+  /* ------------------------------------ - ----------------------------------- */
+  
 
   return (
     <div className='layouts'>
@@ -22,15 +73,50 @@ function page(id: string) {
           user && (
             <>
               <div className="wrapper relative">
-                <Search id = {id}/>
+                <Search id={id} />
                 <div className="md:block absolute right-[0px] top-[0px] hidden">
-                  <Link href={'/'}> <Image src={notification_b} width={40} alt="avatar" /> </Link>
+                  <div className="relative">
+                    {/* <div>notif = {notification}</div> */}
+                    <div>lent = {friendShips?.length}</div>
+                    <Image src={notification_b} width={40} alt="avatar" className="cursor-pointer" />
+                    {
+                      (friendShips?.length != 0) && (
+                        <div className="absolute w-[12px] h-[12px] top-1 right-1 bg-red-400 rounded-full"></div>
+                      )
+                    }
+
+                    {
+                      (friendShips && friendShips?.length > 0) && (
+
+                        <ul className="max-w-[450px] w-full flex flex-col gap-[20px] gradients absolute p-[2rem] top-[5rem] left-[5px] z-10 shadow-lg">
+                          {
+                            friendShips?.map((fShip, index) => (
+                              <>
+                                <li key={index} className="flex justify-between items-center">
+                                  <div className="relative flex items-center gap-[10px] w-[100px]">
+                                    <p className="text-primary font-semibold">
+                                      {fShip.friendId}
+                                    </p>
+                                  </div>
+                                  <div className="friend_message flex gap-[20px] items-center">
+                                    <button>Accept</button>
+                                    <button>Decline</button>
+                                  </div>
+                                </li>
+                              </>
+                            ))
+                          }
+                        </ul>
+                      )
+                    }
+
+                  </div>
                 </div>
               </div>
               <div className="wrapper ">
                 <p className="title">{sessionStorage.getItem("id")}</p>
                 <div className="flex flex-col gap-[50px] items-center justify-center w-[200px] xs:w-[300px] md:w-[400px] gradients px-[1rem] py-[1rem] xs:py-[3rem]">
-                  <Image src={user?.Avatar} width={300} height={300} alt="avatar" className="rounded-full max-w-[300px] max-h-[300px] object-cover" />
+                  <Image src={user?.Avatar} width={300} height={300} alt="avatar" className="rounded-full max-w-[300px] max-h-[300px] w-[270px] h-[270px] object-cover" />
                   <div className="flex flex-col items-center gap-[10px] w-[80%]">
                     <p id='name_user' className="font-semibold md:text-3xl text-center xs:text-xl text-[15px] text-primary w-full">{user?.name}</p>
                     <div className='flex xs:justify-between justify-center w-full items-center'>

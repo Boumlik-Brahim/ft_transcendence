@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from "react";
-import { users_int } from "../../../../interfaces";
+import { friendShip, users_int } from "../../../../interfaces";
 import axios from "axios";
 
 export function useUserData(userId: string) {
@@ -34,7 +34,7 @@ export async function createFriend(userId: string, friendId: string) {
     if (response.ok) return true
     else { console.error('Post failed:', response.status); }
   } catch (error) { console.error('Error:', error); }
-  return false ;
+  return false;
 }
 
 export async function deleteFriend(userId: string, friendId: string) {
@@ -45,5 +45,5 @@ export async function deleteFriend(userId: string, friendId: string) {
     if (response.ok) return true
     else { console.error('Delete failed:', response.status) }
   } catch (error) { console.error('Error:', error) }
-  return false ;
+  return false;
 }

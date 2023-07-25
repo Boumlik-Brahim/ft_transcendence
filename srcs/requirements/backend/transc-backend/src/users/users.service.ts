@@ -250,6 +250,45 @@ export class UsersService {
     });
   }
 
+  async pendingStat(userID: string): Promise<Friend[]> {
+    return this.prisma.friend.findMany({
+      where: {
+        friendId: userID,
+        friendShipStatus: 'PENDING'
+      },
+      orderBy: {
+        created_at: 'asc',
+      },
+    })
+    .catch (error => {
+      throw new HttpException({
+        status: HttpStatus.NOT_FOUND,
+        error: 'NotFoundException',
+      }, HttpStatus.NOT_FOUND, {
+        cause: error
+      });
+    });
+  }
+  async friendShip(userID: string, friendID: string): Promise<Friend[]> {
+    return this.prisma.friend.findMany({
+      where: {
+        userId: userID,
+        friendId: friendID
+      },
+      orderBy: {
+        created_at: 'asc',
+      },
+    })
+    .catch (error => {
+      throw new HttpException({
+        status: HttpStatus.NOT_FOUND,
+        error: 'NotFoundException',
+      }, HttpStatus.NOT_FOUND, {
+        cause: error
+      });
+    });
+  }
+
   async findAllFriends(userID: string): Promise<Friend[]> {
     return this.prisma.friend.findMany({
       where: {

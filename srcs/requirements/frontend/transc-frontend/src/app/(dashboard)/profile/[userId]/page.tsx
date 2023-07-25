@@ -14,6 +14,12 @@ import { friendShip } from "../../../../../interfaces";
 import axios from "axios";
 
 
+import { io } from 'socket.io-client';
+
+export const socket = io('http://localhost:3000', { transports: ['websocket'] });
+
+// export default socket;
+
 // export async function createFriend (userId:string, friendId: string){
 //   console.log("dddddd")
 //   try {
@@ -36,31 +42,84 @@ import axios from "axios";
 //   } catch (error) { console.error('Error:', error);  return false;}
 // }
 
-function page() {
-  const { userId } = useParams();
-  const friend = useUserData(userId);
-  const user = JSON.parse(sessionStorage.user);
 
-  const [friends, setFriends] = useState<friendShip[]>()
+
+function page() {
+  /* ------------------------- get friend ID from url ------------------------- */
+  const { userId } = useParams();
+  /* ------------------------------------ - ----------------------------------- */
+
+
+  /* -------------------------- fetch (ID) ==> freind ------------------------- */
+  const friend = useUserData(userId);
+  /* ------------------------------------ - ----------------------------------- */
+
+
+  /* ----------------------------- get the USER ID ---------------------------- */
+  const user = JSON.parse(sessionStorage.user);
+  /* ------------------------------------ - ----------------------------------- */
+
+
+  /* -------------------------- get FriendShip status ------------------------- */
+  const [friendShip, setFriendShip] = useState<friendShip[]>();
   const [status, setStatus] = useState<string>();
 
   useEffect(() => {
-    const fetchFriends = async () => {
+    const fetchfriendShip = async () => {
       try {
-        const response = await axios.get(`http://127.0.0.1:3000/users/${user.id}/friend`);
-        setFriends(response.data);
+        const response = await axios.get(`http://127.0.0.1:3000/users/${user.id}/friendShip/${userId}`);
+        setFriendShip(response.data);
       } catch (error) { console.log(error); }
     }
-    fetchFriends();
+    fetchfriendShip();
   }, []);
+
+  useEffect(() => {
+    const fetched = friendShip;
+    console.log("=====>", fetched)
+    setStatus(fetched?.length ? fetched[0].friendShipStatus : "NOFRIEND")
+  }, [friendShip, userId])
+  /* ------------------------------------ - ----------------------------------- */
+
+
+  
+  /* ----------------------- get pending friend request ----------------------- */
+  const [friendShips, setFriendShips] = useState<friendShip[]>();
 
 
   useEffect(() => {
-    const result = friends?.filter(elm => elm.friendId === userId);
-    setStatus(result?.length ? result[0].friendShipStatus : "NOFRIEND")
-  }, [friends, userId])
+    const fetchfriendShip = async () => {
+      try {
+        const response = await axios.get(`http://127.0.0.1:3000/users/${userId}/pending`);
+        setFriendShips(response.data);
+      } catch (error) { console.log(error); }
+    }
+    fetchfriendShip();
+  }, []);
 
+  useEffect(() => {
+    const fetched = friendShips;
+    console.log("fetched >>> ", fetched)
+  }, [friendShips, userId])
+  /* ------------------------------------ - ----------------------------------- */
 
+  /* -------------------------- friend requset socket ------------------------- */
+  const [notification, setNotification] = useState<string>("null");
+  useEffect(() => {
+    socket.on('friendRequest', (data) => {
+      setNotification("friendRequest")
+      console.log(`friendRequest`)
+    });
+    socket.on('friendCancel', () => {
+      setNotification("friendCancel")
+      console.log(`FfriendCancel`)
+      console.log("FfriendShips....", friendShips?.length)
+    });
+    return () => {
+      socket.off('friendRequest');
+    };
+  }, [notification]);
+  /* ------------------------------------ - ----------------------------------- */
   return (
     <div className='layouts'>
       <div className="my_container">
@@ -69,7 +128,16 @@ function page() {
             <div className="wrapper relative">
               <Search id={user.id} />
               <div className="md:block absolute right-[0px] top-[0px] hidden">
-                <Link href={'/'}> <Image src={notification_b} width={40} alt="avatar" /> </Link>
+                <div className="relative">
+                  <div>notif = {notification}</div>
+                  <div>lent = {friendShips?.length}</div>
+                  <Image src={notification_b} width={40} alt="avatar" className="cursor-pointer" />
+                  {
+                    (notification === "friendRequest" || friendShips?.length != 0) && (
+                      <div className="absolute w-[12px] h-[12px] top-1 right-1 bg-red-400 rounded-full"></div>
+                    )
+                  }
+                </div>
               </div>
             </div>
             <div className="wrapper">
@@ -93,8 +161,21 @@ function page() {
                 <div className="card_friend gradients"
                   onClick={
                     async (event) => {
-                      if (status === "NOFRIEND") { await createFriend(user.id, userId) && setStatus("PENDING"); }
-                      else if (status === "PENDING" || status === "ACCEPTED") { await deleteFriend(user.id, userId) && setStatus("NOFRIEND"); }
+                      console.log("SSSSSSS=>", status)
+                      if (status === "NOFRIEND") {
+                        await createFriend(user.id, userId) && setStatus("PENDING");
+
+                        socket.emit('friendRequest', {
+                          userId: user.id,
+                          friendId: userId,
+                          friendShipStatus: "PENDING",
+                        });
+                      }
+                      else if (status === "PENDING" || status === "ACCEPTED") {
+                        await deleteFriend(user.id, userId) && setStatus("NOFRIEND");
+                        console.log("ANY BODY HERE ??")
+                        socket.emit('friendCancel');
+                      }
                     }}
                 >
                   <Image src={status === "ACCEPTED" ? deleteuser_b : status === "PENDING" ? close_b : adduser_b} width={30} alt="avatar" />
