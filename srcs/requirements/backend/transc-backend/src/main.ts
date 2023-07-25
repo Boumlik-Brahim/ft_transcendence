@@ -9,7 +9,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
  
   const corsOptions: CorsOptions = {
-    origin: 'http://localhost:5173', // Replace '*' with the origin URL of your Next.js frontend
+    origin: true, // Replace '*' with the origin URL of your Next.js frontend
   };
 
   app.enableCors(corsOptions);

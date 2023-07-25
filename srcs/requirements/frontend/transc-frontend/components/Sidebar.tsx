@@ -77,7 +77,7 @@ function Sidebar() {
                 </div>
                 <ul>
                     {SideLinks.map((link,index) => (
-                        <Link href={link.name}  key={index}>
+                        <Link href={`/${link.name}`}  key={index}>
                             <li key={index} className='li_sidebar'>
                                     
                                 <Image key={link.name} src={link.icon_b} width={30}  alt={link.name} />

@@ -30,9 +30,8 @@ export class UsersService {
       throw new HttpException({
         status: HttpStatus.BAD_REQUEST,
         error: 'BadRequestException',
-      }, HttpStatus.BAD_REQUEST, {
-        cause: error
-      });
+      }, 
+      HttpStatus.BAD_REQUEST, { cause: error });
     });
   }
   
@@ -255,7 +254,7 @@ export class UsersService {
     return this.prisma.friend.findMany({
       where: {
         userId: userID,
-        friendShipStatus: 'ACCEPTED'
+        // friendShipStatus: 'ACCEPTED'
       },
       orderBy: {
         created_at: 'asc',

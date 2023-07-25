@@ -19,6 +19,7 @@ import forbidden_r from "./forbidden_r.svg";
 import game_b from "./game_b.svg";
 import send_b from "./send_b.svg";
 import contacts_b from "./contacts_b.svg";
+import search_b from "./search_b.svg";
 
 
 import logo_w from "./logo_w.svg";
@@ -37,6 +38,7 @@ import message_w from "./message_w.svg";
 import search_w from "./search_w.svg";
 
 import avatar from "./fake/avatar.png";
+import avatar1 from "./fake/avatar.jpg";
 import winner from "./winner.png";
 import bulr_c1 from "./blur_color_1.svg";
 import bulr_c2 from "./blur_color_2.svg";
@@ -98,8 +100,10 @@ export {
   close_w,
   message_w,
   search_w,
+  search_b,
 
   avatar,
+  avatar1,
   winner,
   bulr_c1,
   bulr_c2,
