@@ -10,8 +10,8 @@ import { useRouter } from 'next/navigation';
 import { getCookie } from 'cookies-next';
 
 interface CreateGameType {
-  invitedId? : string, 
-  creatorId : string, 
+  invitedId? : String, 
+  creatorId : String, 
   isRamdomOponent : boolean
 }
 
@@ -33,7 +33,7 @@ const Game = () => {
         creatorId : myId,
         isRamdomOponent
       }
-      console.log("ok")
+      console.log("ok -- 6")
       socket.emit('createGame', data);
     }
   }

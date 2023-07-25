@@ -18,7 +18,6 @@ interface GameEntity {
   playerSpeed : number,
   scoreLimit : number,
   ball_speed : number,
-  gameStatus : null | 'waiting' | 'started' | 'finished' | 'canceled',
   winner : null | String
 }
 
