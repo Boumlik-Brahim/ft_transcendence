@@ -1,5 +1,4 @@
 import Image from "next/image";
-import ContactLg from "../src/app/(dashboard)/chat/components/Contact/ContactLg";
 
 interface Props{
     title : string ,
@@ -11,7 +10,6 @@ interface Props{
 function InfoBox({title, paragraph,image, isChat} : Props) {
   let changes  = "";
   {isChat ? changes = "lg:flex-row-reverse" : changes="lg:flex-row";}
-  console.log(isChat)
   return(
     <div className={`
       w-[full] h-[250px] flex flex-col items-center pt-[50px]
