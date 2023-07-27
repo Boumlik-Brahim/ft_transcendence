@@ -3,7 +3,7 @@ import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect,
 import { Server, Socket } from 'socket.io';
 import { ChatService } from '../chat.service';
 import { CreateChatDto } from '../dto/create-chat.dto';
-import { connectedClients } from 'src/app.gateway';
+// import { connectedClients } from 'src/app.gateway';
 
 @WebSocketGateway( {
   cors: { 
@@ -21,15 +21,15 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   private logger: Logger = new Logger('CHAT Gateway Log');
 
-  isUserConnected(userId: string): boolean {
-    return connectedClients.has(userId);
-  }
+  // isUserConnected(userId: string): boolean {
+  //   return connectedClients.has(userId);
+  // }
   
-  async getSocketIdByUserId(userId: string): Promise<string> {
-    if (this.isUserConnected(userId)){
-      return connectedClients.get(userId);
-    }
-  }
+  // async getSocketIdByUserId(userId: string): Promise<string> {
+  //   if (this.isUserConnected(userId)){
+  //     return connectedClients.get(userId);
+  //   }
+  // }
 
   afterInit(server: Server) {
     this.logger.log('Initialized!');
