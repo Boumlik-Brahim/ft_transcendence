@@ -21,6 +21,8 @@ export class AuthController {
         const payload: JwtPayload = {id: req.user.id, email: req.user.email};
         const token = await this.authService.signToken(payload);
         res.cookie('accessToken', token);
+        res.cookie('id', user.id)
+        
         return res.redirect('http://localhost:3000/')
     }
 }

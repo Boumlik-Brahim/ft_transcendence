@@ -40,7 +40,7 @@ export class GameGateway {
     if (!data) return;
     const { gameId, userId } = data;
     if (gameId && userId ) {
-      await this.gameService.joinGame(userId, gameId, client, this.server);
+       this.gameService.joinGame(userId, gameId, client, this.server);
     }
     else {
       client.emit('error', "Bad request");
@@ -53,7 +53,7 @@ export class GameGateway {
     const { gameId, userId } = data;
     if (gameId && userId) 
     {
-      this.gameService.ArrowDown(gameId, userId);
+      this.gameService.ArrowDown(gameId, userId, client);
     }
   }
 
@@ -63,13 +63,39 @@ export class GameGateway {
     const { gameId, userId } = data;
     if (gameId && userId) 
     {
-      this.gameService.ArrowUp(gameId, userId);
+      this.gameService.ArrowUp(gameId, userId, client);
     }
   }
 
-  @SubscribeMessage('quitGame')
-  quitGame(@ConnectedSocket() client: Socket) {
+  @SubscribeMessage('quiteGame')
+  quitGame(@MessageBody() data: JoinGameDto, @ConnectedSocket() client: Socket) {
+    if (!data) return; 
+    const { gameId, userId } = data;
+    if (gameId && userId) 
+    {
+      this.gameService.quiteGame(userId, gameId, client);
+    }
+  }
 
+  @SubscribeMessage('cancelGame')
+  cancelGame(@MessageBody() data: JoinGameDto, @ConnectedSocket() client: Socket) {
+    if (!data) return; 
+    const { gameId, userId } = data;
+    if (gameId && userId) 
+    {
+      this.gameService.cancelGame(userId, gameId, client);
+    }
+  }
+
+  @SubscribeMessage('pauseOrStart')
+  pauseOrSart(@MessageBody() data: JoinGameDto, @ConnectedSocket() client: Socket) {
+    console.log(data)
+    if (!data) return; 
+    const { gameId, userId } = data;
+    if (gameId && userId) 
+    {
+      this.gameService.pauseOrSart(userId, gameId, client);
+    }
   }
 
   handleDisconnect(client : Socket) {

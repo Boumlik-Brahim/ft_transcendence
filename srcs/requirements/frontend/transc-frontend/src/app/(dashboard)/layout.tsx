@@ -14,7 +14,6 @@ export default function DashboardLayout({
   return (
     <html lang="en">
       <body>
-
         <main className='flex flex-col md:flex-row w-full'> 
           <Sidebar/>   
           {children}

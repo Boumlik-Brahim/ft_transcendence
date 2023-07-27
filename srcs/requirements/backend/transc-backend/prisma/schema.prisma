@@ -71,7 +71,7 @@ model UserStat {
 
 model Achievement {
   id  String @id @default(uuid())
-  achievement String
+  achievement String[]
   user  User @relation(fields: [userId], references: [id])
   userId  String @unique
   created_at  DateTime  @default(now())
