@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Query } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { DirectMessage } from '@prisma/client';
+import { UpdateChatDto } from './dto/update-chat.dto';
 
 @ApiTags('chat')
 @Controller('chat')
@@ -15,9 +16,15 @@ export class ChatController {
     return chat;
   }
 
+  // @Get()
+  // async findAll(@Query('senderId') senderId: string, @Query('receiverId') receiverId: string): Promise<DirectMessage[]> {
+  //   const chat = await this.chatService.findAllChats(senderId, receiverId);
+  //   return chat;
+  // }
+
   @Get()
-  async findAll(@Query('senderId') senderId: string, @Query('receiverId') receiverId: string): Promise<DirectMessage[]> {
-    const chat = await this.chatService.findAllChats(senderId, receiverId);
+  async findAll(@Query('hashedRoomId') hashedRoomId: string): Promise<DirectMessage[]> {
+    const chat = await this.chatService.findAllChats(hashedRoomId);
     return chat;
   }
 
@@ -25,5 +32,10 @@ export class ChatController {
   async findOne(@Param('id') id: string): Promise<DirectMessage> {
     const chat = await this.chatService.findOneChat(id);
     return chat;
+  }
+
+  @Patch(':senderId/:receiverId')
+  async update(@Query('senderId') senderId: string, @Query('receiverId') receiverId: string, @Body() updateChatDto: UpdateChatDto): Promise<void> {
+    await this.chatService.updateChat(senderId, receiverId , updateChatDto);
   }
 }

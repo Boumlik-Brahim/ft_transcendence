@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { Achievement, BlockedUser, Friend, User, UserStat } from '@prisma/client';
+import { Achievement, BlockedUser, Friend, Prisma, User, UserStat } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -49,6 +49,74 @@ export class UsersService {
         cause: error
       });
     });
+  }
+
+  async findAllUsersReceivers(senderID: string): Promise<User[]> {
+    const users = this.prisma.user.findMany({
+      where: {
+        OR: [
+          {
+            senders: {
+              some: {recieverId: senderID},
+            },
+          },
+          {
+            receivers: {
+              some: {senderId: senderID},
+            }, 
+          },
+        ],
+      },
+      include: {
+        senders: {
+          orderBy: {
+            created_at: 'desc',
+          },
+          take: 1
+        },
+        receivers: {
+          orderBy: {
+            created_at: 'desc',
+          },
+          take: 1
+        },
+        _count: {
+          select: {
+            senders: {
+              where: {
+                recieverId: senderID,
+                seen: false
+              }
+            }
+          }
+        }
+      },
+    })
+
+    const sortedUsers = (await users).sort((userA, userB) => {
+      const lastMessageTimeA = Math.max(
+        ...userA.senders.map((sender) => new Date(sender.created_at).getTime()),
+        ...userA.receivers.map((receiver) => new Date(receiver.created_at).getTime())
+      );
+    
+      const lastMessageTimeB = Math.max(
+        ...userB.senders.map((sender) => new Date(sender.created_at).getTime()),
+        ...userB.receivers.map((receiver) => new Date(receiver.created_at).getTime())
+      );
+    
+      return lastMessageTimeB - lastMessageTimeA;
+    });
+
+    return sortedUsers;
+  
+    // .catch (error => {
+    //   throw new HttpException({
+    //     status: HttpStatus.NOT_FOUND,
+    //     error: 'NotFoundException',
+    //   }, HttpStatus.NOT_FOUND, {
+    //     cause: error
+    //   });
+    // });
   }
   
   async findOne(id: string): Promise<User> {
@@ -354,7 +422,7 @@ export class UsersService {
     });
   }
   
-  async updateFriend(userID: string, friendID: string, updateFriendDto: UpdateFriendDto): Promise<Friend> {
+  async updateFriend(userID: string, friendID: string): Promise<Friend> {
     return this.prisma.friend.update({
       where: {
         userAndFriend: {
@@ -362,7 +430,9 @@ export class UsersService {
           friendId: friendID
         },
       },
-      data: updateFriendDto
+      data: {
+        friendShipStatus: 'ACCEPTED',
+      }
     })
     .catch (error => {
       throw new HttpException({

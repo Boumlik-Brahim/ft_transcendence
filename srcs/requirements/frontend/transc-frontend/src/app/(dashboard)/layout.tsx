@@ -12,11 +12,9 @@ export default function DashboardLayout({
   children: React.ReactNode
 }) {
   return (
-
     <main className='flex flex-col md:flex-row w-full'>
       <Sidebar />
       {children}
     </main>
-
   )
 }

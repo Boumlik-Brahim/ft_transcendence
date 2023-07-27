@@ -14,13 +14,19 @@ export interface GameEntity {
     playerSpeed : number,
     scoreLimit : number,
     ball_speed : number,
-    gameStatus : null | 'waiting' | 'started' | 'finished' | 'canceled',
+    gameStatus : gameState,
     winner : null | String
 }
 
 export interface Player {
     id : String,
+    inThegame : boolean,
     paddleX : number,
     paddleY : number,
     score : number
+}
+
+export interface gameState {
+    update_t : number,
+    status : null | 'waiting' | 'started' | 'finished' | 'canceled' | 'pause' | 'stopped';
 }

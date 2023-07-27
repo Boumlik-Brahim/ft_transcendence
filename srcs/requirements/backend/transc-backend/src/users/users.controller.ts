@@ -29,6 +29,12 @@ export class UsersController {
     return users;
   }
   
+  @Get(':senderID/receivers')
+  async findAllUsersReceivers(@Param('senderID') senderID: string): Promise<User[]> {
+    const users = await this.usersService.findAllUsersReceivers(senderID);
+    return users;
+  }
+  
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<User> {
     const user = await this.usersService.findOne(id);
@@ -138,8 +144,8 @@ export class UsersController {
   }
   
   @Patch('/:userId/friend/:friendId')
-  async updateFriend(@Param('userId') userId: string, @Param('friendId') friendId: string, @Body() updateFriendDto: UpdateFriendDto): Promise<Friend> {
-    const updateFriend = await this.usersService.updateFriend(userId, friendId, updateFriendDto);
+  async updateFriend(@Param('userId') userId: string, @Param('friendId') friendId: string): Promise<Friend> {
+    const updateFriend = await this.usersService.updateFriend(userId, friendId);
     return updateFriend;
   }
   
