@@ -120,8 +120,8 @@ export class UsersController {
   }
   
   @Patch('/:userId/friend/:friendId')
-  async updateFriend(@Param('userId') userId: string, @Param('friendId') friendId: string, @Body() updateFriendDto: UpdateFriendDto): Promise<Friend> {
-    const updateFriend = await this.usersService.updateFriend(userId, friendId, updateFriendDto);
+  async updateFriend(@Param('userId') userId: string, @Param('friendId') friendId: string): Promise<Friend> {
+    const updateFriend = await this.usersService.updateFriend(userId, friendId);
     return updateFriend;
   }
   
