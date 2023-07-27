@@ -119,18 +119,18 @@ body {
 .sidebarmd {
   /* @apply bg-primary h-screen w-full min-w-[200px] min-h-[100px] pt-[15px] absolute z-[9] top-0; */
   @apply absolute z-10 mt-[15vh];
-  @apply bg-primary h-[85vh] w-full min-w-[200px];
+  @apply bg-primary h-[85vh] w-full min-w-[200px] ;
   @apply flex flex-col justify-around items-center md:hidden;
 }
 
 .sidebarlg {
-  @apply bg-primary h-screen w-[20%] ;
+  @apply bg-primary h-screen w-[20%]  ;
   @apply md:flex flex-col justify-around items-center hidden lg:hidden;
 }
 
 .sidebarxl {
   @apply bg-primary h-screen w-[25%];
-  @apply lg:flex flex-col justify-around items-center hidden;
+  @apply lg:flex flex-col justify-around items-center hidden ;
 }
 
 .li_sidebar {

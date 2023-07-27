@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Achievement, BlockedUser, Friend, Prisma, User, UserStat } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
@@ -51,6 +52,7 @@ export class UsersService {
     });
   }
 
+ 
   async findAllUsersReceivers(senderID: string): Promise<User[]> {
     const users = this.prisma.user.findMany({
       where: {

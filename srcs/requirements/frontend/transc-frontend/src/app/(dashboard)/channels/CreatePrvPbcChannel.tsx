@@ -14,7 +14,7 @@ function CreatePrvPbcChannel() {
     }
     return (
         <>
-            <div className="w-full h-[20%] flex items-center justify-between mb-[15px]">
+            <div className="w-full h-[20%] flex items-center justify-between mb-[15px] ">
                 <div>
                     <h1 className="font-poppins font-bold text-base text-white  uppercase leading-6 tracking-wider md:text-[25px]">
                        {
@@ -47,7 +47,7 @@ function CreatePrvPbcChannel() {
                 holder="name"
                 type="text"
             />
-            <button className="w-full text-white font-poppins font-semibold text-xs  leading-4 tracking-widest rounded-full  h-[37px] btn-background md:h-[43px] md:border-2">
+            <button className="w-full text-white font-poppins font-semibold text-xs  leading-4 tracking-widest rounded-full  h-[37px] btn-background md:h-[43px] md:border-2 lg:h-[55px] lg:text-[14px]">
                 Create
             </button>
             

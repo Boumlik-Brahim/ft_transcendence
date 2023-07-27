@@ -9,7 +9,8 @@ import { close_b, logo_b, logo_w, logout_b, logout_w, menu_b, notification_b } f
 import { useDispatch, useSelector } from 'react-redux';
 import { createChannelOn, createChannelOff } from '../src/app/store/reducer';
 import { RootState } from '../src/app/store/store';
-
+import { useMediaQuery } from 'react-responsive';
+import { useEffect } from "react";
 
 function ge(nav: string, id: string) {
     if (nav === 'profile')
@@ -24,6 +25,9 @@ function Sidebar() {
     /* ------------------------------------ - ----------------------------------- */
 
     const isCreateChannelOn = useSelector((state: RootState) => state.createChannelToggle);
+    
+    const isCreateChannelPopUpOn = useSelector((state: RootState) => state.createChannelPopUpToggle);
+    
     const [toggle, setToggle] = useState(true);
     return (
         <>
@@ -86,7 +90,7 @@ function Sidebar() {
                 </div>
             </nav>
 
-            <nav className='sidebarxl'>
+            <nav className={`${"sidebarxl"} ${isCreateChannelPopUpOn.createChannelPopUpToggled ? "blur-sm bg-gray-400" : ""} `}>
                 <div className='side_logo'>
                     <Image key='logo' src={logo_w} width={100} alt="logo" />
                 </div>
@@ -94,8 +98,7 @@ function Sidebar() {
                     {SideLinks.map((link, index) => (
                         <Link href={`/${ge(link.name, userSession.id)}`} key={index}>
                             <li key={index} className='li_sidebar'>
-
-                                <Image key={link.name} src={link.icon_b} width={30} alt={link.name} />
+                                <Image key={link.name} src={link.icon_b} width={30}  alt={link.name} />
                                 <p className='text-primary hidden xs:flex'>
                                     {link.name}
                                 </p>

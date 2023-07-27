@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { PrismaService } from '../../prisma/prisma.service';
