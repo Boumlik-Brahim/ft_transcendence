@@ -47,6 +47,7 @@ model User {
   Avatar  String?
   status  Status @default(ONLINE)
   twoFa   Boolean @default(true)
+  isAuth  Boolean @default(true)
   userStat  UserStat[]
   achievement Achievement[]
   userThatBlock BlockedUser[] @relation("Bloking")
