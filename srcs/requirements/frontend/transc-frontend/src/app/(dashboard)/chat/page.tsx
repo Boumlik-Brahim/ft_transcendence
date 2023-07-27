@@ -17,35 +17,21 @@ import { useEffect, useState, useRef, useReducer } from "react";
 
 import axios from "axios";
 
-import {io, Socket} from 'socket.io-client'
+import { io, Socket } from 'socket.io-client'
 import Cookies from 'universal-cookie';
 
 
 import { setCurrentUser, setOtherUser } from '@/app/store/reducer';
 
 
-
-
-
 interface Message {
-  id: string;
+  id?: string;
   content: string;
   created_at: string;
   senderId: string;
   recieverId: string;
+  room: string;
 }
-
-interface Pic {
-  id: string
-  name: string
-  email: string
-  IntraId: string
-  Avatar: string
-  status: string
-  created_at: string
-  updated_at: string
-}
-
 
 interface MessageData {
   content: string;
@@ -54,45 +40,51 @@ interface MessageData {
 }
 
 function Page() {
+
+  const isContactListHidden = useSelector((state: RootState) => state.toggleShowContactList);
+  const refreshStatus = useSelector((state: RootState) => state.refreshFetchMessagesSlice.refreshFetchMessages);
+  const [currentRoomId, setCurrentRoomId] = useState("");
+
+
+  //^ ---------------------------  screen sizes states ----------------------------
   const isMdScreen = useMediaQuery({ minWidth: 768 });
   const isLgScreen = useMediaQuery({ minWidth: 1200 });
 
   const [isMdScreenState, setIsMdScreen] = useState(false);
   const [isLgScreenState, setIsLgScreen] = useState(false);
+
+
+  //* useEffect for screen sizes state
   useEffect(() => {
     setIsMdScreen(isMdScreen);
     setIsLgScreen(isLgScreen);
   }, [isMdScreen, isLgScreen]);
-
-
-
-  const [path, setPath] = useState("");
+  //^ -------------------------------------------------------------------------------
+  
+  const dispatch = useDispatch();
+  (isMdScreenState || isLgScreenState) && dispatch(hide());
+  //^ ---------------------------  get user Id  part ----------------------------
 
   const otherUserId = useSelector((state: RootState) => state.EditUserIdsSlice.otherUserId);
-  // const currentUserId = useSelector((state: RootState) => state.EditUserIdsSlice.currentUserId);
-
-
-  
-  const refreshStatus = useSelector((state: RootState) => state.refreshFetchMessagesSlice.refreshFetchMessages);
-  
   const currentUserId = useSelector((state: RootState) => state.EditUserIdsSlice.currentUserId);
-  
-  //get userID from cookies 
-  const dispatch = useDispatch();
+  //* useEffect for extracting my id from the cookie
   useEffect(() => {
-   const cookies = new Cookies();
-   const userIdFromCookie = cookies.get('id');
-  //  setCurrentUser(userIdFromCookie);
-  dispatch(setCurrentUser(userIdFromCookie));
-}, [dispatch]);
-  
-  
-  
+    const cookies = new Cookies();
+    const userIdFromCookie = cookies.get('id');
+    dispatch(setCurrentUser(userIdFromCookie));
+  }, [dispatch]);
+  //^ -----------------------------------------------------------------------------
+
+
+
+  //^ ---------------------------  fetching Messages from backend ----------------------------
+
   const [messages, setMessages] = useState<Message[]>([]);
+  //* useEffect for fetching data of a Room
   useEffect(() => {
     async function fetchMessages() {
       try {
-        const response = await axios.get<Message[]>(`http://localhost:3000/chat?senderId=${otherUserId}&receiverId=${currentUserId}`);
+        const response = await axios.get<Message[]>(`http://localhost:3000/chat?hashedRoomId=${currentRoomId}`);
         setMessages(response.data);
 
       } catch (error) {
@@ -100,83 +92,62 @@ function Page() {
       }
     }
     fetchMessages();
-  }, [currentUserId, otherUserId,refreshStatus]);
+
+  }, [currentRoomId]);
 
 
-  const autoScrollRef = useRef<HTMLDivElement>(null); 
+  //^ ----------------------------------------------------------------------------------------------
 
+  //^ ---------------------------  scroll to the last message --------------------------------------
+
+  const autoScrollRef = useRef<HTMLDivElement>(null);
+
+  //* useEffect for scrolling to the last msg
   useEffect(() => {
-    autoScrollRef.current?.scrollIntoView({behavior : "smooth"});
-  },[messages])
-  
+    autoScrollRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages])
 
+  //^ ---------------------------------------------------------------------------------------
 
-
-  const conversations = messages.map(item => {
+  //& ------- mapping for the chat conversation and make each chat in it's component ----- 
+  const conversations = messages.map((item, i) => {
     return (
-      <div key={item.id} ref={autoScrollRef} >
-
+      <div key={i} ref={autoScrollRef} >
         <MessageBox
-          key={item.id}
           userId={item.senderId}
           messageContent={item.content}
           date={item.created_at}
         />
       </div>
-
     )
   });
 
+  //^ -----------------------------------  Socket IO Part --------------------------------------
 
 
-
-  // ---------------- socket.io----------------------
-  
-//  console.log("the current userId state  : ",currentUserId);
   const socket = useRef<Socket>();
-  const [arrivalMessage, setArrivalMessage] = useState<MessageData>();
 
+
+  //* useEffect for creating socket
   useEffect(() => {
     socket.current = io("ws://localhost:3000");
-    socket.current.on("getMessage", (data) => {
-      // setArrivalMessage({
-      //   senderId: data.senderId,
-      //   content: data.text,
-      //   recieverId : otherUserId,
-      // });
-      console.log("THE DATA SENDED FROM SOCKET : ", data);
-    });
-    
+  }, [])
 
-  },[]);
-
-  // useEffect(() => {
-  //   console.log(" ---- here ---  : ",arrivalMessage)  
-  // }, [arrivalMessage]);
-
-
+  //* useEffect for getting message from socket
   useEffect(() => {
-    socket.current?.emit("addUser", currentUserId);
-    console.log("test");
-    socket.current?.on("getUsers", (users) => {
-        console.log(users);
+    socket.current?.on("getMessage", (data) => {
+      setMessages((prev) => [...prev, { senderId: data.senderId, content: data.text, recieverId: data.receiverId, created_at: new Date().toISOString(), room: data.room }])
     });
-   
-  }, [currentUserId]);
-  
-const clickMe = () =>{
-  socket.current?.emit("sendMessage", {
-    senderId: "df",
-    recieverId: "ds",
-    text: "sfygdf",
-    
-  }
-  );
-  console.log("i'm here ")
-}
+  }, [socket]);
 
+  //* useEffect for getting channel Id from socket
+  useEffect(() => {
+    socket.current?.on("joined", (data) => {
+      setCurrentRoomId(data.roomName);
+    });
+  }, []);
+  //^ -----------------------------------------------------------------------------------------
 
-  const isContactListHidden = useSelector((state: RootState) => state.toggleShowContactList);
 
 
   return (
@@ -184,28 +155,30 @@ const clickMe = () =>{
       <div className={`${!isContactListHidden.showContactListToggled ? "w-full h-full " : "hidden"} `}>
 
         {isMdScreenState && <Header
-          ContactName={"Channel"}
+          ContactName={"Direct Chat"}
         />}
 
 
-        <div className="w-full h-[85%] bg-sender pl-[20px]  pr-[15px] py-[15px] overflow-auto no-scrollbar  md:h-[80%]">
+        <div className="w-full h-[85%] bg-sender pl-[20px]  pr-[15px] py-[15px] overflow-auto no-scrollbar  md:h-[80%] ">
           {conversations}
-          <button onClick={clickMe}> click me </button>
         </div>
-        <MessageInputBox 
-            inputRef={socket}/>
+        <MessageInputBox
+          inputRef={socket} />
       </div>
-      <ContactListSm />
+        {<ContactListSm 
+          inputRef={socket}
+        />
+        }
+      {(isMdScreenState && !isLgScreenState) && <ContactListMd 
+          inputRef={socket}
+      />}
+      {isLgScreenState && <ContactListLg
+        inputRef={socket}
+      />}
+      
 
-      {isLgScreenState && <ContactListLg />}
-
-      {(isMdScreenState && !isLgScreenState) && <ContactListMd />}
 
     </div>
   );
 }
 export default Page;
-
-function dispatch() {
-  throw new Error("Function not implemented.");
-}

@@ -12,7 +12,7 @@ import axios from "axios";
 import { setCurrentUser, setOtherUser } from '@/app/store/reducer';
 import { Socket } from "socket.io-client";
 
-
+//* Interface of Message Data
 interface MessageData {
     content: string;
     senderId: string;
@@ -20,75 +20,58 @@ interface MessageData {
 }
 
 interface Props {
-    inputRef: any ;
-  }
+    inputRef: any;
+}
 
 function MessageInputBox({ inputRef }: Props) {
+    //* States
     const isContactListHidden = useSelector((state: RootState) => state.toggleShowContactList);
-    const dispatch = useDispatch();
-    const handleShowContactList = () => {
-        dispatch(show());
-        // console.log(isContactListHidden.showContactListToggled)
-
-    }
-
-  
-
     const [messageContent, setMessageContent] = useState('');
-    const handleMessageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setMessageContent(event.target.value);
-    };
-
-    const handleSubmit = async (event: React.KeyboardEvent<HTMLInputElement>) => {
-        event.preventDefault();
-
-        inputRef.current.emit("sendMessage", {
-            senderId: currentUserId,
-            recieverId: otherUserId,
-            text: message.content,
-            
-          }
-          );
-
-          console.log("i'm inside the sendMessage")
-        try {
-            if (!message.content) {
-                return;
-            }
-            const response = await axios.post('http://localhost:3000/chat', message);
-            dispatch(setRefreshOn());
-            // Clear the message input field after sending
-            setMessage({ ...message, content: '' });
-        } catch (error) {
-            console.error(error);
-        }
-    };
-
     const otherUserId = useSelector((state: RootState) => state.EditUserIdsSlice.otherUserId);
     const currentUserId = useSelector((state: RootState) => state.EditUserIdsSlice.currentUserId);
+    const [message, setMessage] = useState<MessageData>({
+        content: '',
+        senderId: '',
+        recieverId: '',
+    });
 
+    const dispatch = useDispatch();
+    //* function that shows the contact List Friends
+    const handleShowContactList = () => {
+        dispatch(show());
+    }
+
+    //* function that submits and sends the message typed in the input
+    const handleSubmit = async (event: React.KeyboardEvent<HTMLInputElement>) => {
+        event.preventDefault();
+        if (!message.content)
+            return;
+        // & sending the message in the socket 
+        inputRef.current.emit("message", {
+            content: message.content,
+            senderId: currentUserId,
+            recieverId: otherUserId,
+        }
+        );
+        // & clearing the input field after sending the message
+        setMessage({ ...message, content: '' });
+    };
+
+    // //* function that sets the message typed in the input
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setMessage({
             ...message,
-            [event.target.name]: event.target.value, senderId: otherUserId, recieverId: currentUserId
+            [event.target.name]: event.target.value, senderId: currentUserId, recieverId: otherUserId
         });
     };
 
-
+    // //* function that watch if enter clicked to send th message
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {
             event.preventDefault();
             handleSubmit(event);
         }
     };
-
-
-
-    const [message, setMessage] = useState<MessageData>({
-        content: '',
-        senderId: '',
-        recieverId: '',
-    });
 
     return (
         <div className="w-full h-[15%] bg-channel-600 flex items-center justify-between md:h-[10%] ">
@@ -115,7 +98,7 @@ function MessageInputBox({ inputRef }: Props) {
             '>
 
                 <Image src={"./send_b.svg"} alt="send message" width={24} height={24} className="text-primary text-[17px]    cursor-pointer 
-                            md:text-[23px]" onClick={(e) => {handleSubmit}} />
+                            md:text-[23px]" onClick={(e) => { handleSubmit }} />
                 <Image src={"./contacts_b.svg"} alt="send message" width={24} height={24} className=" text-primary text-[20px] ml-2.5 cursor-pointer 
                             md:hidden" onClick={handleShowContactList} />
             </div>

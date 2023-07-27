@@ -13,7 +13,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setCurrentUser, setOtherUser } from '@/app/store/reducer';
 import { RootState } from '@/app/store/store';
 
-
+//* Interface of Contact
 interface Contact {
     id: string
     name: string
@@ -23,40 +23,32 @@ interface Contact {
     status: string
     created_at: string
     updated_at: string
+    _count: any
 }
 
 
 
-function ContactListMd() {
-    const [activeButtonId, setActiveButtonId] = useState<string | null>(null);
-    const [changeUserId, setChangeUserId] = useState<string | null>(null);
+function ContactListMd({ inputRef }: any) {
 
-    const otherUserId = useSelector((state: RootState) => state.EditUserIdsSlice.otherUserId);
+    //* States
+    const [activeButtonId, setActiveButtonId] = useState<string | null>(null);
     const currentUserId = useSelector((state: RootState) => state.EditUserIdsSlice.currentUserId);
+    const [cont, setCont] = useState<Contact[]>([]);
 
     const dispatch = useDispatch();
 
+    //* styling the selected btn and dispatch otherUserId
     const handleButtonClick = (buttonId: string) => {
-
         setActiveButtonId(buttonId);
-        // setChangeUserId(buttonId);
         dispatch(setOtherUser(buttonId));
-
-
     };
 
-    useEffect(() => {
-        console.log("new user clicked : ",  changeUserId);
-    }, [changeUserId])
-
-    
-    const [cont, setCont] = useState<Contact[]>([]);
-
+//* fetching contact List 
     useEffect(() => {
         async function fetchContact() {
             try {
-                const response = await axios.get<Contact[]>(`http://localhost:3000/users/${currentUserId}/receiver`);
-                setCont(response.data);
+                const response = currentUserId && await axios.get<Contact[]>(`http://localhost:3000/users/${currentUserId}/receiver`);
+                response && setCont(response.data);
             } catch (error) {
                 console.error(error);
             }
@@ -65,21 +57,21 @@ function ContactListMd() {
     }, [currentUserId]);
 
 
+// ^ ------------------------ filling contact component with data ---------------------
     const contacts = cont.map((contact) => {
         return (
             <ContactLg
                 key={contact.id}
                 id={contact.id}
                 name={contact.name}
-                unreadMessages={1}
+                unreadMessages={contact._count.senders}
                 profilePicturePath={contact.Avatar}
                 activeButtonId={activeButtonId}
+                inputRef={inputRef}
                 onClick={handleButtonClick}
             />
         );
     });
-
-
 
     return (
         <div className="h-full w-[33.3%] bg-primary">

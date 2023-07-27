@@ -4,6 +4,10 @@ import { OnlineFriends } from "../../../../constant"
 import { conversation } from "./TempData/conversation"
 import { useState, useEffect } from 'react';
 import axios from "axios";
+import { useSelector } from "react-redux";
+import { RootState } from "@/app/store/store";
+
+//* User Interface
 interface User {
     id: string
     name: string
@@ -15,6 +19,7 @@ interface User {
     updated_at: string
 }
 
+//* Props Interface
 interface Props {
     userId: string,
     messageContent: string,
@@ -23,10 +28,19 @@ interface Props {
 
 function MessageBox({ userId, messageContent, date }: Props) {
 
+    //*  States
     const [user, setUser] = useState<User[]>([]);
     const [userName, setUserName] = useState<User>();
+    const currentUserId = useSelector((state: RootState) => state.EditUserIdsSlice.currentUserId);
+    const otherUserId = useSelector((state: RootState) => state.EditUserIdsSlice.otherUserId);
+
     const [isMounted, setIsMounted] = useState(false)
+
+    //^ ----------------------- fetch User (receiver) data ----------------------
+
+
     const link = `http://localhost:3000/users/${userId}`
+    //* useEffect to fetch User data 
     useEffect(() => {
         async function fetchUser() {
             try {
@@ -42,9 +56,27 @@ function MessageBox({ userId, messageContent, date }: Props) {
     }, [link]);
 
 
+    //^ ----------------------- fetch current User data ----------------------
+    const currentUser = `http://localhost:3000/users/${currentUserId}`
+    const [CurrentUserName, setUserCurrentUserName] = useState<User>();
+    //* useEffect to fetch current User Data 
+    useEffect(() => {
+        async function fetchUser() {
+            try {
+                const response = await axios.get<User>(currentUser);
+                setUserCurrentUserName(response.data);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        fetchUser();
+    }, [currentUser])
+
+    //^ --------------------- checking if the user sender or receiver --------------------
+
     let bg_color = "";
     let position = "";
-    if (userName?.name === "Bilal Ben Aouad") {
+    if (userName?.name === CurrentUserName?.name) {
         bg_color = "bg-receive"
         position = "items-start md:ml-[25px]"
     }
@@ -53,6 +85,7 @@ function MessageBox({ userId, messageContent, date }: Props) {
         position = "items-end md:mr-[25px]";
     }
 
+    //^ ----------------------- converting date format  ----------------------
 
     const utcDateString = date
     const dateToConv = new Date(utcDateString);
@@ -60,8 +93,7 @@ function MessageBox({ userId, messageContent, date }: Props) {
     const localTimeString = dateToConv.toLocaleTimeString();
 
     return (
-
-        <div className={`flex flex-col ${position} mb-[28px] pr-[13px]`}>
+        <div className={`flex flex-col ${position} mb-[28px] pr-[13px]`} >
             <div className='relative  w-[280px]  min-h-[30px] md:w-[300px] lg:w-[340px] '>
                 <Image src={`${userName ? userName?.Avatar : "https://cdn.pixabay.com/photo/2017/07/03/09/54/dog-2467149_1280.jpg"}`} width={40} height={40} alt="avatar" className="absolute  w-[40px] h-[40px] rounded-full md:w-[43] md:h-[43]" />
 

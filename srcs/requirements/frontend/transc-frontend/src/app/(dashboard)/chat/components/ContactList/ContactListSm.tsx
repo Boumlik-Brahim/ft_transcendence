@@ -4,18 +4,18 @@ import Image from "next/image";
 import ContactSm from "../Contact/ContactSm";
 import { contactFriendList, ContactFriend } from '../../TempData/contacts'
 import { useDispatch, useSelector } from 'react-redux';
-import { show, hide } from '../../../../store/reducer';
+import { show, hide } from '@/app/store/reducer';
 
-import { RootState } from '../../../../store/store';
+import { RootState } from '@/app/store/store';
 
 import { useState, useEffect } from 'react';
+import { setCurrentUser, setOtherUser } from '@/app/store/reducer';
+
 import axios from "axios";
 
 
-import { setCurrentUser, setOtherUser } from '@/app/store/reducer';
 
-
-
+//* Interface of Contact
 interface Contact {
     id: string
     name: string
@@ -25,49 +25,59 @@ interface Contact {
     status: string
     created_at: string
     updated_at: string
+    _count: any
+
 }
 
 
-function ContactListSm() {
+function ContactListSm({ inputRef }: any) {
 
+    //* States
     const [cont, setCont] = useState<Contact[]>([]);
-
     const currentUserId = useSelector((state: RootState) => state.EditUserIdsSlice.currentUserId);
+    const isContactListHidden = useSelector((state: RootState) => state.toggleShowContactList);
 
+    const dispatch = useDispatch();
 
+    //* select conversation
+    const handleButtonClick = (buttonId: string) => {
+        dispatch(setOtherUser(buttonId));
+    };
+
+    //* fetching contact List 
     useEffect(() => {
         async function fetchContact() {
             try {
-                const response = await axios.get<Contact[]>('http://localhost:3000/users/5e56a41b-3354-4529-940c-c2a3e4f54bff/receiver');
-                setCont(response.data);
+                const response = currentUserId &&  await axios.get<Contact[]>(`http://localhost:3000/users/${currentUserId}/receiver`);
+                response && setCont(response.data);
             } catch (error) {
                 console.error(error);
             }
         }
         fetchContact();
-    }, [cont]);
+    }, [currentUserId]);
 
-    const contacts = cont.map((contact) => {
+
+    // ^ ------------------------ filling contact component with data ---------------------
+    const contacts = cont && cont.map((contact) => {
         return (
             <ContactSm
                 key={contact.id}
                 id={contact.id}
                 name={contact.name}
-                unreadMessages={4}
+                unreadMessages={contact._count.senders}
                 profilePicturePath={contact.Avatar}
+                inputRef={inputRef}
+                onClick={handleButtonClick}
             />
         );
     });
 
-
-
-
-
-    const isContactListHidden = useSelector((state: RootState) => state.toggleShowContactList);
-    const dispatch = useDispatch();
+    //* show the contact List 
     const handleShowContactList = () => {
         dispatch(show());
     }
+
     return (
         <div className={`${isContactListHidden.showContactListToggled ? "w-full h-full bg-primary" : "hidden"}`}>
             <div className="w-full h-[12%] pr-[12%]  flex items-end justify-end">
