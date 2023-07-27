@@ -1,4 +1,6 @@
 export type JwtPayload = {
-    id: number,
+    id: string,
     email: string,
+    isTwoFactorEnabled?: Boolean,
+    isTwoFactorAuthenticated?: Boolean
 }
