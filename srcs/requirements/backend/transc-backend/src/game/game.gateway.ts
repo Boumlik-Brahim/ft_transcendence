@@ -11,7 +11,7 @@ import { subscribe } from 'diagnostics_channel';
 @WebSocketGateway({
   namespace : "game",
   cors : {
-    origin : 'http://localhost:5173'
+    origin : '*'
   }
 })
 export class GameGateway {

@@ -130,27 +130,27 @@ export class GameService {
         const paddle1_top = player1.paddleY;
         const paddle2_top = player2.paddleY;
 
-        if (ball_left <= paddle1_surface && ball_bottom > paddle1_top && ball_top < paddle1_bottom)
+        if (ball_left <= paddle1_surface && ball_y > paddle1_top && ball_y < paddle1_bottom)
         {
-            gameValue.ball_speed += 0.2;
-            gameValue.vx *= -1;
-            // const angle = this.paddleCollisionAngle(ball_y, paddle1_top, paddle_middle);
-            // gameValue.vx = gameValue.ball_speed * Math.cos(angle);
-            // gameValue.vy = gameValue.ball_speed * Math.sin(angle);
-            // if (gameValue.vx < 0)
-            // {
-            // }
-        }
-        else if (ball_right >= paddle2_surface && ball_bottom > paddle2_top && ball_top < paddle2_bottom)
-        {
-            gameValue.ball_speed += 0.2;
+            gameValue.ball_speed += 0.1;
+            const angle = this.paddleCollisionAngle(ball_y, paddle1_top, paddle_middle);
+            gameValue.vx = gameValue.ball_speed * Math.cos(angle);
+            gameValue.vy = gameValue.ball_speed * Math.sin(angle);
+            if (gameValue.vx < 0)
+            {
                 gameValue.vx *= -1;
+            }
+        }
+        else if (ball_right >= paddle2_surface && ball_y > paddle2_top && ball_y < paddle2_bottom)
+        {
+            gameValue.ball_speed += 0.1;
             const angle = this.paddleCollisionAngle(ball_y, paddle2_top, paddle_middle);
-            // gameValue.vx = gameValue.ball_speed * Math.cos(angle);
-            // gameValue.vy = gameValue.ball_speed * Math.sin(angle);
-            // if (gameValue.vx > 0)
-            // {
-            // }
+            gameValue.vx = gameValue.ball_speed * Math.cos(angle);
+            gameValue.vy = gameValue.ball_speed * Math.sin(angle);
+            if (gameValue.vx > 0)
+            {
+                gameValue.vx *= -1;
+            }
         }  
         else if (ball_right > W_screen || ball_left < 0)
         {
@@ -175,10 +175,9 @@ export class GameService {
                 }
             }
         }
-        else if (ball_bottom >= H_screen || ball_top <= 0)
+        else if (ball_bottom > H_screen || ball_top < 0)
         {
             gameValue.vy *= -1;
-            gameValue.ball_speed = 1;
         }
     }
     
@@ -245,7 +244,7 @@ export class GameService {
             ball_x : 125,
             ball_y : 50,
             radius : 4,
-            vx : 1 ,
+            vx : 1,
             vy : 1,
             player1 : {
                 id : player1Id,

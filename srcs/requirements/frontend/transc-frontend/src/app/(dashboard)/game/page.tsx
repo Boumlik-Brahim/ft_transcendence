@@ -20,6 +20,7 @@ const Game = () => {
   const [oponentId, setIOponnentId] = useState<string>();
   const [isRamdom, setIsramdom] = useState<boolean>(true);
   const myId : string = getCookie('id') as string;
+  console.log(getCookie('accessToken'), 'token')
   const router = useRouter();
 
 
@@ -74,7 +75,9 @@ const Game = () => {
           </div>
           {
             oponentName === '' ? (
-              <button className='border-2 gradient-bg shadow-xl ml-auto mr-auto md:mr-0 text-primary text-[20px] p-2 w-[268px] h-[61px] rounded-[40px] md:ml-4 mt-10 hover:bg-primary ease-in duration-300 hover:text-white hover:border-none' onClick={() => createGame(isRamdom)}>
+              <button 
+                className='border-2 gradient-bg shadow-xl ml-auto mr-auto md:mr-0 text-primary text-[20px] p-2 w-[268px] h-[61px] rounded-[40px] md:ml-4 mt-10 hover:bg-primary ease-in duration-300 hover:text-white hover:border-none' 
+              onClick={() => createGame(isRamdom)}>
                 { isRamdom ?  "Random player" : "Send Him Invitation" }
               </button>
             )
@@ -94,7 +97,9 @@ const Game = () => {
                       </div>
                       <h1 className='text-primary text-[12px] font-[700]'>{user.name}</h1>
                     </div>
-                    <button className='p-1 border text-[10px] text-primary border-primary rounded-[40px] w-[80px] hover:bg-primary hover:text-white'>challenge</button>
+                    <button className='p-1 border text-[10px] text-primary border-primary rounded-[40px] w-[80px] hover:bg-primary hover:text-white'>
+                      challenge
+                    </button>
                   </div>
                 ))
               }

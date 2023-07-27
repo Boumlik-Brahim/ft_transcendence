@@ -22,6 +22,7 @@ export class AuthController {
         const token = await this.authService.signToken(payload);
         res.cookie('accessToken', token);
         res.cookie('id', user.id)
+        
         return res.redirect('http://localhost:3000/')
     }
 }
