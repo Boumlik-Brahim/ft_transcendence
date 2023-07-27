@@ -83,9 +83,9 @@ export class UsersService {
         },
         _count: {
           select: {
-            receivers: {
+            senders: {
               where: {
-                senderId: senderID,
+                recieverId: senderID,
                 seen: false
               }
             }
@@ -339,7 +339,7 @@ export class UsersService {
     });
   }
 
-  async updateFriend(userID: string, friendID: string, updateFriendDto: UpdateFriendDto): Promise<Friend> {
+  async updateFriend(userID: string, friendID: string): Promise<Friend> {
     return this.prisma.friend.update({
       where: {
         userAndFriend: {
@@ -347,7 +347,9 @@ export class UsersService {
           friendId: friendID
         },
       },
-      data: updateFriendDto
+      data: {
+        friendShipStatus: 'ACCEPTED',
+      }
     })
     .catch (error => {
       throw new HttpException({
