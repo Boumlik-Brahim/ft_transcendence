@@ -1,7 +1,6 @@
-"use client";
+'use client'
 import React, { useState } from "react";
 import Link from "next/link";
-import cookie from "js-cookie";
 import InfoBox from "../../components/Features";
 import Member from "../../components/Member";
 
