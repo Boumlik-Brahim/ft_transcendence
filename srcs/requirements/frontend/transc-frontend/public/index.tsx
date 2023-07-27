@@ -11,6 +11,7 @@ import logout_b from "./logout_b.svg";
 import notification_b from "./notification_b.svg";
 import menu_b from "./menu_b.svg";
 import close_b from "./close_b.svg";
+import close_r from "./close_r.svg";
 import message_b from "./message_b.svg";
 import adduser_b from "./adduser_b.svg";
 import deleteuser_b from "./deleteuser_b.svg";
@@ -20,6 +21,10 @@ import game_b from "./game_b.svg";
 import send_b from "./send_b.svg";
 import contacts_b from "./contacts_b.svg";
 import search_b from "./search_b.svg";
+import block_b from "./block_b.svg";
+import unblock_r from "./unblock_r.svg";
+import block_r from "./block_r.svg";
+import unblock_b from "./unblock_b.svg";
 
 
 import logo_w from "./logo_w.svg";
@@ -77,6 +82,7 @@ export {
   notification_b,
   menu_b,
   close_b,
+  close_r,
   message_b,
   adduser_b,
   deleteuser_b,
@@ -101,7 +107,10 @@ export {
   message_w,
   search_w,
   search_b,
-
+  block_b,
+  unblock_r,
+  block_r,
+  unblock_b,
   avatar,
   avatar1,
   winner,

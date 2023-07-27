@@ -90,6 +90,7 @@ export class UsersController {
   @Post('/blockedUser')
   async createBlockedUser(@Body() createBlockedUserDto: CreateBlockedUserDto): Promise<BlockedUser> {
     const blockedUser = await this.usersService.createBlockedUser(createBlockedUserDto);
+    console.log("blochsdds")
     return blockedUser;
   }
   
@@ -97,6 +98,17 @@ export class UsersController {
   async findAllBlockedUser(@Param('userId') userId: string): Promise<BlockedUser[]> {
     const blockedUsers = await this.usersService.findAllBlockedUsers(userId);
     return blockedUsers;
+  }
+
+  @Get('/:userId/blockedUserOne')
+  async findBlockedUser(@Param('userId') userId: string): Promise<BlockedUser[]> {
+    const blockedUsers = await this.usersService.findBlockedUser(userId);
+    return blockedUsers;
+  }
+ 
+  @Delete ('/:userId/unBlockedUser/:friendId')
+  async unBlockUser(@Param('userId') userId: string, @Param('friendId') friendId: string): Promise<void> {
+    await this.usersService.unBlockUser(userId, friendId);
   }
   //* -------------------------------------------------------------blockedUserCRUDOp------------------------------------------------------ *//
 
@@ -114,9 +126,8 @@ export class UsersController {
   }
   
   @Get('/:userId/pending')
-  async pendingStat(@Param('userId') userId: string): Promise<Friend[]> {
-    const friendShip = await this.usersService.pendingStat(userId);
-    console.log("first=c===>",friendShip)
+  async pendingReq(@Param('userId') userId: string): Promise<Friend[]> {
+    const friendShip = await this.usersService.pendingReq(userId);
     return friendShip;
   }
   

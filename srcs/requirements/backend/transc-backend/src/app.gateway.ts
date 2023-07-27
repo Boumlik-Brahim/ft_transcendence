@@ -23,8 +23,27 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
         this.server.emit('friendRequest', data);
     }
     @SubscribeMessage('friendCancel')
-    handleFriendCancel(@ConnectedSocket() client: Socket) {
-        this.server.emit('friendCancel');
+    handleFriendCancel(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
+        this.server.emit('friendCancel', data);
+    }
+    @SubscribeMessage('friendDeletion')
+    handleFriendDelete(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
+        this.server.emit('friendDeletion', data);
+    }
+ 
+    @SubscribeMessage('friendCreation')
+    handleFriendCreate(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
+        this.server.emit('friendCreation', data);
+    }
+
+    @SubscribeMessage('blockfriend')
+    handleBlockfriend(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
+        this.server.emit('blockfriend', data);
+    }
+   
+    @SubscribeMessage('unblockfriend')
+    handleUnblockfriend(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
+        this.server.emit('unblockfriend', data);
     }
 
     @SubscribeMessage('gameInvitation')

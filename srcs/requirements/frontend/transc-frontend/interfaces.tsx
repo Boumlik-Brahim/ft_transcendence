@@ -20,3 +20,9 @@ export interface friendShip
     friendId: string,
 }
 
+export interface blockedUser
+{
+    userId: string,
+    blockedUserId: string,
+}
+
