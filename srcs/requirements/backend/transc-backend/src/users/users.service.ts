@@ -30,9 +30,8 @@ export class UsersService {
       throw new HttpException({
         status: HttpStatus.BAD_REQUEST,
         error: 'BadRequestException',
-      }, HttpStatus.BAD_REQUEST, {
-        cause: error
-      });
+      }, 
+      HttpStatus.BAD_REQUEST, { cause: error });
     });
   }
   
@@ -273,6 +272,7 @@ export class UsersService {
   //* ----------------------------------------------------------blockedUserServices------------------------------------------------------- *//
   
   async createBlockedUser(createBlockedUser: CreateBlockedUserDto): Promise<BlockedUser> {
+    console.log('createBlockedUser', createBlockedUser)
     return this.prisma.blockedUser.create({ data: createBlockedUser })
     .catch (error => {
       throw new HttpException({
@@ -303,6 +303,45 @@ export class UsersService {
     });
   }
   
+  async findBlockedUser(userID: string): Promise<BlockedUser[]> {
+    return this.prisma.blockedUser.findMany({
+      where: {
+      OR: [
+        { userId: userID },
+        { blockedUserId: userID },
+      ]
+      },
+      orderBy: {
+        created_at: 'asc',
+      },
+    })
+    .catch (error => {
+      throw new HttpException({
+        status: HttpStatus.NOT_FOUND,
+        error: 'NotFoundException',
+      }, HttpStatus.NOT_FOUND, {
+        cause: error
+      });
+    });
+  }
+
+  async unBlockUser(userID: string, friendID: string): Promise<void> {
+    await this.prisma.blockedUser.deleteMany({
+      where: {
+        userId: userID,
+        blockedUserId: friendID,
+      },
+    })
+    .catch (error => {
+      throw new HttpException({
+        status: HttpStatus.NOT_FOUND,
+        error: 'NotFoundException',
+      }, HttpStatus.NOT_FOUND, {
+        cause: error
+      });
+    });
+  }
+
   //* ----------------------------------------------------------blockedUserServices------------------------------------------------------- *//
 
   //* ------------------------------------------------------------friendServices---------------------------------------------------------- *//
@@ -319,11 +358,11 @@ export class UsersService {
     });
   }
 
-  async findAllFriends(userID: string): Promise<Friend[]> {
+  async pendingReq(userID: string): Promise<Friend[]> {
     return this.prisma.friend.findMany({
       where: {
-        userId: userID,
-        friendShipStatus: 'ACCEPTED'
+        friendId: userID,
+        friendShipStatus: 'PENDING'
       },
       orderBy: {
         created_at: 'asc',
@@ -339,6 +378,50 @@ export class UsersService {
     });
   }
 
+  
+  async findAllFriends(userID: string): Promise<Friend[]> {
+    return this.prisma.friend.findMany({
+      where: {
+        OR: [
+          { userId: userID },
+          { friendId: userID },
+        ],
+        friendShipStatus: 'ACCEPTED'
+      },
+      orderBy: {
+        created_at: 'asc',
+      },
+    })
+    .catch (error => {
+      throw new HttpException({
+        status: HttpStatus.NOT_FOUND,
+        error: 'NotFoundException',
+      }, HttpStatus.NOT_FOUND, {
+        cause: error
+      });
+    });
+  }
+  
+  async friendShip(userID: string, friendID: string): Promise<Friend[]> {
+    return this.prisma.friend.findMany({
+      where: {
+        userId: userID,
+        friendId: friendID
+      },
+      orderBy: {
+        created_at: 'asc',
+      },
+    })
+    .catch (error => {
+      throw new HttpException({
+        status: HttpStatus.NOT_FOUND,
+        error: 'NotFoundException',
+      }, HttpStatus.NOT_FOUND, {
+        cause: error
+      });
+    });
+  }
+  
   async updateFriend(userID: string, friendID: string): Promise<Friend> {
     return this.prisma.friend.update({
       where: {

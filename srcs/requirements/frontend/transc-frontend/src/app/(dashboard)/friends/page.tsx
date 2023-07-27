@@ -1,10 +1,14 @@
-import React from 'react'
+import loading from './loading';
+
 
 function page() {
   return (
     <div className="layouts">
-        <div className="flex-1">friends</div>
-    </div> 
+      <div className="my_container">
+        <loading/>
+        <h1>FRIIIIIEND</h1>
+      </div>
+    </div>
   )
 }
 
