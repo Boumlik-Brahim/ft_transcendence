@@ -4,6 +4,9 @@ import { PrismaService } from 'prisma/prisma.service';
 import { JwtPayload } from "./type/jwt-payload.type"
 import { JwtService } from "@nestjs/jwt";
 import { JWT_SECRET } from "../utils/constants";
+import { User } from "../users/user.interface";
+import { LOGIN_REDIRECT_URL, PROFILE_REDIRECT_URL } from "src/utils/constants";
+import { Req } from "@nestjs/common";
 import { User } from "@prisma/client";
 import { authenticator } from "otplib";
 import { toDataURL } from 'qrcode'
@@ -15,7 +18,8 @@ export class AuthService {
                     private prisma: PrismaService,
                     private jwt: JwtService) {}
                     
-    async valideUser(req: any) {
+    async getUser(req: any) {
+        console.log(req.user);
         let user = await this.userService.findOneWithMail(req.user.email);
         if (user)
             return user;
@@ -24,13 +28,23 @@ export class AuthService {
                 name: req.user.username,
                 email: req.user.email,
                 IntraId: req.user.id,
-                status: 'ONLINE',
+                Avatar: req.user.avatarUrl,
+                // status: 'ONLINE',
             },
         })
         return newUser;
     }
+
+    async redirectBasedOnTwoFa(res: any, user: User): Promise<void> {
+        if (!user.twoFa) {
+          return res.redirect(LOGIN_REDIRECT_URL);
+        } else {
+          return res.redirect(PROFILE_REDIRECT_URL);
+        }
+      }
     
-    async signToken(payload: JwtPayload) {
+    async signToken(@Req() req: any) : Promise<string>{
+        const payload: JwtPayload = {id: req.user.id, email: req.user.email};
         return await this.jwt.signAsync(payload, {secret: JWT_SECRET});
     }
     

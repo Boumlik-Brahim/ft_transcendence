@@ -1,6 +1,6 @@
 import { Controller, Req, Res, Get, UseGuards, Redirect, Post, Body, UnauthorizedException, Response, Query } from "@nestjs/common";
 import { AuthService } from "./auth.service";
-import { AuthDto } from "./dto/auth.dto"
+import { User } from "../users/user.interface";
 import { AuthGuard } from "@nestjs/passport";
 import { JwtPayload } from "./type/jwt-payload.type"
 import { ApiTags } from "@nestjs/swagger";
@@ -15,18 +15,24 @@ export class AuthController {
 
     @Get()
     @UseGuards(AuthGuard('42'))
-    login() {}
+    login(@Res() res: any, user: User) : Promise<any> {
+        return this.authService.redirectBasedOnTwoFa(res, user);
+    }
     
     @Get('callback')
     @UseGuards(AuthGuard('42'))
-    async callback(@Req() req: any, @Res() res: any) {
-        let user = await this.authService.valideUser(req);
-        const payload: JwtPayload = {id: req.user.id, email: req.user.email};
-        const token = await this.authService.signToken(payload);
-        res.cookie('accessToken', token);
-        res.cookie('id', user.id);
-        return res.redirect('http://localhost:5173/profile');
-        // res.send({user : user})
+    async callback(@Req() req: any, @Res() res: any) : Promise<any>{
+        try {
+            let user = await this.authService.getUser(req);
+            console.log(user);
+            const token = await this.authService.signToken(req);
+            res.cookie('id', user.id);
+            res.cookie('accessToken', token);
+            return this.login(res, user);
+        }
+        catch(e) {
+            console.log(e);
+        }
     }
     
     @Post('2fa/generate')

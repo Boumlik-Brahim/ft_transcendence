@@ -36,5 +36,8 @@
     "utf-8-validate": "^5.0.10",
     "vite": "^4.4.6",
     "ws": "^8.13.0"
+  },
+  "devDependencies": {
+    "@types/js-cookie": "^3.0.3"
   }
 }

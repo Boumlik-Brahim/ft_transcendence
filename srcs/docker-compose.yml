@@ -15,14 +15,14 @@ services:
     volumes:
       - database_volume:/var/lib/postgresql/data
 
-  pgAdmin:
-    image: dpage/pgadmin4
-    container_name: pgAdmin
-    ports:
-      - "5050:80"
-    restart: always
-    env_file:
-      - .env
+  # pgAdmin:
+  #   image: dpage/pgadmin4
+  #   container_name: pgAdmin
+  #   ports:
+  #     - "5050:80"
+  #   restart: always
+  #   env_file:
+  #     - .env
 
   backend:
     image: backend
