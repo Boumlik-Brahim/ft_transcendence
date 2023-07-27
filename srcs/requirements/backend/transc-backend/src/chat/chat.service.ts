@@ -49,14 +49,33 @@ export class ChatService {
     });
   }
   
-  async findAllChats(senderId: string, receiverId: string): Promise<DirectMessage[]> {
+  // async findAllChats(senderId: string, receiverId: string): Promise<DirectMessage[]> {
   
-    const hasshedRoomName = await this.generateHashedRommId(senderId, receiverId);
-    console.log(hasshedRoomName);
+  //   const hasshedRoomName = await this.generateHashedRommId(senderId, receiverId);
+  //   console.log(hasshedRoomName);
 
+  //   return this.prisma.directMessage.findMany({
+  //     where: {
+  //       roomId: hasshedRoomName
+  //     },
+  //     orderBy: {
+  //       created_at: 'asc',
+  //     },
+  //   })
+  //   .catch (error => {
+  //     throw new HttpException({
+  //       status: HttpStatus.NOT_FOUND,
+  //       error: 'NotFoundException',
+  //     }, HttpStatus.NOT_FOUND, {
+  //       cause: error
+  //     });
+  //   });
+  // }
+
+  async findAllChats(hashedRoomId: string): Promise<DirectMessage[]> {
     return this.prisma.directMessage.findMany({
       where: {
-        roomId: hasshedRoomName
+        roomId: hashedRoomId 
       },
       orderBy: {
         created_at: 'asc',
