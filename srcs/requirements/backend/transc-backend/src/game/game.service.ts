@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { GameEntity, Player } from './entity/game.entity';
 import { v4 as uuidv4 } from 'uuid';
+import { plainToClass } from 'class-transformer';
 
 @Injectable()
 export class GameService {
@@ -13,7 +14,7 @@ export class GameService {
         const { invitedId, creatorId, isRamdomOponent } = data;
         if (!isRamdomOponent) {
             try {
-                const user = await this.prisma.user.findUnique({
+                const user =  this.prisma.user.findUnique({
                     where : {
                         id : invitedId
                     }
@@ -39,7 +40,7 @@ export class GameService {
             }
             else {
                 const gameJoined : GameEntity = this.gameMap.get(this.inTheQueue);
-                // if (creatorId === gameJoined.player1.id) return;
+                if (creatorId === gameJoined.player1.id) return;
                 this.inTheQueue = null;
                 gameJoined.player2.id = creatorId;
                 this.gameMap.set(gameJoined.id, gameJoined);
@@ -54,20 +55,32 @@ export class GameService {
             const game = this.gameMap.get(gameId);
             console.log(game);
             if (!game) {
-                client.emit("error", "This game does not exist");
+                client.emit("error_access");
                 return;
             }
             if (userId !== game.player1.id && userId !== game.player2.id) {
-                client.emit("error", "Permission denied");
+                client.emit("error_access");
                 return;
             }
             client.join(gameId);
-            client.emit('gameSate', {state : game.gameStatus});
+            client.emit('gameSate', {state : game.gameStatus.status});
             const nbrClientRequire = 2;
             const rooms = server.adapter.rooms.get(gameId)
+            if (userId === game.player1.id)
+            {
+                game.player1.inThegame = true;
+            }
+            else
+            {
+                game.player2.inThegame = true;
+            }
             if (rooms && rooms.size === nbrClientRequire) {
-                game.gameStatus = 'started';
-                server.to(gameId).emit('gameSate', {state : game.gameStatus});
+                console.log(game.player1.inThegame, game.player2.inThegame);
+                if (game.gameStatus.status !== 'pause' && game.player1.inThegame && game.player2.inThegame)
+                {
+                    game.gameStatus.status = 'started';
+                }
+                server.to(gameId).emit('gameSate', {state : game.gameStatus.status});
                 this.gameLoop(game, server);
             }
         }
@@ -79,8 +92,8 @@ export class GameService {
 
     gameLogique(gameValue : GameEntity) {
         this.collision(gameValue)
-        gameValue.ball_x += (gameValue.vx );
-        gameValue.ball_y += (gameValue.vy );
+        gameValue.ball_x += (gameValue.vx * gameValue.ball_speed);
+        gameValue.ball_y += (gameValue.vy * gameValue.ball_speed );
     }
 
     paddleCollisionAngle(ball_y : number, paddle_y : number, paddle_middle : number) : number {
@@ -99,6 +112,7 @@ export class GameService {
             radius,
             ball_y,
             player1,
+            w_paddle,
             player2,
             h_paddle,
         } = gameValue;
@@ -109,37 +123,38 @@ export class GameService {
         const ball_bottom = ball_y + radius;
 
         const paddle_middle = h_paddle / 2;
-        const paddle1_surface = player1.paddleX;
+        const paddle1_surface = player1.paddleX + w_paddle;
         const paddle2_surface = player2.paddleX;
         const paddle1_bottom = player1.paddleY + h_paddle;
         const paddle2_bottom = player2.paddleY + h_paddle;
         const paddle1_top = player1.paddleY;
         const paddle2_top = player2.paddleY;
 
-        if (ball_left <= paddle1_surface && ball_bottom > paddle1_top && ball_top < paddle1_bottom)
+        if (ball_left <= paddle1_surface && ball_y > paddle1_top && ball_y < paddle1_bottom)
         {
-            gameValue.ball_speed += 0.5;
-            gameValue.vx *= -1; 
-            // const angle = this.paddleCollisionAngle(ball_y, paddle1_top, paddle_middle);
-            // gameValue.vx = gameValue.ball_speed * Math.cos(angle);
-            // gameValue.vy = gameValue.ball_speed * Math.sin(angle);
-            // if (gameValue.vx < 0)
-            // {
-            // }
+            gameValue.ball_speed += 0.1;
+            const angle = this.paddleCollisionAngle(ball_y, paddle1_top, paddle_middle);
+            gameValue.vx = gameValue.ball_speed * Math.cos(angle);
+            gameValue.vy = gameValue.ball_speed * Math.sin(angle);
+            if (gameValue.vx < 0)
+            {
+                gameValue.vx *= -1;
+            }
         }
-        else if (ball_right >= paddle2_surface && ball_bottom > paddle2_top && ball_top < paddle2_bottom)
+        else if (ball_right >= paddle2_surface && ball_y > paddle2_top && ball_y < paddle2_bottom)
         {
-            gameValue.ball_speed += 0.5;
-            gameValue.vx *= -1;
-            // const angle = this.paddleCollisionAngle(ball_y, paddle2_top, paddle_middle);
-            // gameValue.vx = gameValue.ball_speed * Math.cos(angle);
-            // gameValue.vy = gameValue.ball_speed * Math.sin(angle);
-            // if (gameValue.vx > 0)
-            // {
-            // }
+            gameValue.ball_speed += 0.1;
+            const angle = this.paddleCollisionAngle(ball_y, paddle2_top, paddle_middle);
+            gameValue.vx = gameValue.ball_speed * Math.cos(angle);
+            gameValue.vy = gameValue.ball_speed * Math.sin(angle);
+            if (gameValue.vx > 0)
+            {
+                gameValue.vx *= -1;
+            }
         }  
         else if (ball_right > W_screen || ball_left < 0)
         {
+            gameValue.ball_speed = 1;
             gameValue.vx *= -1;
             gameValue.ball_x = W_screen / 2;
             gameValue.ball_y = H_screen / 2;
@@ -147,38 +162,40 @@ export class GameService {
                 gameValue.player1.score += 1;
                 if (gameValue.player1.score === gameValue.scoreLimit)
                 {
-                    gameValue.gameStatus = 'finished';
+                    gameValue.gameStatus.status = 'finished';
                     gameValue.winner = gameValue.player1.id;
-                    gameValue.ball_speed = 20;
                 }
-
             }
             else if (ball_left < 0) {
                 gameValue.player2.score += 1;
-                // if (gameValue.player2.score === gameValue.scoreLimit)
-                // {
-                //     gameValue.gameStatus = 'finished';
-                //     gameValue.winner = gameValue.player2.id;
-                //     gameValue.ball_speed = 20;
-                // }
+                if (gameValue.player2.score === gameValue.scoreLimit)
+                {
+                    gameValue.gameStatus.status = 'finished';
+                    gameValue.winner = gameValue.player2.id;
+                }
             }
         }
-        else if (ball_bottom >= H_screen || ball_top <= 0)
+        else if (ball_bottom > H_screen || ball_top < 0)
+        {
             gameValue.vy *= -1;
+        }
     }
     
     gameLoop(game : GameEntity, server : any) {
         const id = setInterval(() => {
             this.updatePaddle(game);
-            this.gameLogique(game);
-            this.istheGameEnd(game, id);
+            if (game.gameStatus.status === 'started')
+            {
+                this.gameLogique(game);
+            }
             server.to(game.id).emit("gameData", game);
+            this.istheGameEnd(game, id, server);
         }, 1000 / 60);
     }
 
-    ArrowUp(gameId : String, playerId : String) {
-        const game : GameEntity = this.gameMap.get(gameId);
-        if (game) {
+    ArrowUp(gameId : String, playerId : String, client : any) {
+        const game : GameEntity = this.getGame(playerId, gameId, client);
+        if (game && game.gameStatus.status === 'started') {
             if (playerId === game.player1.id) {
                 if (game.player1.paddleY > 0)
                     game.player1.paddleY -= game.playerSpeed;
@@ -192,9 +209,9 @@ export class GameService {
         }
     }
 
-    ArrowDown(gameId : String, playerId : String) {
-        const game : GameEntity = this.gameMap.get(gameId);
-        if (game) {
+    ArrowDown(gameId : String, playerId : String, client : any) {
+        const game : GameEntity = this.getGame(playerId, gameId, client);
+        if (game && game.gameStatus.status === 'started') {
             if (playerId === game.player1.id) {
                 if (game.player1.paddleY + game.h_paddle < game.H_screen)
                 game.player1.paddleY += game.playerSpeed;
@@ -206,7 +223,6 @@ export class GameService {
                 this.gameMap.set(gameId, game)
             }
         }
-        // console.log(game.player1.paddleY)
     }
 
     updatePaddle(currentGame : GameEntity) {
@@ -227,39 +243,194 @@ export class GameService {
             H_screen : 100,
             ball_x : 125,
             ball_y : 50,
-            radius : 2,
-            vx : 1 ,
+            radius : 4,
+            vx : 1,
             vy : 1,
             player1 : {
                 id : player1Id,
-                paddleX : 2,
+                inThegame : false,
+                paddleX : 10,
                 paddleY : 0,
                 score : 0
             },
             player2 : {
                 id : player2Id,
-                paddleX : 248,
+                inThegame : false,
+                paddleX : 230,
                 paddleY : 80,
                 score : 0
             },
-            w_paddle : 5,
+            w_paddle : 10,
             h_paddle : 20,
-            playerSpeed : 4,
+            playerSpeed : 8,
             scoreLimit : 10,
-            ball_speed : 2,
-            gameStatus : "waiting",
+            ball_speed : 1,
+            gameStatus  : {
+                update_t : new Date().getTime(),
+                status : 'waiting'
+            },
             winner : null
         }
         return newGameValue;
     }
 
-    istheGameEnd(game : GameEntity, intervalId) {
-        const { gameStatus } = game;
-        if (gameStatus === 'finished' || gameStatus === 'canceled')
-            clearInterval(intervalId);
+    async updateWinner(userId : string) {
+        try {
+            const userSate = await this.prisma.userStat.findUnique({
+                where : {
+                    userId: userId
+                }
+            });
+            if (!userSate) {
+                await this.prisma.userStat.create({
+                    data: {
+                        winsNumbr : 1,
+                        lossesNumbr : 0,
+                        rate : 0.5,
+                        userId
+                    },
+                });
+            }
+            else {
+                await this.prisma.userStat.update({
+                    where: {
+                      userId
+                    },
+                    data: {
+                      winsNumbr : {increment: 1},
+                      rate : {increment : 0.5}
+                    },
+                })
+            }
+        }
+        catch (error) {
+
+        }
     }
 
-    // stopAgame(gameId : number) {
-    //     clearInterval(gameLoopId);
-    // }
+    async updateLoser(userId : string) {
+        try {
+            const userSate = await this.prisma.userStat.findUnique({
+                where : {
+                    userId: userId
+                }
+            });
+            if (!userSate) {
+                await this.prisma.userStat.create({
+                    data: {
+                        winsNumbr : 0,
+                        lossesNumbr : 1,
+                        rate : 0.5,
+                        userId
+                    },
+                });
+            }
+            else {
+                await this.prisma.userStat.update({
+                    where: {
+                      userId
+                    },
+                    data: {
+                        lossesNumbr : {increment: 1}
+                    },
+                })
+            }
+        }
+        catch (error) {
+
+        }
+    }
+
+    checkTimeToEnd(updateTime : number, maxTimeInsecond : number, game : GameEntity) {
+       const time = updateTime + (maxTimeInsecond * 1000);
+       const current = new Date();
+       if (current.getTime() >= time)
+       {
+            game.gameStatus.status = 'finished';
+            if (game.player1.score >  game.player2.score)
+                game.winner = game.player1.id;
+            else if (game.player1.score <  game.player2.score)
+                game.winner = game.player2.id;
+       }
+    }
+
+    istheGameEnd(game : GameEntity, intervalId, server : any) {
+        const { gameStatus } = game;
+        if (gameStatus.status === 'stopped')
+        {
+            this.checkTimeToEnd(game.gameStatus.update_t, 10, game);
+        } 
+        if (gameStatus.status === 'finished' || gameStatus.status === 'canceled')
+        {
+            server.to(game.id).emit('gameSate', {state : game.gameStatus.status});
+            if (game.winner)
+            {
+                const loserId : String = game.winner === game.player1.id ? game.player2.id : game.player1.id;
+                this.updateLoser(loserId as string);
+                this.updateWinner(game.winner as string);
+            }
+            this.gameMap.delete(game.id);
+            clearInterval(intervalId);
+        }
+    }
+
+    getGame(playerId : String, gameId : String, client : any) : GameEntity | null {
+        const game : GameEntity = this.gameMap.get(gameId);
+        if (game && (playerId === game.player1.id || playerId === game.player2.id))
+            return game;
+        return null;
+    }
+
+
+    pauseOrSart(playerId : String, gameId : String, client : any) {
+        const game : GameEntity = this.getGame(playerId, gameId, client);
+        if (game) {
+            game.gameStatus.status = game.gameStatus.status === 'pause' ? 'started' : 'pause';
+            game.gameStatus.update_t = new Date().getTime();
+            this.gameMap.set(gameId, game);
+        }
+    }
+
+    cancelGame(playerId : String, gameId : String, client : any) {
+        const game : GameEntity = this.getGame(playerId, gameId, client);
+        if (game) {
+            if (game.gameStatus.status === 'waiting')
+            {
+                if (game.id === this.inTheQueue)
+                    this.inTheQueue = null;
+                this.gameMap.delete(gameId);
+                client.emit('error_access');
+            }
+            else
+            {
+                if (playerId === game.player1.id)
+                    game.winner = game.player2.id
+                else
+                    game.winner = game.player1.id
+                game.gameStatus.status = 'canceled';
+                this.gameMap.set(gameId, game)
+            }
+        }
+    }
+
+    quiteGame(playerId : String, gameId : String, client : any) {
+        const game : GameEntity = this.getGame(playerId, gameId, client);
+        if (game) {
+            if (game.gameStatus.status === 'waiting')
+            {
+                if (game.id === this.inTheQueue)
+                    this.inTheQueue = null;
+                this.gameMap.delete(gameId);
+            }
+            {
+                if (playerId === game.player1.id)
+                    game.player1.inThegame = false;
+                else
+                    game.player2.inThegame = false;
+                game.gameStatus.status = 'stopped';
+                game.gameStatus.update_t = new Date().getTime();
+                this.gameMap.set(gameId, game);
+            }
+        }
+    }
 }

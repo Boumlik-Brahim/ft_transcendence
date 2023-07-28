@@ -21,10 +21,10 @@ export const SideLinks = [
 ]
 
 export const OnlineFriends = [
-    { id: 1, name: "Oussama Belkhadir", avarat: avatar, status: "online" },
-    { id: 2, name: "Oussama Belkhadir", avarat: avatar, status: "online" },
-    { id: 3, name: "Oussama Belkhadir", avarat: avatar, status: "online" },
-    { id: 4, name: "Oussama Belkhadir", avarat: avatar, status: "online" },
+    { id: 1, name: "Oussama", avarat: avatar, status: "online" },
+    { id: 2, name: "Oussama bel", avarat: avatar, status: "online" },
+    { id: 3, name: "jilali bo", avarat: avatar, status: "online" },
+    { id: 4, name: "khalid", avarat: avatar, status: "online" },
 ]
 
 export const history_game = [
