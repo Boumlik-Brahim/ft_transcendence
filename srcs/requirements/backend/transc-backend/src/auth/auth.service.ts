@@ -4,7 +4,7 @@ import { PrismaService } from 'prisma/prisma.service';
 import { JwtPayload } from "./type/jwt-payload.type"
 import { JwtService } from "@nestjs/jwt";
 import { JWT_SECRET } from "../utils/constants";
-import { User } from "../users/user.interface";
+import { UserInter } from "../users/user.interface";
 import { LOGIN_REDIRECT_URL, PROFILE_REDIRECT_URL } from "src/utils/constants";
 import { Req } from "@nestjs/common";
 import { User } from "@prisma/client";
@@ -34,12 +34,14 @@ export class AuthService {
         })
         return newUser;
     }
-
-    async redirectBasedOnTwoFa(res: any, user: User): Promise<void> {
+    async redirectBasedOnTwoFa(res: any, user: UserInter): Promise<void> {
         if (!user.twoFa) {
-          return res.redirect(LOGIN_REDIRECT_URL);
+            console.log(`${LOGIN_REDIRECT_URL} + ${user.id}}`)
+            return res.redirect(`${LOGIN_REDIRECT_URL}/${user.id}}`);
         } else {
-          return res.redirect(PROFILE_REDIRECT_URL);
+            
+            console.log(`${PROFILE_REDIRECT_URL} + ${user.id}}`)
+            return res.redirect(`${PROFILE_REDIRECT_URL}/${user.id}`);
         }
       }
     
