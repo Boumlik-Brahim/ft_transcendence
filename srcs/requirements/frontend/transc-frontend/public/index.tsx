@@ -20,6 +20,8 @@ import forbidden_r from "./forbidden_r.svg";
 import game_b from "./game_b.svg";
 import send_b from "./send_b.svg";
 import contacts_b from "./contacts_b.svg";
+import trash from './trash.svg'
+import moreCircle from "./morecircle.svg"
 import search_b from "./search_b.svg";
 import block_b from "./block_b.svg";
 import unblock_r from "./unblock_r.svg";
@@ -117,6 +119,8 @@ export {
   bulr_c1,
   bulr_c2,
   bulr_c3,
+  trash,
+  moreCircle,
 
 };
 

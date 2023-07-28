@@ -14,6 +14,7 @@ import { friendShip, users_int } from "../../../../../interfaces";
 import FriendAction from "../../../../../components/FriendAction";
 import { io } from 'socket.io-client';
 export const socket = io('http://localhost:3000', { transports: ['websocket'] });
+import Cookies from 'universal-cookie';
 
 
 
@@ -21,16 +22,23 @@ export const socket = io('http://localhost:3000', { transports: ['websocket'] })
 function page() {
   /* ------------------------- get url ID from url ------------------------- */
   const { userId } = useParams();
+  console.log("user ID from useParams : ",userId)
   /* ------------------------------------ - ----------------------------------- */
 
 
   /* ------------------------------- fetch (ID) ------------------------------- */
   const userUrl = useUserData(userId);
+  console.log("user Url from useParams : ",userUrl)
+
   /* ------------------------------------ - ----------------------------------- */
 
 
   /* ----------------------------- get the USER ID ---------------------------- */
-  const userSession = JSON.parse(sessionStorage.user);
+  // const userSession = JSON.parse(sessionStorage.user);
+
+  const cookies = new Cookies();
+  const userSession = cookies.get('id');
+
   /* ------------------------------------ - ----------------------------------- */
 
 
@@ -49,8 +57,8 @@ function page() {
   useEffect(() => {
     const fetchfriendShip = async () => {
       try {
-        const response = await axios.get(`http://127.0.0.1:3000/users/${userSession.id}/pending`);
-        setFriendShip(response.data);
+        const response = userSession && await axios.get(`http://127.0.0.1:3000/users/${userSession}/pending`);
+        response && setFriendShip(response.data);
       } catch (error) { console.log(error); }
     }
     fetchfriendShip();
@@ -59,32 +67,32 @@ function page() {
 
   /* ------------------------------------ - ----------------------------------- */
 
-  
+
   /* ------------------------------- getPending ------------------------------- */
   const pendingUsers = usePendingUsers(friendShip);
   /* ------------------------------------ - ----------------------------------- */
 
-  
+
   /* -------------------------- friend requset socket ------------------------- */
   useEffect(() => {
     socket.on('friendRequest', (data) => {
-      console.log('friendRequest from',data.userId)
-      setNotification(data.userId+data.status)
+      console.log('friendRequest from', data.userId)
+      setNotification(data.userId + data.status)
     });
-    
+
     socket.on('friendCancel', (data) => {
-      console.log('friendRequest from',data.userId+data.status)
+      console.log('friendRequest from', data.userId + data.status)
       setNotification(data.userId)
     });
 
     socket.on('friendDeletion', (data) => {
-      console.log('friendDeletion from',data.userId)
+      console.log('friendDeletion from', data.userId)
       setNotification(data.userId)
     });
 
     socket.on('friendCreation', (data) => {
-      console.log('friendCreation from',data.userId)
-      setNotification(data.userId+data.status)
+      console.log('friendCreation from', data.userId)
+      setNotification(data.userId + data.status)
     });
 
     return () => {
@@ -92,17 +100,20 @@ function page() {
     };
   }, [notification, pendingUsers]);
   /* ------------------------------------ - ----------------------------------- */
-  
+
+
 
 
 
   return (
+
     <div className='layouts'>
+
       <div className="my_container">
-        {
-          userUrl && (<>
+        
+          
             <div className="wrapper relative">
-              <Search id={userSession.id} />
+              <Search id={userSession} />
               <div className="md:block absolute right-[0px] top-[0px] hidden">
                 <div className="relative">
                   <Image src={notification_b} width={40} alt="avatar" className="cursor-pointer" />
@@ -125,29 +136,29 @@ function page() {
                               {user.name}
                             </p>
                           </div>
-                          
+
                           <div className="friend_message flex gap-[7px] items-center">
                             <button className="bg-blue-500 font-medium text-sm text-white py-[5px] px-[10px] rounded-2xl hover:opacity-60"
-                            onClick={async () => {
-                              console.log("ACCEPT")
-                              await updateFriend(user.id, userSession.id) && handleStatusChange("ACCEPTED");
-                              socket.emit('friendCreation', {
-                                userId: user.id,
-                                status:"ACCEPTED"
-                              });
-                            }}
-                            >Accept</button>
-                            
-                            <Image src={close_r} width={30} alt="decline" className="cursor-pointer hover:opacity-60" 
                               onClick={async () => {
-                              console.log("DECLINE")
-                              await deleteFriend(user.id, userSession.id) && handleStatusChange("NOFRIEND");
-                              socket.emit('friendDeletion', {
-                                userId: user.id,
-                                status:"DELETION"
-                              });
-                              
-                            }}/>
+                                console.log("ACCEPT")
+                                await updateFriend(user.id, userSession) && handleStatusChange("ACCEPTED");
+                                socket.emit('friendCreation', {
+                                  userId: user.id,
+                                  status: "ACCEPTED"
+                                });
+                              }}
+                            >Accept</button>
+
+                            <Image src={close_r} width={30} alt="decline" className="cursor-pointer hover:opacity-60"
+                              onClick={async () => {
+                                console.log("DECLINE")
+                                await deleteFriend(user.id, userSession) && handleStatusChange("NOFRIEND");
+                                socket.emit('friendDeletion', {
+                                  userId: user.id,
+                                  status: "DELETION"
+                                });
+
+                              }} />
                           </div>
                         </li>
                       )
@@ -158,15 +169,17 @@ function page() {
               }
             </div>
             {friendShip.length}
+
+
+            
             <div className="wrapper">
-              {/* <p className="title">{friend?.name}</p> */}
               <div className="flex flex-col gap-[70px] items-center justify-center h-[500px] w-[200px] xs:w-[300px] md:w-[400px] gradients px-[1rem] py-[1rem] xs:py-[2rem]">
-                <Image src={userUrl?.Avatar} width={300} height={300} alt="avatar" className="rounded-full max-w-[300px] max-h-[300px] w-[270px] h-[270px] object-cover" />
+                {userUrl?.Avatar && <Image src={userUrl.Avatar} width={300} height={300} alt="avatar" className="rounded-full max-w-[300px] max-h-[300px] w-[270px] h-[270px] object-cover" />}
                 <div className="flex flex-col items-center gap-[10px] w-[80%]">
                   <p id='name_user' className="font-semibold md:text-3xl text-center xs:text-xl text-[15px] text-primary w-full">{userUrl?.name}</p>
                   <div className='flex xs:justify-between justify-center w-full items-center'>
                     <div className="font-normal text-primary text-xs md:text-lg hidden xs:block">
-                      {new Date(userUrl?.created_at).toDateString().split(' ').slice(1).join(' ')}
+                      { userUrl && new Date(userUrl.created_at).toDateString().split(' ').slice(1).join(' ')}
                     </div>
                     <div className="flex gap-[5px] items-center">
                       <span className="bg-primary text-white text-s px-[10px] font-normal xs:font-semibold">level</span>
@@ -176,9 +189,9 @@ function page() {
                 </div>
               </div>
 
-              {
-                (userId !== userSession.id) && <FriendAction userId={userId} userSessionId={userSession.id} status={status} setStatus={handleStatusChange}/>
-              }
+              {/* {
+                (userId !== userSession) && <FriendAction userId={userId} userSessionId={userSession} status={status} setStatus={handleStatusChange} />    //! problem here and in the sideBar !! 
+              } */}
 
               <div className="flex flex-wrap gap-[20px] justify-center  w-[200px] xs:w-[300px] md:w-[400px]">
                 <div className="card gradients"><p className="font-bold xs:text-3xl">{userUrl?.name}</p> FRIENDS</div>
@@ -188,45 +201,13 @@ function page() {
             </div>
 
 
-            {/* <div className="wrapper">
-              <p className="title">{true ? ("Your") : ('Brahim')} Achievements</p>
-              <ul className="flex flex-col xs:flex-row flex-wrap gap-[20px] ">
-                {
-                  achievements.map((ach, index) => (
-                    <li key={index} className="achievement ">
-                      <Image src={ach} className="w-full" alt="ach" />
-                    </li>
-                  ))
-                }
-              </ul>
-            </div>
-
-            <div className="wrapper">
-              <p className="title">{true ? ("Your") : ('Brahim')} History</p>
-              <ul className="flex flex-col w-full gap-[20px]">
-                {
-                  history_game.map((history, index) => (
-                    <li key={index} className={`history ${history.status}`}>
-                      <div className="flex items-center gap-[10px] max-w-[100px]">
-                        <Image src={history.avarat} className="w-[40px] md:w-[70px]" alt="avatar" />
-                        <p className="font-medium text-xs md:text-lg text-primary ">{"Osama belkhadir"}</p>
-                      </div>
-                      <div className="history_score">1:2</div>
-                      <div className="flex items-center gap-[10px] max-w-[100px] flex-row-reverse">
-                        <Image src={history.avarat} className="w-[40px] md:w-[70px]" alt="avatar" />
-                        <p className="font-medium text-xs md:text-lg text-primary">{history.oppenet}</p>
-                      </div>
-                    </li>
-                  ))
-                }
-              </ul>
-            </div> */}
-          </>
-          )}
+            
+          
       </div>
       <Friendsbar />
     </div>
   )
+
 }
 
 export default page

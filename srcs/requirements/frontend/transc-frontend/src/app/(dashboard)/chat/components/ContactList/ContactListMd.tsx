@@ -5,75 +5,76 @@ import ContactSm from "../Contact/ContactMd";
 import { contactFriendList, ContactFriend } from '../../TempData/contacts'
 
 import ContactMd from "../Contact/ContactMd";
-import { useState ,useEffect} from 'react';
-
-
+import { useState, useEffect } from 'react';
 
 import axios from "axios";
 
-interface Pic{
-    albumId: number,
-    id: number,
-    title: string,
-    url: string,
-    thumbnailUrl: string
+import { useSelector, useDispatch } from 'react-redux';
+import { setCurrentUser, setOtherUser } from '@/app/store/reducer';
+import { RootState } from '@/app/store/store';
+
+//* Interface of Contact
+interface Contact {
+    id: string
+    name: string
+    email: string
+    IntraId: string
+    Avatar: string
+    status: string
+    created_at: string
+    updated_at: string
+    _count: any
 }
 
-function ContactListMd() {
-    const [activeButtonId, setActiveButtonId] = useState<number | null>(null);
-    const handleButtonClick = (buttonId: number) => {
+function ContactListMd({ inputRef }: any) {
+
+    //*  States
+    const [activeButtonId, setActiveButtonId] = useState<string | null>(null);
+    const [cont, setCont] = useState<Contact[]>([]);
+    const currentUserId = useSelector((state: RootState) => state.EditUserIdsSlice.currentUserId);
+    
+    const dispatch = useDispatch();
+    
+    //* styling the selected btn and dispatch otherUserId
+    
+    const handleButtonClick = (buttonId: string) => {
         setActiveButtonId(buttonId);
+        dispatch(setOtherUser(buttonId));
     };
-
-
-
-    const [pic, setPic] = useState<Pic[]>([]);
+    
+    //* fetching contact List 
     useEffect(() => {
-        async function fetchPic() {
-          try {
-            const response = await axios.get<Pic[]>('https://jsonplaceholder.typicode.com/albums/1/photos');
-            setPic(response.data);
-          } catch (error) {
-            console.error(error);
-          }
+        
+         async function fetchContact() {
+            try {
+                const response = currentUserId &&  await axios.get<Contact[]>(`http://localhost:3000/users/${currentUserId}/receiver`);
+                response && setCont(response.data);
+            } catch (error) {
+                console.error(error);
+            }
         }
-        fetchPic();
-      }, []);
+         fetchContact();
+    }, [currentUserId]); 
 
-
-    const contacts = pic.map((item) => {
+    // ^ ------------------------ filling contact component with data ---------------------
+    const contacts = cont.map((contact) => {
         return (
             <ContactMd
-                key={item.id}
-                id={item.id}
-                unreadMessages={item.id}
-                profilePicturePath={item.url}
+                key={contact.id}
+                id={contact.id}
+                unreadMessages={contact._count.senders}
+                profilePicturePath={contact.Avatar}
                 activeButtonId={activeButtonId}
+                inputRef={inputRef}
                 onClick={handleButtonClick}
             />
         );
     });
 
-
-
-    // const contacts = contactFriendList.map((item: ContactFriend) => {
-    //     return (
-    //         <ContactMd
-    //             key={item.id}
-    //             id={item.id}
-    //             unreadMessages={item.unreadMessages}
-    //             profilePicturePath={item.profilePicturePath}
-    //             activeButtonId={activeButtonId}
-    //             onClick={handleButtonClick}
-    //         />
-    //     );
-    // });
-
     return (
-        
         <div className="h-full w-[25%] bg-primary flex items-center">
             <div className="h-[90%] w-full  overflow-auto no-scrollbar pt-[58px]">
-               {contacts}
+                {contacts}
             </div>
         </div>
 

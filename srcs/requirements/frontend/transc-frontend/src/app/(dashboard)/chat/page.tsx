@@ -13,104 +13,172 @@ import { useMediaQuery } from 'react-responsive';
 import { useDispatch, useSelector } from 'react-redux';
 import { show, hide } from '../../store/reducer';
 import { RootState } from '../../store/store';
-import { useEffect , useState} from "react";
+import { useEffect, useState, useRef, useReducer } from "react";
 
 import axios from "axios";
-import dynamic from "next/dynamic";
+
+import { io, Socket } from 'socket.io-client'
+import Cookies from 'universal-cookie';
+
+
+import { setCurrentUser, setOtherUser } from '@/app/store/reducer';
 
 
 interface Message {
-    id: string;
-    content: string;
-    created_at: string;
-    senderId: string;
-    recieverId: string;
-  }
-  
+  id?: string;
+  content: string;
+  created_at: string;
+  senderId: string;
+  recieverId: string;
+  room: string;
+}
+
+interface MessageData {
+  content: string;
+  senderId: string;
+  recieverId: string;
+}
 
 function Page() {
-    const isMdScreen = useMediaQuery({ minWidth: 768 });
-    const isLgScreen = useMediaQuery({ minWidth: 1200 });
-   
-    const [isMdScreenState, setIsMdScreen] = useState(false);
-    const [isLgScreenState, setIsLgScreen] = useState(false);
-    useEffect(() => {
-        setIsMdScreen(isMdScreen);
-        setIsLgScreen(isLgScreen);
-      }, [isMdScreen, isLgScreen]);
+
+  const isContactListHidden = useSelector((state: RootState) => state.toggleShowContactList);
+  const refreshStatus = useSelector((state: RootState) => state.refreshFetchMessagesSlice.refreshFetchMessages);
+  const [currentRoomId, setCurrentRoomId] = useState("");
 
 
-    const [messages, setMessages] = useState<Message[]>([]);
-    useEffect(() => {
-        async function fetchMessages() {
-          try {
-            const response = await axios.get<Message[]>('http://localhost:3000/chat?senderId=4526e24e-23be-11ee-be56-0242ac120002&receiverId=ee10f6ea-23bb-11ee-be56-0242ac120002');
-            setMessages(response.data);
-            // console.log(response);
-          } catch (error) {
-            console.error(error);
-          }
-        }
-        fetchMessages();
-      }, []);
+  //^ ---------------------------  screen sizes states ----------------------------
+  const isMdScreen = useMediaQuery({ minWidth: 768 });
+  const isLgScreen = useMediaQuery({ minWidth: 1200 });
 
-      const conversations = messages.map(item => {
-        return (
-            <MessageBox
-                key={item.id}
-                userId={item.id}
-                messageContent={item.content}
-                date={item.created_at}
-                time={'15:20'}
-                profilePicture={"bben-aou.jpeg"}
-                user={"Bilal Ben Aouad"}
-            />
-
-        )
-    });
+  const [isMdScreenState, setIsMdScreen] = useState(false);
+  const [isLgScreenState, setIsLgScreen] = useState(false);
 
 
-    const isContactListHidden = useSelector((state: RootState) => state.toggleShowContactList);
-    // const conversations = conversation.map(item => {
-    //     return (
-    //         <MessageBox
-    //             key={item.id}
-    //             userId={item.id}
-    //             messageContent={item.messageContent}
-    //             date={item.date}
-    //             time={item.time}
-    //             profilePicture={item.profilePicture}
-    //             user={item.user}
-    //         />
+  //* useEffect for screen sizes state
+  useEffect(() => {
+    setIsMdScreen(isMdScreen);
+    setIsLgScreen(isLgScreen);
+  }, [isMdScreen, isLgScreen]);
+  //^ -------------------------------------------------------------------------------
+  
+  const dispatch = useDispatch();
+  (isMdScreenState || isLgScreenState) && dispatch(hide());
+  //^ ---------------------------  get user Id  part ----------------------------
 
-    //     )
-    // });
+  const otherUserId = useSelector((state: RootState) => state.EditUserIdsSlice.otherUserId);
+  const currentUserId = useSelector((state: RootState) => state.EditUserIdsSlice.currentUserId);
+  //* useEffect for extracting my id from the cookie
+  useEffect(() => {
+    const cookies = new Cookies();
+    const userIdFromCookie = cookies.get('id');
+    dispatch(setCurrentUser(userIdFromCookie));
+  }, [dispatch]);
+  //^ -----------------------------------------------------------------------------
 
 
-    
 
+  //^ ---------------------------  fetching Messages from backend ----------------------------
+
+  const [messages, setMessages] = useState<Message[]>([]);
+  //* useEffect for fetching data of a Room
+  useEffect(() => {
+    async function fetchMessages() {
+      try {
+        const response = await axios.get<Message[]>(`http://localhost:3000/chat?hashedRoomId=${currentRoomId}`);
+        setMessages(response.data);
+
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    fetchMessages();
+
+  }, [currentRoomId]);
+
+
+  //^ ----------------------------------------------------------------------------------------------
+
+  //^ ---------------------------  scroll to the last message --------------------------------------
+
+  const autoScrollRef = useRef<HTMLDivElement>(null);
+
+  //* useEffect for scrolling to the last msg
+  useEffect(() => {
+    autoScrollRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages])
+
+  //^ ---------------------------------------------------------------------------------------
+
+  //& ------- mapping for the chat conversation and make each chat in it's component ----- 
+  const conversations = messages.map((item, i) => {
     return (
-        <div className="w-full h-[85vh] md:h-screen flex">
-            <div className={`${!isContactListHidden.showContactListToggled ? "w-full h-full " : "hidden"} `}>
+      <div key={i} ref={autoScrollRef} >
+        <MessageBox
+          userId={item.senderId}
+          messageContent={item.content}
+          date={item.created_at}
+        />
+      </div>
+    )
+  });
 
-                {isMdScreenState && <Header 
-                    ContactName = { "Channel"}
-                />}
-              
+  //^ -----------------------------------  Socket IO Part --------------------------------------
 
-                <div className="w-full h-[85%] bg-sender pl-[20px]  pr-[15px] py-[15px] overflow-auto no-scrollbar  md:h-[80%]">
-                    {conversations}
-                </div>
-                <MessageInputBox />
-            </div>
-            <ContactListSm />
-          
-            {isLgScreenState  && <ContactListLg/>}
-            
-            {(isMdScreenState && !isLgScreenState) && <ContactListMd/>}
-           
+
+  const socket = useRef<Socket>();
+
+
+  //* useEffect for creating socket
+  useEffect(() => {
+    socket.current = io("ws://localhost:3000");
+  }, [])
+
+  //* useEffect for getting message from socket
+  useEffect(() => {
+    socket.current?.on("getMessage", (data) => {
+      setMessages((prev) => [...prev, { senderId: data.senderId, content: data.text, recieverId: data.receiverId, created_at: new Date().toISOString(), room: data.room }])
+    });
+  }, [socket]);
+
+  //* useEffect for getting channel Id from socket
+  useEffect(() => {
+    socket.current?.on("joined", (data) => {
+      setCurrentRoomId(data.roomName);
+    });
+  }, []);
+  //^ -----------------------------------------------------------------------------------------
+
+
+
+  return (
+    <div className="w-full h-[85vh] md:h-screen flex">
+      <div className={`${!isContactListHidden.showContactListToggled ? "w-full h-full " : "hidden"} `}>
+
+        {isMdScreenState && <Header
+          ContactName={"Direct Chat"}
+        />}
+
+
+        <div className="w-full h-[85%] bg-sender pl-[20px]  pr-[15px] py-[15px] overflow-auto no-scrollbar  md:h-[80%] ">
+          {conversations}
         </div>
-    );
+        <MessageInputBox
+          inputRef={socket} />
+      </div>
+        {<ContactListSm 
+          inputRef={socket}
+        />
+        }
+      {(isMdScreenState && !isLgScreenState) && <ContactListMd 
+          inputRef={socket}
+      />}
+      {isLgScreenState && <ContactListLg
+        inputRef={socket}
+      />}
+      
+
+
+    </div>
+  );
 }
 export default Page;
-// export default dynamic (() => Promise.resolve(Page), {ssr: false})
