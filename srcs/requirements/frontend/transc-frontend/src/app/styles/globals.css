@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@100;200;300;400;500;600;700&display=swap');
 /* https://fonts.google.com/specimen/Quicksand */
 
 @tailwind base;
@@ -37,20 +38,21 @@ body {
 
 .my_container{
   @apply flex flex-1 flex-col items-center;
-  @apply py-[100px] overflow-scroll;
+  @apply py-[100px] overflow-scroll overflow-x-hidden;
 }
 
 .status{
   content: '';
   position: absolute;
-  width: 20px;
-  height: 20px;
+  width: 15px;
+  height: 15px;
   background: #03A900;
   outline: 4px solid #3E3B6A;
   border-radius: 50%;
-  left: 50px;
-  top: 50px;
+  left: 35px;
+  top: 35px;
 }
+
 .gradient
 {
     border-radius: 2.5rem;
@@ -93,6 +95,16 @@ body {
   @apply border-gray-400 xs:w-[200px] opacity-70;
 }
 
+.loading_animation{
+  animation: loading_animation 1s infinite linear;
+}
+
+@keyframes loading_animation {
+  0% {opacity: 1;}
+  50% {opacity: .4;}
+  100% {opacity: 1;}
+}
+
 
 /* --------------------------------- SIDEBAR -------------------------------- */
 .header {
@@ -108,18 +120,18 @@ body {
 .sidebarmd {
   /* @apply bg-primary h-screen w-full min-w-[200px] min-h-[100px] pt-[15px] absolute z-[9] top-0; */
   @apply absolute z-10 mt-[15vh];
-  @apply bg-primary h-[85vh] w-full min-w-[200px];
+  @apply bg-primary h-[85vh] w-full min-w-[200px] ;
   @apply flex flex-col justify-around items-center md:hidden;
 }
 
 .sidebarlg {
-  @apply bg-primary h-screen w-[20%] ;
+  @apply bg-primary h-screen w-[20%]  ;
   @apply md:flex flex-col justify-around items-center hidden lg:hidden;
 }
 
 .sidebarxl {
   @apply bg-primary h-screen w-[25%];
-  @apply lg:flex flex-col justify-around items-center hidden;
+  @apply lg:flex flex-col justify-around items-center hidden ;
 }
 
 .li_sidebar {
@@ -128,7 +140,7 @@ body {
   @apply font-medium text-center;
   @apply xs:mb-[15px] mb-[10px];
   @apply xs:pl-[25px] lg:pl-[25px] pl-0 md:pl-0 xs:p-[15px] lg:xs:p-[15px] py-[5px] md:p-0 md:py-0;
-  @apply w-[80px] xs:w-[250px] md:w-[100px] lg:w-[250px];
+  @apply w-[80px] xs:w-[200px] md:w-[100px] lg:w-[200px];
   @apply hover:bg-gradient-to-br from-[#fff] via-[#DFDDFF]/40 to-[#fff];
 }
 
@@ -136,8 +148,8 @@ body {
 /* ------------------------------ ONLINEFRIEND ------------------------------ */
 .friend {
   @apply bg-primary h-screen w-[25%] ;
-  @apply lg:flex flex-col items-center gap-[50px] hidden;
-  @apply p-[50px] pt-[100px];
+  @apply lg:flex flex-col items-center hidden;
+  @apply py-[50px];
 }
 
 /* --------------------------------- PROFILE -------------------------------- */

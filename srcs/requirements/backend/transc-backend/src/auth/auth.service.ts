@@ -4,12 +4,12 @@ import { PrismaService } from 'prisma/prisma.service';
 import { JwtPayload } from "./type/jwt-payload.type"
 import { JwtService } from "@nestjs/jwt";
 import { JWT_SECRET } from "../utils/constants";
-// import * as cookieParser from 'cookie-parser';
-// import { AuthDto } from "./dto/auth.dto";
-// import * as bcrypt from 'bcryptjs';
-// import { Response } from "express";
-// import { ConfigService } from '@nestjs/config';
-// import { HttpClient } from '@nestjs/common';
+import { UserInter } from "../users/user.interface";
+import { LOGIN_REDIRECT_URL, PROFILE_REDIRECT_URL } from "src/utils/constants";
+import { Req } from "@nestjs/common";
+import { User } from "@prisma/client";
+import { authenticator } from "otplib";
+import { toDataURL } from 'qrcode'
 
 
 @Injectable()
@@ -18,7 +18,8 @@ export class AuthService {
                     private prisma: PrismaService,
                     private jwt: JwtService) {}
                     
-    async valideUser(req: any) {
+    async getUser(req: any) {
+        console.log(req.user);
         let user = await this.userService.findOneWithMail(req.user.email);
         if (user)
             return user;
@@ -27,73 +28,87 @@ export class AuthService {
                 name: req.user.username,
                 email: req.user.email,
                 IntraId: req.user.id,
-                status: 'ONLINE',
+                Avatar: req.user.avatarUrl,
+                // status: 'ONLINE',
             },
         })
         return newUser;
     }
+    async redirectBasedOnTwoFa(res: any, user: UserInter): Promise<void> {
+        if (!user.twoFa) {
+            console.log(`${LOGIN_REDIRECT_URL} + ${user.id}}`)
+            return res.redirect(`${LOGIN_REDIRECT_URL}/${user.id}}`);
+        } else {
+            
+            console.log(`${PROFILE_REDIRECT_URL} + ${user.id}}`)
+            return res.redirect(`${PROFILE_REDIRECT_URL}/${user.id}`);
+        }
+      }
     
-    async signToken(payload: JwtPayload) {
+    async signToken(@Req() req: any) : Promise<string>{
+        const payload: JwtPayload = {id: req.user.id, email: req.user.email};
         return await this.jwt.signAsync(payload, {secret: JWT_SECRET});
     }
+    
+    async setTwoFactorAuthenticationSecret(secret: string, userId: string){
+        await this.prisma.user.update({
+            where: {
+                id: userId,
+            },
+            data: {
+                twoFactorAuthSecret: secret,
+            }
+        });
+    }
 
-    // constructor(private prisma: PrismaService, private jwt: JwtService) {} 
-    // constructor(private http: HttpClient, private configService: ConfigService) {} 
+    async turnOnTwoFactorAuthentication(userId: string){
+        await this.prisma.user.update({
+            where: {
+                id: userId,
+            },
+            data: {
+                isTwoFactorEnabled: true,
+            }
+        });
+    }
 
-    // async signUp(dto: AuthDto) {
-    //     const {email, password} = dto;
-    //     const foundUser = await this.prisma.user.findUnique({where: {email: dto.email}});
+    async generateTwoFactorAuthenticationSecret(user: User) {
+        const secret = authenticator.generateSecret();
 
+        const otpauthUrl = authenticator.keyuri(user.email, 'ft_transcendence', secret);
+
+        await this.setTwoFactorAuthenticationSecret(secret, user.id);
         
-    //     if (foundUser){
-    //         throw new BadRequestException('Email already exists');
-    //     }
-    //     const hashedPassword = await this.hashPassword(password);
-    //     await this.prisma.user.create({
-    //         data: {
-    //             email,
-    //             password: hashedPassword,
-    //             Status: ['online'],
-    //           }
-    //     })
-    //     return "I'm Sign Up";
-    // }
+        return {
+            secret,
+            otpauthUrl
+        }
 
-    // async signIn(dto: AuthDto, res : Response) {
-    //     const {email, password} = dto;
+    }
 
-    //     const foundUser = await this.prisma.user.findUnique({where: {email: dto.email}});
-    //     if (!foundUser){
-    //         throw new BadRequestException('Wrong credentials1');
-    //     }
-    //     const isMatch = await this.comparePasswords({
-    //         password,
-    //         hash: foundUser.password,
-    //     });
-    //     if (!isMatch){
-    //         throw new BadRequestException('Wrong credentials2');
-    //     }
-        
-    //     const token = await this.signToken({
-    //         id: foundUser.id,
-    //         email: foundUser.email,
-    //     });
-    //     return res.header('Authorization', `Bearer ${token}`).send();
-    // }
+    async generateQrCodeDataURL(otpauthUrl: string) {
+        return toDataURL(otpauthUrl);
+    }
 
-    // async signOut(res : Response) {
-    //     res.header('Authorization', 'Bearer expired-token');
-    //     return "SignOut Succefully";
-    // }
+    async isTwoFactorAuthenticationCodeValid(twoFactorAuthenticationCode: string, user: User){
+        return authenticator.verify({
+            token: twoFactorAuthenticationCode,
+            secret: user.twoFactorAuthSecret,
+        });
+    }
 
-    // async hashPassword(password: string): Promise<string> {
-    //     const saltOrRounds = 10;
+    async loginWith2fa(userWithoutPsw: Partial<User>){
+        const payload: JwtPayload =  {
+            id: userWithoutPsw.id,
+            email: userWithoutPsw.email,
+            isTwoFactorEnabled: !!userWithoutPsw.isTwoFactorEnabled,
+            isTwoFactorAuthenticated: true,
+        };
 
-    //     return await bcrypt.hash(password, saltOrRounds); 
-    // }
-
-    // async comparePasswords(args: {password: string; hash: string}): Promise<boolean> {
-    //     return await bcrypt.compare(args.password, args.hash);
-    // }
-
+        return {
+            email: payload.email,
+            access_token: this.signToken(payload),
+        };
+    }
+    
 }

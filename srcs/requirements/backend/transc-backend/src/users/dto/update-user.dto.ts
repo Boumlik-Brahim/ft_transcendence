@@ -19,7 +19,7 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
     @ApiProperty()
     @IsString()
     @IsNotEmpty()
-    password: string
+    IntraId: string
     
     @ApiProperty()
     @IsString()
