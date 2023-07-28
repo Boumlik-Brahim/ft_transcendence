@@ -8,9 +8,11 @@ import { ChannelModule } from './channel/channel.module';
 import { GameModule } from './game/game.module';
 import { UsersModule } from './users/users.module';
 
+import { AppGateway } from './app.gateway';
+
 @Module({
   imports: [PrismaModule, GameModule, ChatModule, ChannelModule, AuthModule, UsersModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, AppGateway],
 })
-export class AppModule {}
+export class AppModule { }

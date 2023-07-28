@@ -16,9 +16,15 @@ export class ChatController {
     return chat;
   }
 
+  // @Get()
+  // async findAll(@Query('senderId') senderId: string, @Query('receiverId') receiverId: string): Promise<DirectMessage[]> {
+  //   const chat = await this.chatService.findAllChats(senderId, receiverId);
+  //   return chat;
+  // }
+
   @Get()
-  async findAll(@Query('senderId') senderId: string, @Query('receiverId') receiverId: string): Promise<DirectMessage[]> {
-    const chat = await this.chatService.findAllChats(senderId, receiverId);
+  async findAll(@Query('hashedRoomId') hashedRoomId: string): Promise<DirectMessage[]> {
+    const chat = await this.chatService.findAllChats(hashedRoomId);
     return chat;
   }
 
@@ -28,9 +34,8 @@ export class ChatController {
     return chat;
   }
 
-  @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateChatDto: UpdateChatDto): Promise<DirectMessage> {
-    const updateChat = await this.chatService.updateChat(id, updateChatDto);
-    return updateChat;
+  @Patch(':senderId/:receiverId')
+  async update(@Query('senderId') senderId: string, @Query('receiverId') receiverId: string, @Body() updateChatDto: UpdateChatDto): Promise<void> {
+    await this.chatService.updateChat(senderId, receiverId , updateChatDto);
   }
 }
