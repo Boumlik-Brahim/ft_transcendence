@@ -22,7 +22,8 @@ module.exports = {
           300: '#53BBB5',
           400: '#FF2626',
           500 : ' #b9b7cf',
-          600 : '#F6F6F6'
+          600 : '#F6F6F6',
+          700 : '#E3E2F0'
         },
       }
     },
@@ -30,11 +31,12 @@ module.exports = {
       xs: "395px",
       md: "768px",
       lg: "1200px",
-      xl: "2560px",
+      xl: "1900px",
     },
     fontFamily: {
       'poppins' : ['"Poppins"', 'sans-serif'],
       'press': '"Press Start 2P"',
+      'roboto': '"Roboto Mono"'
     },
   },
   plugins: [],

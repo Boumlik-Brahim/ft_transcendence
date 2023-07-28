@@ -8,6 +8,7 @@
 .card_friend {
     @apply xs:h-[60px] md:h-[70px] h-[50px] rounded-xl p-[10px] xs:p-0;
     @apply flex justify-center items-center flex-col flex-1;
+    @apply hover:opacity-50;
     @apply cursor-pointer;
 }
 

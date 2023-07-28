@@ -1,5 +1,5 @@
 import Sidebar from '@/../components/Sidebar'
-import { ReduxProvider } from '../store/Provider'
+
 
 export const metadata = {
   title: 'Profile',
@@ -12,15 +12,9 @@ export default function DashboardLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body>
-
-        <main className='flex flex-col md:flex-row w-full'> 
-          <Sidebar/>   
-          {children}
-        </main>
-
-      </body>
-    </html>
+    <main className='flex flex-col md:flex-row w-full'>
+      <Sidebar />
+      {children}
+    </main>
   )
 }

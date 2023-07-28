@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { Achievement, BlockedUser, Friend, User, UserStat } from '@prisma/client';
 import { ApiTags } from '@nestjs/swagger';
@@ -96,6 +97,7 @@ export class UsersController {
   @Post('/blockedUser')
   async createBlockedUser(@Body() createBlockedUserDto: CreateBlockedUserDto): Promise<BlockedUser> {
     const blockedUser = await this.usersService.createBlockedUser(createBlockedUserDto);
+    console.log("blochsdds")
     return blockedUser;
   }
   
@@ -104,6 +106,17 @@ export class UsersController {
     const blockedUsers = await this.usersService.findAllBlockedUsers(userId);
     return blockedUsers;
   }
+
+  @Get('/:userId/blockedUserOne')
+  async findBlockedUser(@Param('userId') userId: string): Promise<BlockedUser[]> {
+    const blockedUsers = await this.usersService.findBlockedUser(userId);
+    return blockedUsers;
+  }
+ 
+  @Delete ('/:userId/unBlockedUser/:friendId')
+  async unBlockUser(@Param('userId') userId: string, @Param('friendId') friendId: string): Promise<void> {
+    await this.usersService.unBlockUser(userId, friendId);
+  }
   //* -------------------------------------------------------------blockedUserCRUDOp------------------------------------------------------ *//
 
   //* ---------------------------------------------------------------friendCRUDOp--------------------------------------------------------- *//
@@ -111,6 +124,18 @@ export class UsersController {
   async createFriend(@Body() createFriendDto: CreateFriendDto): Promise<Friend> {
     const friend = await this.usersService.createFriend(createFriendDto);
     return friend;
+  }
+  
+  @Get('/:userId/friendShip/:friendId')
+  async friendShip(@Param('userId') userId: string, @Param('friendId') friendId: string ): Promise<Friend[]> {
+    const friendShip = await this.usersService.friendShip(userId, friendId);
+    return friendShip;
+  }
+  
+  @Get('/:userId/pending')
+  async pendingReq(@Param('userId') userId: string): Promise<Friend[]> {
+    const friendShip = await this.usersService.pendingReq(userId);
+    return friendShip;
   }
   
   @Get('/:userId/friend')
