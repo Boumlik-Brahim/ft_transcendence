@@ -136,15 +136,25 @@ const Page = ( {params} : any) => {
                                         </div>
                                     </div>
                                 </div>
-                                <div className={`lg:min-w-[700px] md:max-w-[65vw] max-w-[95vw]  md:min-w-[50vw] h-[85vw] md:h-[50vh] pl-2 pr-2 pb-2 md:w-[50vh] border-2 border-white shadow-2xl lg:h-[600px] ${ userId === gameData?.player1.id ? "rotate-[-90deg]" : "rotate-90"} 
+                                <div className={`lg:min-w-[700px] md:max-w-[65vw] max-w-[95vw] mb-3  md:min-w-[50vw] h-[85vw] md:h-[50vh] pl-2 pr-2 pb-2 md:w-[50vh] border-2 border-white shadow-2xl lg:h-[600px] ${ userId === gameData?.player1.id ? "rotate-[-90deg]" : "rotate-90"} 
                                 md:rotate-0 `}>
                                     <Canvas gameData={gameData}></Canvas>
+                                </div>
+                                <div className='lg:min-w-[700px] md:max-w-[65vw] max-w-[95vw] h-[50px]  md:min-w-[50vw] mt-6 flex  items-center'>
+                                    <button className='bg-primary m-4 p-2 w-[150px] border border-primary text-white rounded-xl cursor hover:bg-white hover:text-primary' onClick={handleCancel}>
+                                        cancel
+                                    </button>
+                                    <button className='bg-white m-4 p-2 border border-primary w-[150px] text-primary rounded-xl hover:bg-primary hover:text-white' onClick={handlePause}>
+                                        {
+                                            gameSate === 'pause' ? 'Start' : 'Pause'
+                                        }
+                                    </button>
                                 </div>
                             </div>
                         )
                     }
                     {
-                        (gameSate === 'waiting') && <Waiting></Waiting>
+                        (gameSate === 'waiting') && <Waiting cancel={handleCancel}></Waiting>
                     }
                     {
                         (gameSate === 'finished' || gameSate === 'canceled') && (
@@ -169,26 +179,6 @@ const Page = ( {params} : any) => {
                             </div>
                         )
                     }
-                    <div className='w-full flex items-center absolute top-0'>
-                        {
-                            (gameSate !== 'finished' && gameSate !== 'canceled') && (
-                                <button className='bg-primary m-4 p-2 w-[150px] border border-primary text-white rounded-xl cursor hover:bg-white hover:text-primary' onClick={handleCancel}>
-                                    {
-                                        gameSate === 'waiting' ? 'Leave' : 'Cancel'
-                                    }
-                                </button>
-                            )
-                        }
-                        {
-                            (gameSate === 'started' || gameSate === 'pause')  && (
-                                <button className='bg-white m-4 p-2 border border-primary w-[150px] text-primary rounded-xl hover:bg-primary hover:text-white' onClick={handlePause}>
-                                    {
-                                        gameSate === 'pause' ? 'Start' : 'Pause'
-                                    }
-                                </button>
-                            )
-                        }
-                    </div>
                 </div>
             </div>
         )

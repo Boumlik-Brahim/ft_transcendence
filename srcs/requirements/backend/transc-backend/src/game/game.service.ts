@@ -416,8 +416,9 @@ export class GameService {
     quiteGame(playerId : String, gameId : String, client : any) {
         const game : GameEntity = this.getGame(playerId, gameId, client);
         if (game) {
-            if (game.gameStatus.status === 'waiting')
+            if (game.gameStatus.status === 'waiting' || game.id === this.inTheQueue)
             {
+                console.log('fode oulae')
                 if (game.id === this.inTheQueue)
                     this.inTheQueue = null;
                 this.gameMap.delete(gameId);
