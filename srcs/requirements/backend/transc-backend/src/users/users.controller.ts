@@ -107,9 +107,10 @@ export class UsersController {
     return blockedUsers;
   }
 
-  @Get('/:userId/blockedUserOne')
-  async findBlockedUser(@Param('userId') userId: string): Promise<BlockedUser[]> {
-    const blockedUsers = await this.usersService.findBlockedUser(userId);
+  
+  @Get('/:userId/block/:friendId')
+  async findBlockedUser(@Param('userId') userId: string, @Param('friendId') blockedId: string): Promise<BlockedUser[]> {
+    const blockedUsers = await this.usersService.findBlockedUser(userId, blockedId);
     return blockedUsers;
   }
  

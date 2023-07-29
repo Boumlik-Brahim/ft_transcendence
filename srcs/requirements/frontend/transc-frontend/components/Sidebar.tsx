@@ -5,16 +5,13 @@ import Link from 'next/link'
 import { SideLinks } from '@/../constant'
 import { useState } from 'react';
 import { close_b, logo_b, logo_w, logout_b, logout_w, menu_b, notification_b } from '../public';
-
-import { useDispatch, useSelector } from 'react-redux';
-import { createChannelOn, createChannelOff } from '../src/app/store/reducer';
+import { useSelector } from 'react-redux';
 import { RootState } from '../src/app/store/store';
-import { useMediaQuery } from 'react-responsive';
 import { useEffect } from "react";
 import Cookies from 'universal-cookie';
 
 
-function ge(nav: string, id: string) {
+function getPath(nav: string, id: string) {
     if (nav === 'profile')
         return `profile/${id}`
     return nav
@@ -23,28 +20,24 @@ function ge(nav: string, id: string) {
 function Sidebar() {
 
     /* ----------------------------- get the USER ID ---------------------------- */
-    // const userSession = JSON.parse(sessionStorage.user);
+    const [userSession, setUserSession] = useState<string>("")
 
-
-      const cookies = new Cookies();
-      const userSession = cookies.get('id');
-
+    useEffect(() => {
+        const cookies = new Cookies();
+        setUserSession(cookies.get('id'));
+    }, [])
     /* ------------------------------------ - ----------------------------------- */
 
     const isCreateChannelOn = useSelector((state: RootState) => state.createChannelToggle);
-    
+
     const isCreateChannelPopUpOn = useSelector((state: RootState) => state.createChannelPopUpToggle);
     const [toggle, setToggle] = useState(true);
-//    if (!userSession){
-//        console.log("when it's null in sideBar : ",userSession)
-//        return <>ops</>
-//    }
-const path="";
-    
-    
+
+
+
     return (
         <>
-       
+
             <div className="header">
                 <button onClick={() => setToggle(!toggle)}>
                     {
@@ -63,7 +56,7 @@ const path="";
                     <nav className='sidebarmd '>
                         <ul>
                             {SideLinks.map((link, index) => (
-                               <Link href={`/${ge(link.name, userSession)}`} key={index}>
+                                <Link href={`/${getPath(link.name, userSession)}`} key={index}>
 
                                     <li key={index} className='li_sidebar'>
                                         <Image key={link.name} src={link.icon_b} width={30} alt={link.name} />
@@ -90,7 +83,7 @@ const path="";
                 </div>
                 <ul>
                     {SideLinks.map((link, index) => (
-                        <Link href={`/${ge(link.name, userSession)}`} key={index}>
+                        <Link href={`/${getPath(link.name, userSession)}`} key={index}>
 
                             <li key={index} className='li_sidebar'>
                                 <Image key={link.name} src={link.icon_w} width={60} alt={link.name} />
@@ -110,9 +103,9 @@ const path="";
                 </div>
                 <ul>
                     {SideLinks.map((link, index) => (
-                        <Link href={`/${ge(link.name, userSession)}`} key={index}>
+                        <Link href={`/${getPath(link.name, userSession)}`} key={index}>
                             <li key={index} className='li_sidebar'>
-                                <Image key={link.name} src={link.icon_b} width={30}  alt={link.name} />
+                                <Image key={link.name} src={link.icon_b} width={30} alt={link.name} />
                                 <p className='text-primary hidden xs:flex'>
                                     {link.name}
                                 </p>
@@ -132,7 +125,7 @@ const path="";
             </nav>
         </>
     )
-                    
+
 }
 
 export default Sidebar
