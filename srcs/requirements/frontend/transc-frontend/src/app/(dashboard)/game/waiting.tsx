@@ -2,17 +2,35 @@
 import Image from 'next/image';
 import { GIF } from '../../../../public';
 import { closeCircle } from '../../../../public';
+import Player from './player';
+import Friends from './friends';
+import { vs } from '../../../../public';
+import { useState } from 'react';
 
 
 interface Props {
-    cancel : () => void
+    cancel : () => void,
+    myId : string,
+    oponentId : string | undefined
 }
 
-const Waiting = ({cancel} : Props) => {
+const Waiting = ({cancel, myId, oponentId} : Props) => {
+
+    const setInput = (params : string) => {}
 
     return (
-        <div className='flex justify-center items-center h-[90%] w-[90%] p-10  m-auto'>
-            
+        <div className='flex flex-col justify-center items-center h-[90%] w-[90%] p-10  m-auto'>
+            <div className='hidden md:flex items-sart justify-center gap-2 m-auto md:max-h-[348px] relative '>
+                <div className='flex flex-col-reverse md:flex-col'>
+                    <Player playerId={myId}  setInputValue={setInput} waiting={true} />
+                </div>
+                <div className='absolute top-[50%] md:block hidden'>
+                    <Image src={vs} height='50' width='100' alt='no player' />
+                </div>
+                <div className='flex flex-col'>
+                    <Player  playerId={oponentId} setInputValue={setInput} waiting={true} />
+                </div>
+            </div>
            <div className='p-2 z-10 w-[80%] md:w-[793px] h-auto rounded-lg relative gradient'>
                <div className='flex justify-between items-center w-full p-4'>
                     <h1 className='game_font text-primary  text-[10px] md:text-[15px]'>waiting your opponent...</h1>

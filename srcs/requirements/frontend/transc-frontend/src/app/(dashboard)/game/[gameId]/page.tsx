@@ -9,6 +9,7 @@ import Canvas from './canva'
 import { useRouter } from 'next/navigation';
 import Waiting from '../waiting';
 import { getCookie } from 'cookies-next';
+import Players from './players';
 
 
 
@@ -50,7 +51,10 @@ const Page = ( {params} : any) => {
     const [gameSate, setGameSate] = useState<string | undefined>();
     const [gameData, setGameData] = useState<GameEntity | undefined>();
     const userId = getCookie('id') as string;
+    const oponentId = userId === gameData?.player1.id ? gameData.player2.id : gameData?.player1.id;
     const id = params.gameId;
+
+    console.log(gameData, 'fode')
 
     const createGame = (isRamdomOponent : boolean) : void => {
         if (!socket.connected) return ;
@@ -81,20 +85,20 @@ const Page = ( {params} : any) => {
         document.addEventListener('keydown', (event) => {
             const code = event.code;
             if (code === 'ArrowRight' || code === 'ArrowLeft')
-                socket.emit(code, {gameId : id, userId})
-          }, false);
+            socket.emit(code, {gameId : id, userId})
+        }, false);
         
         socket.on('Success', data => {
             const { id } = data;
             router.push(`/game/${id}`)
         });
-    
+        
         socket.on('error_access', () => {
             router.push('/game')
         })
-
+        
         socket.on('gameData', (data) => setGameData(data))
-
+        
         socket.on('gameSate', data => {
             const { state } = data;
             setGameSate(state);
@@ -119,23 +123,9 @@ const Page = ( {params} : any) => {
                     {
                         (gameSate === 'started' || gameSate === 'pause' || gameSate === 'stopped') && (
                             <div className='flex flex-col flex-1 w-full justify-center items-center bg-[#E8E8E8] '>
-                                <div className='
-                                    md:min-w-[700px]  p-2 lg:w-[700px]
-                                    border-2 border-white 
-                                    hidden lg:flex justify-between items-center  bg-primary'>
-                                    <div className='flex gap-3 items-center'>
-                                        <div className='h-auto m-auto'>
-                                            <Image src={avatar} height='80' width='80' alt='no player' className='border-4 rounded-full' />
-                                        </div>
-                                        <h1 className='text-white text-[20px] font-[700]'>Player Name</h1>
-                                    </div>
-                                    <div className='flex gap-3 items-center'>
-                                        <h1 className='text-white text-[20px] font-[700]'>Oponent Name</h1>
-                                        <div className='h-auto m-auto'>
-                                            <Image src={avatar} height='80' width='80' alt='player'  className='border-4 rounded-full' />
-                                        </div>
-                                    </div>
-                                </div>
+                                {
+                                    gameData && <Players userId_1={gameData.player1.id as string}  userId_2={gameData.player2.id as string} />
+                                }
                                 <div className={`lg:min-w-[700px] md:max-w-[65vw] max-w-[95vw] mb-3  md:min-w-[50vw] h-[85vw] md:h-[50vh] pl-2 pr-2 pb-2 md:w-[50vh] border-2 border-white shadow-2xl lg:h-[600px] ${ userId === gameData?.player1.id ? "rotate-[-90deg]" : "rotate-90"} 
                                 md:rotate-0 `}>
                                     <Canvas gameData={gameData}></Canvas>
@@ -154,7 +144,7 @@ const Page = ( {params} : any) => {
                         )
                     }
                     {
-                        (gameSate === 'waiting') && <Waiting cancel={handleCancel}></Waiting>
+                        (gameSate === 'waiting') && <Waiting cancel={handleCancel} myId={userId} oponentId={oponentId as string}></Waiting>
                     }
                     {
                         (gameSate === 'finished' || gameSate === 'canceled') && (

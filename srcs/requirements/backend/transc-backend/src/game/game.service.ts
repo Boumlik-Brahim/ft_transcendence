@@ -13,6 +13,8 @@ export class GameService {
     async createGame(data, client : any)  {
         const { invitedId, creatorId, isRamdomOponent } = data;
         if (!isRamdomOponent) {
+            if (creatorId === invitedId)
+                return ;
             try {
                 const user =  this.prisma.user.findUnique({
                     where : {
@@ -64,6 +66,7 @@ export class GameService {
             }
             client.join(gameId);
             client.emit('gameSate', {state : game.gameStatus.status});
+            client.emit('gameData', game);
             const nbrClientRequire = 2;
             const rooms = server.adapter.rooms.get(gameId)
             if (userId === game.player1.id)
@@ -132,7 +135,7 @@ export class GameService {
 
         if (ball_left <= paddle1_surface && ball_y > paddle1_top && ball_y < paddle1_bottom)
         {
-            gameValue.ball_speed += 0.1;
+            gameValue.ball_speed += 0.2;
             const angle = this.paddleCollisionAngle(ball_y, paddle1_top, paddle_middle);
             gameValue.vx = gameValue.ball_speed * Math.cos(angle);
             gameValue.vy = gameValue.ball_speed * Math.sin(angle);
@@ -143,7 +146,7 @@ export class GameService {
         }
         else if (ball_right >= paddle2_surface && ball_y > paddle2_top && ball_y < paddle2_bottom)
         {
-            gameValue.ball_speed += 0.1;
+            gameValue.ball_speed += 0.2;
             const angle = this.paddleCollisionAngle(ball_y, paddle2_top, paddle_middle);
             gameValue.vx = gameValue.ball_speed * Math.cos(angle);
             gameValue.vy = gameValue.ball_speed * Math.sin(angle);
@@ -416,13 +419,12 @@ export class GameService {
     quiteGame(playerId : String, gameId : String, client : any) {
         const game : GameEntity = this.getGame(playerId, gameId, client);
         if (game) {
-            if (game.gameStatus.status === 'waiting' || game.id === this.inTheQueue)
+            if (game.id === this.inTheQueue)
             {
-                console.log('fode oulae')
-                if (game.id === this.inTheQueue)
-                    this.inTheQueue = null;
-                this.gameMap.delete(gameId);
+                this.inTheQueue = null;
+                this.gameMap.delete(game.id);
             }
+            else
             {
                 if (playerId === game.player1.id)
                     game.player1.inThegame = false;
