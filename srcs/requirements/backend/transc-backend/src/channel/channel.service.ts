@@ -14,7 +14,7 @@ export class ChannelService {
 
   //* -------------------------------------------------------------channelServices-------------------------------------------------------- *//
   async createChannel(createChannelDto: CreateChannelDto): Promise<Channel> {
-    return this.prisma.channel.create({ data: createChannelDto })
+    const channel = await this.prisma.channel.create({ data: createChannelDto })
     .catch (error => {
       throw new HttpException({
         status: HttpStatus.BAD_REQUEST,
@@ -23,10 +23,63 @@ export class ChannelService {
         cause: error
       });
     });
+    await this.createChannelMember({
+      "userId": channel.channelOwnerId,
+      "channelId": channel.id,
+      "role": "OWNER",
+      "bannedTime": new Date(null),
+      "mutedTime": new Date(null)
+    });
+    return channel;
   }
   
   async findAllChannels(): Promise<Channel[]> {
     return this.prisma.channel.findMany({
+      where: {
+        OR: [
+          {
+            channelType: 'PUBLIC',
+          },
+          {
+            channelType: 'PROTECTED',
+          },
+        ],
+      },
+      include: {
+        _count: {
+          select: {
+            channelMember: {}
+          }
+        }
+      },
+      orderBy: {
+        created_at: 'asc',
+      },
+    })
+    .catch (error => {
+      throw new HttpException({
+        status: HttpStatus.NOT_FOUND,
+        error: 'NotFoundException',
+      }, HttpStatus.NOT_FOUND, {
+        cause: error
+      });
+    });
+  }
+
+  async findMyAllChannels(userId: string): Promise<Channel[]> {
+    return this.prisma.channel.findMany({
+      include: {
+        channelMember: {
+          where: {
+            userId: userId,
+          },
+        },
+        _count: {
+          select: {
+            channelMember: {}
+          }
+        }
+      },
       orderBy: {
         created_at: 'asc',
       },
