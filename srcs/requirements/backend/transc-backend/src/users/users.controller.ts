@@ -6,7 +6,6 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateFriendDto } from './dto/create-friend.dto';
-import { UpdateFriendDto } from './dto/update-Friend.dto';
 import { CreateUserStatDto } from './dto/create-userStat.dto';
 import { UpdateUserStatDto } from './dto/update-userStat.dto';
 import { CreateAchievementDto } from './dto/create-achievement.dto';
@@ -45,6 +44,12 @@ export class UsersController {
   @Patch(':id')
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto): Promise<User> {
     const updateUser = await this.usersService.update(id, updateUserDto);
+    return updateUser;
+  }
+
+  @Patch(':id/userStatus')
+  async updateUserStatus(@Param('id') id: string, @Body('status') status: 'ONLINE' | 'OFFLINE' | 'INAGAME'): Promise<User> {
+    const updateUser = await this.usersService.updateUserStatus(id, status);
     return updateUser;
   }
   
