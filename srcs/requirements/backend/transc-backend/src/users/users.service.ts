@@ -186,7 +186,7 @@ export class UsersService {
   }
   
   async findOneUserStat(userID: string): Promise<UserStat> {
-    return this.prisma.userStat.findUniqueOrThrow({
+    return this.prisma.userStat.findUnique({
       where: {
         userId: userID
       },

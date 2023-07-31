@@ -60,10 +60,12 @@ export class UsersController {
     const userStat = await this.usersService.createUserStat(createUserStatDto);
     return userStat;
   }
-  
+
   @Get('/:userId/userStat')
   async findOneUserStat(@Param('userId') userId: string): Promise<UserStat> {
+    console.log("ENDPOINT ===> BB", userId)
     const userStat = await this.usersService.findOneUserStat(userId);
+    console.log("ENDPOINT ===>", userStat)
     return userStat;
   }
   
@@ -97,7 +99,6 @@ export class UsersController {
   @Post('/blockedUser')
   async createBlockedUser(@Body() createBlockedUserDto: CreateBlockedUserDto): Promise<BlockedUser> {
     const blockedUser = await this.usersService.createBlockedUser(createBlockedUserDto);
-    console.log("blochsdds")
     return blockedUser;
   }
   
@@ -156,4 +157,21 @@ export class UsersController {
     await this.usersService.removeFriend(userId, friendId);
   }
   //* ---------------------------------------------------------------friendCRUDOp--------------------------------------------------------- *//
+  
+
+  // //* ---------------------------------------------------------------- USER_STAT --------------------------------------------------------- *//
+  // @Get('/:userId/stats')
+  // async getUserStats(@Param('userId') userId: string): Promise<UserStat[]>{
+  //   const userStats = await this.usersService.getUserStats(userId);
+  //   return userStats;
+  // }
+  
+  // @Post('/:userId/stat')
+  // async setUserStat(@Body() createUserStat: CreateFriendDto): Promise<UserStat>{
+    //   const userStat = await this.usersService.getUserStats(userId);
+    //   return userStat;
+    // }
+    // //* ---------------------------------------------------------------- USER_STAT --------------------------------------------------------- *//
+
+
 }

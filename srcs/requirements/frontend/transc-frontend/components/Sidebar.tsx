@@ -9,6 +9,8 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../src/app/store/store';
 import { useEffect } from "react";
 import Cookies from 'universal-cookie';
+import { useParams } from 'next/navigation';
+import Notification from './Notification';
 
 
 function getPath(nav: string, id: string) {
@@ -19,6 +21,10 @@ function getPath(nav: string, id: string) {
 
 function Sidebar() {
 
+    /* ------------------------- get url ID from url ------------------------- */
+    const { userId } = useParams();
+    /* ------------------------------------ - ----------------------------------- */
+  
     /* ----------------------------- get the USER ID ---------------------------- */
     const [userSession, setUserSession] = useState<string>("")
 
@@ -48,7 +54,10 @@ function Sidebar() {
 
                 <Image key='menu' src={logo_b} alt="menu" className='xs:w-[50px] w-[40px]' />
 
-                <Image key='menu2' src={notification_b} alt="menu" className='xs:w-[40px] w-[30px]' />
+                <div className='xs:w-[50px] w-[40px]'>
+                    <Notification userId={userId} userSession={userSession}/>
+                </div>
+                {/* <Image key='menu2' src={notification_b} alt="menu" className='xs:w-[40px] w-[30px]' /> */}
             </div>
 
             {

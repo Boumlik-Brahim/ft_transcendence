@@ -26,3 +26,10 @@ export interface blockedUser
     blockedUserId: string,
 }
 
+export interface userStat
+{
+    winsNumbr: number,
+    lossesNumbr: number,
+    rate: number
+}
+

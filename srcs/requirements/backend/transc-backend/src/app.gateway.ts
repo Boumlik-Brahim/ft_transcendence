@@ -10,16 +10,15 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
     }
 
     handleConnection(client: Socket) {
-        console.log("From AppGateway: Client Connect")
+        // console.log("From AppGateway: Client Connect")
     }
 
     handleDisconnect(client: Socket) {
-        console.log("From AppGateway: Client Disconnect")
+        // console.log("From AppGateway: Client Disconnect")
     }
     
     @SubscribeMessage('RequestFriendShip')
     handleFriendRequest(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
-        console.log("From AppGateway: Data ====> " , data)
         this.server.emit('RequestFriendShip', data);
     }
     @SubscribeMessage('CancelFriendShip')
