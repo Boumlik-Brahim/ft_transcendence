@@ -14,7 +14,7 @@ export class ChannelService {
 
   //* -------------------------------------------------------------channelServices-------------------------------------------------------- *//
   async createChannel(createChannelDto: CreateChannelDto): Promise<Channel> {
-    const channel = await this.prisma.channel.create({ data: createChannelDto })
+    return this.prisma.channel.create({ data: createChannelDto })
     .catch (error => {
       throw new HttpException({
         status: HttpStatus.BAD_REQUEST,
@@ -23,14 +23,14 @@ export class ChannelService {
         cause: error
       });
     });
-    await this.createChannelMember({
-      "userId": channel.channelOwnerId,
-      "channelId": channel.id,
-      "role": "OWNER",
-      "bannedTime": new Date(null),
-      "mutedTime": new Date(null)
-    });
-    return channel;
+    // await this.createChannelMember({
+    //   "userId": channel.channelOwnerId,
+    //   "channelId": channel.id,
+    //   "role": "OWNER",
+    //   "bannedTime": new Date(null),
+    //   "mutedTime": new Date(null)
+    // });
+    // return channel;
   }
   
   async findAllChannels(): Promise<Channel[]> {
@@ -181,8 +181,8 @@ export class ChannelService {
     return this.prisma.channelMember.findUniqueOrThrow({
       where: {
         userAndChannel: {
-          userId,
-          channelId
+          userId: userId,
+          channelId: channelId
         },
       },
     })
@@ -205,6 +205,60 @@ export class ChannelService {
         },
       },
       data: updateChannelMemberDto
+    })
+    .catch (error => {
+      throw new HttpException({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        error: 'InternalServerErrorException',
+      }, HttpStatus.INTERNAL_SERVER_ERROR, {
+        cause: error
+      });
+    });
+  }
+
+  async updateChannelMemberBannedTime(channelId: string, userId: string, bannedTime: string): Promise<ChannelMember> {
+    const unbanneTime = new Date();
+    unbanneTime.setMinutes(unbanneTime.getMinutes() + parseInt(bannedTime));
+
+    return this.prisma.channelMember.update({
+      where: {
+        userAndChannel: {
+          userId: userId,
+          channelId: channelId
+        },
+      },
+      data: {
+        role: 'BANNED_MEMBER',
+        bannedTime: bannedTime,
+        unbanneTime: unbanneTime
+      }
+    })
+    .catch (error => {
+      throw new HttpException({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        error: 'InternalServerErrorException',
+      }, HttpStatus.INTERNAL_SERVER_ERROR, {
+        cause: error
+      });
+    });
+  }
+
+  async updateChannelMemberMutedTime(channelId: string, userId: string, mutedTime: string): Promise<ChannelMember> {
+    const unmuteTime = new Date();
+    unmuteTime.setMinutes(unmuteTime.getMinutes() + parseInt(mutedTime));
+
+    return this.prisma.channelMember.update({
+      where: {
+        userAndChannel: {
+          userId: userId,
+          channelId: channelId
+        },
+      },
+      data: {
+        role: 'MUTED_MEMBER',
+        mutedTime: mutedTime,
+        unmuteTime: unmuteTime
+      }
     })
     .catch (error => {
       throw new HttpException({
