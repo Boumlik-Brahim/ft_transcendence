@@ -68,6 +68,11 @@ export class UsersService {
             }, 
           },
         ],
+        blockedUser: {
+          none: {
+            userId: senderID,
+          },
+        },
       },
       include: {
         senders: {
