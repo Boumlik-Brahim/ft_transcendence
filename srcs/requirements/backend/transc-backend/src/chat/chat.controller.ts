@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Query, Put } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { ApiTags } from '@nestjs/swagger';
@@ -34,8 +34,8 @@ export class ChatController {
     return chat;
   }
 
-  @Patch(':senderId/:receiverId')
-  async update(@Query('senderId') senderId: string, @Query('receiverId') receiverId: string, @Body() updateChatDto: UpdateChatDto): Promise<void> {
+  @Put(':senderId/:receiverId')
+  async update(@Param('senderId') senderId: string, @Param('receiverId') receiverId: string, @Body() updateChatDto: UpdateChatDto): Promise<void> {
     await this.chatService.updateChat(senderId, receiverId , updateChatDto);
   }
 }
