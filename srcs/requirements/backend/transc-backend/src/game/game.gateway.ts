@@ -3,30 +3,35 @@ import { Socket, Server } from "socket.io";
 import { Client } from 'socket.io/dist/client';
 import { CreateGameDto } from './dto/game-create.dto';
 import { JoinGameDto } from './dto/join-game.dto';
-import { UsePipes } from '@nestjs/common';
+import { Logger, UsePipes } from '@nestjs/common';
 import { GameService } from './game.service';
 import { subscribe } from 'diagnostics_channel';
-
+import { ConnectedClientsService } from 'src/connected-clients.service';
 
 @WebSocketGateway({
-  namespace : "game",
+  // namespace : "game",
   cors : {
-    origin : '*'
+    origin : 'http://localhost:5173/game'
   }
 })
+
 export class GameGateway {
 
-  constructor(private gameService : GameService) {}
+  constructor(private gameService : GameService,
+    private readonly connectedClientsService: ConnectedClientsService) {}
 
   @WebSocketServer()
   server: Server;
 
+  private logger: Logger = new Logger('GAME Gateway Log');
+  
   afterInit(server : Server) {
-    console.log('The server has started');
+    this.logger.log('Game Server Initialized!');
   }
 
   handleConnection(client : Socket) {
-    console.log(client.id, "new User");
+    this.connectedClientsService.addClient(client);
+    this.logger.log(`Client connected to Game server: ${client.id}`);
   }
   
   @SubscribeMessage('createGame')
@@ -99,7 +104,8 @@ export class GameGateway {
   }
 
   handleDisconnect(client : Socket) {
-    console.log(client.id, "Client disconnected");
+    this.connectedClientsService.removeClient(client);
+    this.logger.log(`Client disconnected from Game server: ${client.id}`);
   }
 
 }
