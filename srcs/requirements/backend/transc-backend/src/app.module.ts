@@ -10,9 +10,10 @@ import { UsersModule } from './users/users.module';
 
 import { AppGateway } from './app.gateway';
 import { ConnectedClientsService } from './connected-clients.service';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
-  imports: [PrismaModule, GameModule, ChatModule, ChannelModule, AuthModule, UsersModule],
+  imports: [ScheduleModule.forRoot(), PrismaModule, GameModule, ChatModule, ChannelModule, AuthModule, UsersModule],
   controllers: [AppController],
   providers: [AppService, AppGateway, ConnectedClientsService],
 })
