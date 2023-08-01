@@ -117,7 +117,7 @@ model DirectMessage {
 
 model Channel {
   id  String @id @default(uuid())
-  channelName String
+  channelName String @unique
   channelType ChannelType @default(PUBLIC)
   channelPassword String?
   created_at  DateTime  @default(now())
