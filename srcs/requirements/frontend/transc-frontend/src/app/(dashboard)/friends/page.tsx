@@ -1,11 +1,11 @@
-import loading from './loading';
+import Loading from './loading';
 
 
 function page() {
   return (
     <div className="layouts">
       <div className="my_container">
-        <loading/>
+        <Loading/>
         <h1>FRIIIIIEND</h1>
       </div>
     </div>
