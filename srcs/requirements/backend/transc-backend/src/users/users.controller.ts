@@ -1,12 +1,11 @@
 /* eslint-disable prettier/prettier */
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { Achievement, BlockedUser, Friend, User, UserStat } from '@prisma/client';
+import { Achievement, BlockedUser, Friend, GamesHistories, User, UserStat } from '@prisma/client';
 import { ApiTags } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateFriendDto } from './dto/create-friend.dto';
-import { UpdateFriendDto } from './dto/update-Friend.dto';
 import { CreateUserStatDto } from './dto/create-userStat.dto';
 import { UpdateUserStatDto } from './dto/update-userStat.dto';
 import { CreateAchievementDto } from './dto/create-achievement.dto';
@@ -47,6 +46,12 @@ export class UsersController {
     const updateUser = await this.usersService.update(id, updateUserDto);
     return updateUser;
   }
+
+  @Patch(':id/userStatus')
+  async updateUserStatus(@Param('id') id: string, @Body('status') status: 'ONLINE' | 'OFFLINE' | 'INAGAME'): Promise<User> {
+    const updateUser = await this.usersService.updateUserStatus(id, status);
+    return updateUser;
+  }
   
   @Delete(':id')
   async remove(@Param('id') id: string): Promise<void> {
@@ -80,7 +85,21 @@ export class UsersController {
     await this.usersService.removeUserStat(userId);
   }
   //* ---------------------------------------------------------------userStatCRUDOp------------------------------------------------------- *//
+
+  //* ---------------------------------------------------------------getGamesByUser------------------------------------------------------- *//
+
+  @Get('/getGames/:userId')
+  async getUserGames(@Param('userId') userId : string) : Promise<GamesHistories[]> {
+    try {
+      const games = await this.usersService.getUsergames(userId);
+      return games;
+    }
+    catch (error) {
+      throw (error);
+    }
+  } 
   
+
   //* -------------------------------------------------------------achievementCRUDOp------------------------------------------------------ *//
   @Post('/achievement')
   async createAchievement(@Body() createAchievementDto: CreateAchievementDto): Promise<Achievement> {

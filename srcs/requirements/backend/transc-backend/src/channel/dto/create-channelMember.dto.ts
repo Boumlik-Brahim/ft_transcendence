@@ -17,15 +17,4 @@ export class CreateChannelMemberDto {
     @ApiProperty()
     @IsEnum(Role)
     role: Role;
-    
-    @ApiProperty()
-    @IsDateString()
-    @IsOptional()
-    bannedTime: Date;
-    
-    @ApiProperty()
-    @IsDateString()
-    @IsOptional()
-    mutedTime: Date;
-
 }

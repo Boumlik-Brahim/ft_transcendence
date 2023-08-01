@@ -32,7 +32,6 @@ export class ChatService {
 
   async createChat(createChatDto: CreateChatDto): Promise<DirectMessage> {
     const hasshedRoomName = await this.generateHashedRommId(createChatDto.senderId, createChatDto.recieverId);
-    console.log(hasshedRoomName);
   
     return this.prisma.directMessage.create({ data: {
       content: createChatDto.content,
