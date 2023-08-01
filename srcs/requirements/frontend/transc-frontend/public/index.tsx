@@ -19,6 +19,7 @@ import forbidden_b from "./forbidden_b.svg";
 import forbidden_r from "./forbidden_r.svg";
 import game_b from "./game_b.svg";
 import send_b from "./send_b.svg";
+import send_w from "./send_w.svg";
 import contacts_b from "./contacts_b.svg";
 import trash from './trash.svg'
 import moreCircle from "./morecircle.svg"
@@ -27,6 +28,8 @@ import block_b from "./block_b.svg";
 import unblock_r from "./unblock_r.svg";
 import block_r from "./block_r.svg";
 import unblock_b from "./unblock_b.svg";
+import testAch from "./ach.png";
+import testAchs from "./ach.svg";
 
 
 import logo_w from "./logo_w.svg";
@@ -57,21 +60,6 @@ import closeCircle from './closecircle.png'
  
 
 
-import challenge_13_persons from "./achivements/challenge_13_persons.gif";
-import challenge_someone from "./achivements/challenge_someone.gif";
-import create_an_account from "./achivements/create_an_account.gif";
-import have_13_friends from "./achivements/have_13_friends.gif";
-import have_1337_friends from "./achivements/have_1337_friends.gif";
-import have_1337_score from "./achivements/have_1337_score.gif";
-import have_2674_score from "./achivements/have_2674_score.gif";
-import have_a_friend from "./achivements/have_a_friend.gif";
-import play_13_games from "./achivements/play_13_games.gif";
-import play_1337_games from "./achivements/play_1337_games.gif";
-import play_your_first_game from "./achivements/play_your_first_game.gif";
-import send_13_messages from "./achivements/send_13_messages.gif";
-import send_1337_messages from "./achivements/send_1337_messages.gif";
-import send_message from "./achivements/send_message.gif";
-import create_a_channel from "./achivements/create_a_channel.gif";
 
 export {
   closeCircle,
@@ -96,9 +84,14 @@ export {
   forbidden_r,
   game_b,
   send_b,
+  send_w,
   question,
   logo_w,
   GIF,
+  testAch,
+  testAchs,
+
+
   profile_w,
   leaderboard_w,
   achivements_w,
@@ -128,21 +121,93 @@ export {
 
 };
 
+/* ------------------------------ Achievements ------------------------------ */
+import _create_account from "./achievements/create_account.svg"
+import _have_one_friend from "./achievements/have_one_friend.svg"
+import _send_first_msg from "./achievements/send_first_msg.svg"
+import _your_first_game from "./achievements/your_first_game.svg"
+import _19_friends from "./achievements/19_friends.svg"
+import _19_games from "./achievements/19_games.svg"
+import _19_in_score from "./achievements/19_in_score.svg"
+import _19_messages from "./achievements/19_messages.svg"
+import _21_friends from "./achievements/21_friends.svg"
+import _21_games from "./achievements/21_games.svg"
+import _21_in_score from "./achievements/21_in_score.svg"
+import _21_messages from "./achievements/21_messages.svg"
+import _42_friends from "./achievements/42_friends.svg"
+import _42_games from "./achievements/42_games.svg"
+import _42_in_score from "./achievements/42_in_score.svg"
+import _42_messages from "./achievements/42_messages.svg"
+import _1337_friends from "./achievements/1337_friends.svg"
+import _1337_games from "./achievements/1337_games.svg"
+import _1337_in_score from "./achievements/1337_in_score.svg"
+import _1337_messages from "./achievements/1337_messages.svg"
+export {
+  _create_account,
+  _have_one_friend,
+  _send_first_msg,
+  _your_first_game,
+  _19_friends,
+  _19_games,
+  _19_in_score,
+  _19_messages,
+  _21_friends,
+  _21_games,
+  _21_in_score,
+  _21_messages,
+  _42_friends,
+  _42_games,
+  _42_in_score,
+  _42_messages,
+  _1337_friends,
+  _1337_games,
+  _1337_in_score,
+  _1337_messages
+}
+/* ------------------------------ Achievements ------------------------------ */
 
-export const achievements = [
-  challenge_13_persons,
-  challenge_someone,
-  create_an_account,
-  have_13_friends,
-  have_1337_friends,
-  have_1337_score,
-  have_2674_score,
-  have_a_friend,
-  play_13_games,
-  play_1337_games,
-  play_your_first_game,
-  send_13_messages,
-  send_1337_messages,
-  send_message,
-  create_a_channel
-]
+/* ---------------------------- Achievements Gif ---------------------------- */
+import _create_account_gif from "./achievements/create_acount.gif"
+import _have_one_friend_gif from "./achievements/have_one_friend.gif"
+import _your_first_game_gif from "./achievements/your_first_game.gif"
+import _send_first_msg_gif from "./achievements/send_first_msg.gif"
+import _1337_games_gif from "./achievements/1337_games.gif"
+import _1337_in_score_gif from "./achievements/1337_in_score.gif"
+import _1337_friends_gif from "./achievements/1337_friends.gif"
+import _1337_messages_gif from "./achievements/1337_messages.gif"
+import _42_games_gif from "./achievements/42_games.gif"
+import _42_messages_gif from "./achievements/42_messages.gif"
+import _42_in_score_gif from "./achievements/42_in_score.gif"
+import _42_friends_gif from "./achievements/42_friends.gif"
+import _21_in_score_gif from "./achievements/21_in_score.gif"
+import _21_friends_gif from "./achievements/21_friends.gif"
+import _21_games_gif from "./achievements/21_games.gif"
+import _21_messages_gif from "./achievements/21_messages.gif"
+import _19_messages_gif from "./achievements/19_messages.gif"
+import _19_in_score_gif from "./achievements/19_in_score.gif"
+import _19_games_gif from "./achievements/19_games.gif"
+import _19_friends_gif from "./achievements/19_friends.gif"
+
+export {
+  _create_account_gif,
+  _have_one_friend_gif,
+  _your_first_game_gif,
+  _send_first_msg_gif,
+  _19_messages_gif,
+  _19_in_score_gif,
+  _19_games_gif,
+  _19_friends_gif,
+  _21_in_score_gif,
+  _21_friends_gif,
+  _21_games_gif,
+  _21_messages_gif,
+  _42_games_gif,
+  _42_in_score_gif,
+  _42_messages_gif,
+  _42_friends_gif,
+  _1337_games_gif,
+  _1337_in_score_gif,
+  _1337_friends_gif,
+  _1337_messages_gif,
+}
+/* ---------------------------- Achievements Gif ---------------------------- */
