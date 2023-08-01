@@ -130,7 +130,7 @@ model DirectMessage {
 
 model Channel {
   id  String @id @default(uuid())
-  channelName String
+  channelName String @unique
   channelType ChannelType @default(PUBLIC)
   channelPassword String?
   created_at  DateTime  @default(now())
@@ -150,7 +150,9 @@ model ChannelMember {
   sender  ChannelMessage[]  @relation("senderRelation")
   role Role @default(MEMBER)
   bannedTime DateTime?
+  unbanneTime DateTime?
   mutedTime DateTime?
+  unmuteTime DateTime?
   created_at  DateTime  @default(now())
   @@unique([userId, channelId], name: "userAndChannel")
 }
