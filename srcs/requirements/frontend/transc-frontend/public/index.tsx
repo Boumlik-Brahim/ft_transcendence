@@ -52,7 +52,9 @@ import bulr_c2 from "./blur_color_2.svg";
 import bulr_c3 from "./blur_color_3.svg";
 import question from "./question.png"
 import GIF from './wait.gif'
-
+import vs from "./VS.svg";
+import closeCircle from './closecircle.png'
+ 
 
 
 import challenge_13_persons from "./achivements/challenge_13_persons.gif";
@@ -72,6 +74,8 @@ import send_message from "./achivements/send_message.gif";
 import create_a_channel from "./achivements/create_a_channel.gif";
 
 export {
+  closeCircle,
+  vs,
   logo_b,
   profile_b,
   leaderboard_b,

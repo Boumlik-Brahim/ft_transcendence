@@ -1,7 +1,6 @@
 'use client'
 import React, { useEffect, useRef } from 'react'
 
-
 interface GameEntity {
   id : String,
   W_screen : number,
@@ -113,7 +112,7 @@ const Canvas = ({ gameData } : PropsType) => {
   }, [gameData]);
 
   return (
-    <canvas ref={canvasRef} className='border-white w-full h-full rounded-lg '></canvas>
+    <canvas ref={canvasRef} className=' w-full border h-full rounded-lg shadow  '></canvas>
   );
 }
 

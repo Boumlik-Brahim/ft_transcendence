@@ -56,7 +56,9 @@ model User {
   blockedUser   BlockedUser[] @relation("blocked")
   user    Friend[]  @relation("user")
   friend  Friend[]  @relation("friend")
-  senders   DirectMessage[] @relation("sendeMessage")
+  playerA GamesHistories[] @relation("playerA")
+  playerB GamesHistories[] @relation("playerB")
+  senders  DirectMessage[] @relation("sendeMessage")
   receivers DirectMessage[] @relation("receiveMessage")
   channel Channel[]
   created_at  DateTime  @default(now())
@@ -79,6 +81,17 @@ model Achievement {
   user  User @relation(fields: [userId], references: [id])
   userId  String @unique
   created_at  DateTime  @default(now())
+}
+
+model GamesHistories {
+  id  String @id @default(uuid())
+  playerA_Score Int
+  playerB_Score Int
+  created_at  DateTime  @default(now())
+  playerA User @relation("playerA", fields: [playerA_id], references : [id])
+  playerA_id String
+  playerB User @relation("playerB", fields: [playerB_id], references : [id])
+  playerB_id String
 }
 
 model BlockedUser {

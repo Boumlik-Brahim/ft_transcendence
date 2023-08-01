@@ -9,7 +9,7 @@ import { ConnectedClientsService } from 'src/connected-clients.service';
 
 @WebSocketGateway( {
   cors: { 
-    origin: 'http://localhost:5173/chat',
+    origin: '*',
   },
 })
 

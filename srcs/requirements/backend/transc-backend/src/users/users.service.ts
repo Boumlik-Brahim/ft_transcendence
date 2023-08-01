@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { Achievement, BlockedUser, Friend, Prisma, User, UserStat } from '@prisma/client';
+import { Achievement, BlockedUser, Friend, GamesHistories, Prisma, User, UserStat } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -488,5 +488,23 @@ export class UsersService {
   }
 
   //* ------------------------------------------------------------friendServices---------------------------------------------------------- *//
+  //* ------------------------------------------------------------GetUserGamesService---------------------------------------------------------- *//
+  async getUsergames(userId : string) : Promise<GamesHistories[]> {
+    try {
+      const games = await this.prisma.gamesHistories.findMany(
+        {
+          where : {
+            OR : [
+              { playerA_id : userId, playerB_id : userId }
+            ]
+          }
+        }
+      )
+      return games;
+    }
+    catch (error) {
+      throw (error);
+    }
+  }
 
 }

@@ -131,6 +131,9 @@ function Page() {
   //* useEffect for creating socket
   useEffect(() => {
     socket.current = io("ws://localhost:3000");
+    return () => {
+      socket.current?.disconnect();
+    }
   }, [])
 
   //* useEffect for getting message from socket
