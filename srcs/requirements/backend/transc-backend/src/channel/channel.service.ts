@@ -7,6 +7,7 @@ import { CreateChannelMemberDto } from './dto/create-channelMember.dto';
 import { UpdateChannelMemberDto } from './dto/update-channelMember.dto';
 import { CreateKickedMemberDto } from './dto/create-kickedMember.dto';
 import { CreateChannelMessageDto } from './dto/create-channelMessage.dto';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class ChannelService {
@@ -267,6 +268,42 @@ export class ChannelService {
       }, HttpStatus.INTERNAL_SERVER_ERROR, {
         cause: error
       });
+    });
+  }
+
+  @Cron(CronExpression.EVERY_30_SECONDS)
+  async handleUnmuteMember(): Promise<void> {
+    const currentDate = new Date();
+    this.prisma.channelMember.updateMany({
+      where: {
+        role: 'MUTED_MEMBER',
+        unmuteTime: {
+          lte: currentDate
+        },
+      },
+      data: {
+        role: 'MEMBER',
+        mutedTime: "",
+        unmuteTime: ""
+      }
+    });
+  }
+
+  @Cron(CronExpression.EVERY_30_SECONDS)
+  async handleUnbanneMember(): Promise<void> {
+    const currentDate = new Date();
+    await this.prisma.channelMember.updateMany({
+      where: {
+        role: 'BANNED_MEMBER',
+        unbanneTime: {
+          lte: currentDate
+        },
+      },
+      data: {
+        role: 'MEMBER',
+        bannedTime: new Date(0),
+        unbanneTime: new Date(0)
+      }
     });
   }
   
