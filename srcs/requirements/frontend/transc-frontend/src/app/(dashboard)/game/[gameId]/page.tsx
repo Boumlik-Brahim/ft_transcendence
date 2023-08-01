@@ -10,8 +10,7 @@ import { useRouter } from 'next/navigation';
 import Waiting from '../waiting';
 import { getCookie } from 'cookies-next';
 import Players from './players';
-
-
+import { Link } from 'react-router-dom';
 
 export interface GameEntity {
     id : String,
@@ -32,7 +31,7 @@ export interface GameEntity {
     winner : null | String
 }
 
-export interface Player {
+interface Player {
     id : String,
     paddleX : number,
     paddleY : number,
@@ -45,7 +44,6 @@ interface CreateGameType {
     isRamdomOponent : boolean
 }
 
-
 const Page = ( {params} : any) => {
     const router = useRouter();
     const [gameSate, setGameSate] = useState<string | undefined>();
@@ -53,8 +51,6 @@ const Page = ( {params} : any) => {
     const userId = getCookie('id') as string;
     const oponentId = userId === gameData?.player1.id ? gameData.player2.id : gameData?.player1.id;
     const id = params.gameId;
-
-    console.log(gameData, 'fode')
 
     const createGame = (isRamdomOponent : boolean) : void => {
         if (!socket.connected) return ;
@@ -73,6 +69,7 @@ const Page = ( {params} : any) => {
         if (!socket.connected) return;
         socket.emit('pauseOrStart', {gameId : id, userId})
     }
+
     const handleCancel = () => {
         if (!socket.connected) return;
         socket.emit('cancelGame', {gameId : id, userId})
@@ -103,19 +100,18 @@ const Page = ( {params} : any) => {
             const { state } = data;
             setGameSate(state);
         })
-      
-        return () => {
-          socket.off('Success')
-          socket.off('joinGame')
-          socket.off('error_access');
-          socket.off('gameData')
-          socket.off('gameSate')
-          socket.emit('quiteGame', {gameId : id, userId});
-          document.addEventListener('keydown', event => {});
-          socket.disconnect();
-        }
-      }, []);
 
+        return () => {
+                socket.off('Success')
+                socket.off('joinGame')
+                socket.off('error_access');
+                socket.off('gameData')
+                socket.off('gameSate')
+                socket.emit('quiteGame', {gameId : id, userId});
+                document.addEventListener('keydown', () => {});
+                socket.disconnect();
+            }
+        }, []);
 
         return (
             <div className='layouts'>
@@ -126,7 +122,7 @@ const Page = ( {params} : any) => {
                                 {
                                     gameData && <Players userId_1={gameData.player1.id as string}  userId_2={gameData.player2.id as string} />
                                 }
-                                <div className={`lg:min-w-[700px] md:max-w-[65vw] max-w-[95vw] mb-3  md:min-w-[50vw] h-[85vw] md:h-[50vh] pl-2 pr-2 pb-2 md:w-[50vh] border-2 border-white shadow-2xl lg:h-[600px] ${ userId === gameData?.player1.id ? "rotate-[-90deg]" : "rotate-90"} 
+                                <div className={`flex justify-center items-center lg:min-w-[700px]  md:max-w-[65vw] max-w-[95vw] md:min-w-[50vw] h-[85vw] md:h-[50vh] p-2 md:w-[50vh] border-2 border-white shadow-2xl lg:h-[600px] ${ userId === gameData?.player1.id ? "rotate-[-90deg]" : "rotate-90"} 
                                 md:rotate-0 `}>
                                     <Canvas gameData={gameData}></Canvas>
                                 </div>
@@ -163,9 +159,9 @@ const Page = ( {params} : any) => {
                                     :
                                     gameData?.winner === null && <h1 className='text-[70px] text-red-400 uppercase font-bold' > Draw </h1>
                                 }
-                                <button className='border-2 gradient-bg shadow-xl ml-auto mr-auto md:mr-0 text-primary text-[20px] p-2 w-[268px] h-[61px] rounded-[40px] md:ml-4 mt-10 hover:bg-primary ease-in duration-300 hover:text-white hover:border-none' onClick={() => createGame(false)}>
-                                    Play Again
-                                </button>
+                                {/* <Link className='border-2 gradient-bg shadow-xl ml-auto mr-auto md:mr-0 text-primary text-[20px] p-2 w-[268px] h-[61px] rounded-[40px] md:ml-4 mt-10 hover:bg-primary ease-in duration-300 hover:text-white hover:border-none' to='/game'>
+                                    Go on Game Page
+                                </Link> */}
                             </div>
                         )
                     }
