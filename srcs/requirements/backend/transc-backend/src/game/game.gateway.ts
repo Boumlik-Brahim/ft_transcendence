@@ -1,12 +1,12 @@
 import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Socket, Server } from "socket.io";
-import { Client } from 'socket.io/dist/client';
 import { CreateGameDto } from './dto/game-create.dto';
 import { JoinGameDto } from './dto/join-game.dto';
 import { Logger, UsePipes } from '@nestjs/common';
 import { GameService } from './game.service';
 import { subscribe } from 'diagnostics_channel';
 import { ConnectedClientsService } from 'src/connected-clients.service';
+
 
 @WebSocketGateway({
   // namespace : "game",

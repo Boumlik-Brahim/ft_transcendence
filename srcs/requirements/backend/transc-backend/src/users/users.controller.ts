@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { Achievement, BlockedUser, Friend, User, UserStat } from '@prisma/client';
+import { Achievement, BlockedUser, Friend, GamesHistories, User, UserStat } from '@prisma/client';
 import { ApiTags } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -83,7 +83,21 @@ export class UsersController {
     await this.usersService.removeUserStat(userId);
   }
   //* ---------------------------------------------------------------userStatCRUDOp------------------------------------------------------- *//
+
+  //* ---------------------------------------------------------------getGamesByUser------------------------------------------------------- *//
+
+  @Get('/getGames/:userId')
+  async getUserGames(@Param('userId') userId : string) : Promise<GamesHistories[]> {
+    try {
+      const games = await this.usersService.getUsergames(userId);
+      return games;
+    }
+    catch (error) {
+      throw (error);
+    }
+  } 
   
+
   //* -------------------------------------------------------------achievementCRUDOp------------------------------------------------------ *//
   @Post('/achievement')
   async createAchievement(@Body() createAchievementDto: CreateAchievementDto): Promise<Achievement> {
