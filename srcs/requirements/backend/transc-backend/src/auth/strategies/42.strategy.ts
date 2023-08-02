@@ -32,7 +32,7 @@ export class IntraStrategy extends PassportStrategy(Strategy, '42') {
             avatarUrl : photo,
 
         }
-        console.log("----------------------");
+        console.log("---------------------- >>> ", user);
         done(null, user);
     }
 

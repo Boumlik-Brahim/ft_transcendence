@@ -208,7 +208,7 @@ export class UsersService {
   }
   
   async findOneUserStat(userID: string): Promise<UserStat> {
-    return this.prisma.userStat.findUniqueOrThrow({
+    return this.prisma.userStat.findUnique({
       where: {
         userId: userID
       },
@@ -327,13 +327,13 @@ export class UsersService {
     });
   }
   
-  async findBlockedUser(userID: string): Promise<BlockedUser[]> {
+  async findBlockedUser(userID: string, blockedID: string): Promise<BlockedUser[]> {
     return this.prisma.blockedUser.findMany({
       where: {
-      OR: [
-        { userId: userID },
-        { blockedUserId: userID },
-      ]
+        OR: [
+          { userId: userID, blockedUserId: blockedID },
+          { userId: blockedID, blockedUserId: userID },
+        ],
       },
       orderBy: {
         created_at: 'asc',
@@ -429,8 +429,10 @@ export class UsersService {
   async friendShip(userID: string, friendID: string): Promise<Friend[]> {
     return this.prisma.friend.findMany({
       where: {
-        userId: userID,
-        friendId: friendID
+        OR: [
+          { userId: userID, friendId: friendID },
+          { userId: friendID, friendId: userID },
+        ],
       },
       orderBy: {
         created_at: 'asc',
@@ -469,13 +471,13 @@ export class UsersService {
   }
 
   async removeFriend(userID: string, friendID: string,): Promise<void> {
-    await this.prisma.friend.delete({
+    await this.prisma.friend.deleteMany({
       where: {
-        userAndFriend: {
-          userId: userID,
-          friendId: friendID
-        },
-      }
+        OR: [
+          { userId: userID, friendId: friendID },
+          { userId: friendID, friendId: userID },
+        ],
+      },
     })
     .catch (error => {
       throw new HttpException({
