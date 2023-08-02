@@ -6,6 +6,7 @@ import { ChatService } from '../chat.service';
 import { CreateChatDto } from '../dto/create-chat.dto';
 import { UsersService } from 'src/users/users.service';
 import { ConnectedClientsService } from 'src/connected-clients.service';
+import { PrismaService } from 'prisma/prisma.service';
 
 @WebSocketGateway( {
   cors: { 
@@ -17,7 +18,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   constructor(private readonly chatService: ChatService, 
     private readonly usersService: UsersService, 
-    private readonly connectedClientsService: ConnectedClientsService) {}
+    private readonly connectedClientsService: ConnectedClientsService,
+    private prisma: PrismaService) {}
 
   @WebSocketServer()
   server: Server ;
@@ -39,11 +41,13 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
     const messages = await this.chatService.findAllChats(hasshedRoomName);
     if (messages.length === 0){
-      await this.chatService.createChat({
-        "content": "",
-        "senderId": payload.senderId,
-        "recieverId": payload.recieverId,
-      });
+      await this.prisma.directMessage.create({ data: {
+        content: "",
+        senderId: payload.senderId,
+        recieverId: payload.recieverId,
+        roomId: hasshedRoomName,
+        seen: true
+      }});
     }
 
     Array.from(socket.rooms)
@@ -76,16 +80,21 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
     this.server.to(hasshedRoomName).emit('getMessage',{ senderId: payload.senderId, receiverId: payload.recieverId, text: payload.content, room: hasshedRoomName});
     await this.chatService.createChat(payload);
-    
-    if (!this.connectedClientsService.isUserConnected(socket))
-    {
-      const sender = await this.usersService.findOne(payload.senderId)
-      for (const [key, val] of this.connectedClientsService.getAllClients()) {
-        if (val === payload.recieverId) {
-          this.server.to(key).emit('notifMessage',`you receive a message from ${sender.name}`);  
-        }
-      };
-    }
+    for (const [key, val] of this.connectedClientsService.getAllClients()) {
+      if (val === payload.recieverId) {
+          this.server.to(key).emit('refresh');
+      }
+    };
+
+    // if (!this.connectedClientsService.isUserConnected(socket))
+    // {
+    //   const sender = await this.usersService.findOne(payload.senderId)
+    //   for (const [key, val] of this.connectedClientsService.getAllClients()) {
+    //     if (val === payload.recieverId) {
+    //       this.server.to(key).emit('notifMessage',`you receive a message from ${sender.name}`);  
+    //     }
+    //   };
+    // }
   }
   
   handleDisconnect(client: Socket): void {
