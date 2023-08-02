@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { GameEntity, Player } from './entity/game.entity';
 import { v4 as uuidv4 } from 'uuid';
-import { plainToClass } from 'class-transformer';
+import { Server, Socket } from 'socket.io';
 
 @Injectable()
 export class GameService {
@@ -10,50 +10,96 @@ export class GameService {
     private inTheQueue : String | null;
 
     constructor(private prisma : PrismaService) {}
-    async createGame(data, client : any)  {
-        const { invitedId, creatorId, isRamdomOponent } = data;
-        if (!isRamdomOponent) {
-            try {
-                const user =  this.prisma.user.findUnique({
-                    where : {
-                        id : invitedId
-                    }
-                });
-                if (!user) {
-                    client.emit("error", "openent not find");
-                    return; 
-                }
-                const game : GameEntity = this.getGameInitValue(creatorId, invitedId);
-                this.gameMap.set(game.id, game);
-                client.emit("Success", {id : game.id});
-            }
-            catch (error) {
-                client.emit("error", error);
-            }
-        }
-        else {
-            if (this.inTheQueue == null) {
-                const game : GameEntity = this.getGameInitValue(creatorId, '');
-                this.inTheQueue = game.id;
-                this.gameMap.set(game.id, game);
-                client.emit("Success", {id : game.id});
-            }
-            else {
-                const gameJoined : GameEntity = this.gameMap.get(this.inTheQueue);
-                if (creatorId === gameJoined.player1.id) return;
-                this.inTheQueue = null;
-                gameJoined.player2.id = creatorId;
-                this.gameMap.set(gameJoined.id, gameJoined);
-                client.emit("Success", {id : gameJoined.id});
 
+
+    /**
+     * Logique for inviting your friend to play Check if the Oponent is your friend
+     * @param creatorId 
+     * @param invitedId 
+     * @param client 
+     * @returns 
+     */
+    async inviteAfriend(creatorId : string, invitedId : string, client : Socket) {
+        if (creatorId === invitedId)
+                return ;
+        try {
+            const friend = await this.prisma.friend.findMany({
+                where : {
+                    AND : [
+                        {
+                            userId : creatorId
+                        },
+                        {
+                            friendId : invitedId
+                        }
+                    ]
+                }
+            });
+            if (!friend.length)
+            {
+                client.emit('error', 'You are not allowed to play against this one');
+                return ;
             }
+            const game : GameEntity = this.getGameInitValue(creatorId, invitedId);
+            this.gameMap.set(game.id, game);
+            client.emit("Success", {id : game.id});
+        }
+        catch (error) {
+            client.emit("error", error);
         }
     }
 
-    async joinGame(userId : string, gameId : string, client : any, server : any) {
+
+    /**
+     * Here is The logique about maching and joining a queue to wait a Oponent
+     * @param creatorId 
+     * @param client 
+     * @returns 
+     */
+    async joinAqueue(creatorId : string, client : Socket) {
+        if (this.inTheQueue == null) {
+            const game : GameEntity = this.getGameInitValue(creatorId, '');
+            this.inTheQueue = game.id;
+            this.gameMap.set(game.id, game);
+            client.emit("Success", {id : game.id});
+        }
+        else {
+            const gameJoined : GameEntity = this.gameMap.get(this.inTheQueue);
+            if (creatorId === gameJoined.player1.id) return;
+            this.inTheQueue = null;
+            gameJoined.player2.id = creatorId;
+            this.gameMap.set(gameJoined.id, gameJoined);
+            client.emit("Success", {id : gameJoined.id});
+        }
+    }
+
+    /**
+     * Create a new game Or join a queue Loqigue
+     * @param data 
+     * @param client 
+     * @returns 
+     */
+    async createGame(data, client : Socket)  {
+        const { invitedId, creatorId, isRamdomOponent } = data;
+        if (!isRamdomOponent) 
+            this.inviteAfriend(creatorId, invitedId, client);
+        else 
+            this.joinAqueue(creatorId, client);
+    }
+
+
+    /**
+     * Here is the Logique about joining a game room
+     * if a user join the game can start if all players joined Or the user will wait for his Oponent
+     * @param userId 
+     * @param gameId 
+     * @param client 
+     * @param server 
+     * @returns 
+     */
+    async joinGame(userId : string, gameId : string, client : Socket, server : Server) {
         try {
             const game = this.gameMap.get(gameId);
-            console.log(game);
             if (!game) {
                 client.emit("error_access");
                 return;
@@ -64,8 +110,9 @@ export class GameService {
             }
             client.join(gameId);
             client.emit('gameSate', {state : game.gameStatus.status});
-            const nbrClientRequire = 2;
-            const rooms = server.adapter.rooms.get(gameId)
+            client.emit('gameData', game);
+            // const nbrClientRequire = 2;
+            // const rooms = server.adapter.rooms.get(gameId)
             if (userId === game.player1.id)
             {
                 game.player1.inThegame = true;
@@ -74,14 +121,14 @@ export class GameService {
             {
                 game.player2.inThegame = true;
             }
-            if (rooms && rooms.size === nbrClientRequire) {
-                console.log(game.player1.inThegame, game.player2.inThegame);
-                if (game.gameStatus.status !== 'pause' && game.player1.inThegame && game.player2.inThegame)
+            if (game.player1.inThegame && game.player2.inThegame)
+            {
+                if (game.gameStatus.status !== 'pause' )
                 {
                     game.gameStatus.status = 'started';
+                    server.to(gameId).emit('gameSate', {state : game.gameStatus.status});
+                    this.gameLoop(game, server);
                 }
-                server.to(gameId).emit('gameSate', {state : game.gameStatus.status});
-                this.gameLoop(game, server);
             }
         }
         catch (error) {
@@ -90,12 +137,24 @@ export class GameService {
         }
     }
 
+
+    /**
+     * Here is The logique about the Game
+     * @param gameValue 
+     */
     gameLogique(gameValue : GameEntity) {
         this.collision(gameValue)
         gameValue.ball_x += (gameValue.vx * gameValue.ball_speed);
         gameValue.ball_y += (gameValue.vy * gameValue.ball_speed );
     }
 
+    /**
+     * here is The Logique about taking the collision Angle between the Paddle and the Ball
+     * @param ball_y 
+     * @param paddle_y 
+     * @param paddle_middle 
+     * @returns 
+     */
     paddleCollisionAngle(ball_y : number, paddle_y : number, paddle_middle : number) : number {
         const collisionPoint = ball_y - (paddle_y + paddle_middle);
         const NormalisePoint = collisionPoint / paddle_middle;
@@ -104,6 +163,10 @@ export class GameService {
         return angle;
     }
 
+    /**
+     * This is logique Of The collosion of the ball, And all logique mathematic, changement of the score and the game status changement
+     * @param gameValue 
+     */
     collision(gameValue : GameEntity) {
         const  {
             W_screen,
@@ -132,7 +195,7 @@ export class GameService {
 
         if (ball_left <= paddle1_surface && ball_y > paddle1_top && ball_y < paddle1_bottom)
         {
-            gameValue.ball_speed += 0.1;
+            gameValue.ball_speed += 0.2;
             const angle = this.paddleCollisionAngle(ball_y, paddle1_top, paddle_middle);
             gameValue.vx = gameValue.ball_speed * Math.cos(angle);
             gameValue.vy = gameValue.ball_speed * Math.sin(angle);
@@ -143,7 +206,7 @@ export class GameService {
         }
         else if (ball_right >= paddle2_surface && ball_y > paddle2_top && ball_y < paddle2_bottom)
         {
-            gameValue.ball_speed += 0.1;
+            gameValue.ball_speed += 0.2;
             const angle = this.paddleCollisionAngle(ball_y, paddle2_top, paddle_middle);
             gameValue.vx = gameValue.ball_speed * Math.cos(angle);
             gameValue.vy = gameValue.ball_speed * Math.sin(angle);
@@ -181,6 +244,11 @@ export class GameService {
         }
     }
     
+    /**
+     * This is the loop Of the game
+     * @param game 
+     * @param server 
+     */
     gameLoop(game : GameEntity, server : any) {
         const id = setInterval(() => {
             this.updatePaddle(game);
@@ -193,6 +261,12 @@ export class GameService {
         }, 1000 / 60);
     }
 
+    /**
+     * move up the paddle 
+     * @param gameId 
+     * @param playerId 
+     * @param client 
+     */
     ArrowUp(gameId : String, playerId : String, client : any) {
         const game : GameEntity = this.getGame(playerId, gameId, client);
         if (game && game.gameStatus.status === 'started') {
@@ -209,6 +283,12 @@ export class GameService {
         }
     }
 
+    /**
+     * move down the paddle
+     * @param gameId 
+     * @param playerId 
+     * @param client 
+     */    
     ArrowDown(gameId : String, playerId : String, client : any) {
         const game : GameEntity = this.getGame(playerId, gameId, client);
         if (game && game.gameStatus.status === 'started') {
@@ -225,6 +305,11 @@ export class GameService {
         }
     }
 
+    /**
+     * Update players paddle
+     * @param currentGame 
+     */
+    
     updatePaddle(currentGame : GameEntity) {
         const game : GameEntity = this.gameMap.get(currentGame.id);
         if (game)
@@ -234,6 +319,27 @@ export class GameService {
         }
     }
 
+    /**
+     * save the game values in the dataBase
+     * @param playerA 
+     * @param playerB 
+     */
+    async SaveGameHistory (playerA : Player, playerB : Player) {
+        await this.prisma.gamesHistories.create({ 
+            data : {
+                playerA_id : playerA.id as string,
+                playerA_Score : playerA.score,
+                playerB_id : playerA.id as string,
+                playerB_Score : playerB.score
+        }});
+    }
+    
+    /**
+     * Initiate the value of the Game
+     * @param player1Id 
+     * @param player2Id 
+     * @returns 
+     */
     getGameInitValue(player1Id : String, player2Id : String) : GameEntity {
         // const ballDirectionX : number = Math.round(Math.random()) === 1 ? -1 : 1;
         const _id = uuidv4();
@@ -274,6 +380,10 @@ export class GameService {
         return newGameValue;
     }
 
+    /**
+     * Update the user values inside the database
+     * @param userId 
+     */
     async updateWinner(userId : string) {
         try {
             const userSate = await this.prisma.userStat.findUnique({
@@ -308,6 +418,10 @@ export class GameService {
         }
     }
 
+    /**
+     * Update the loser Value inside the Database
+     * @param userId 
+     */
     async updateLoser(userId : string) {
         try {
             const userSate = await this.prisma.userStat.findUnique({
@@ -341,6 +455,10 @@ export class GameService {
         }
     }
 
+    /**
+     * Check if the waiting time is finished
+     * 
+     */
     checkTimeToEnd(updateTime : number, maxTimeInsecond : number, game : GameEntity) {
        const time = updateTime + (maxTimeInsecond * 1000);
        const current = new Date();
@@ -354,6 +472,12 @@ export class GameService {
        }
     }
 
+    /**
+     * Check if the game is finished
+     * @param game 
+     * @param intervalId 
+     * @param server 
+     */
     istheGameEnd(game : GameEntity, intervalId, server : any) {
         const { gameStatus } = game;
         if (gameStatus.status === 'stopped')
@@ -369,10 +493,19 @@ export class GameService {
                 this.updateLoser(loserId as string);
                 this.updateWinner(game.winner as string);
             }
+            this.SaveGameHistory(game.player1, game.player2);
             this.gameMap.delete(game.id);
             clearInterval(intervalId);
         }
     }
+
+    /**
+     * Get a game inside the map and check if the user is a player otherwise return null
+     * @param playerId 
+     * @param gameId 
+     * @param client 
+     * @returns 
+     */
 
     getGame(playerId : String, gameId : String, client : any) : GameEntity | null {
         const game : GameEntity = this.gameMap.get(gameId);
@@ -381,6 +514,12 @@ export class GameService {
         return null;
     }
 
+    /**
+     * make a pause to stop the game for a moment
+     * @param playerId 
+     * @param gameId 
+     * @param client 
+     */
 
     pauseOrSart(playerId : String, gameId : String, client : any) {
         const game : GameEntity = this.getGame(playerId, gameId, client);
@@ -390,6 +529,13 @@ export class GameService {
             this.gameMap.set(gameId, game);
         }
     }
+
+    /**
+     * Cancel a game
+     * @param playerId 
+     * @param gameId 
+     * @param client 
+     */
 
     cancelGame(playerId : String, gameId : String, client : any) {
         const game : GameEntity = this.getGame(playerId, gameId, client);
@@ -413,15 +559,22 @@ export class GameService {
         }
     }
 
+    /**
+     * Quit a game maybe by accident or by yourself, we are gonna wait for a moment after that the game will finish
+     * @param playerId 
+     * @param gameId 
+     * @param client 
+     */
+
     quiteGame(playerId : String, gameId : String, client : any) {
         const game : GameEntity = this.getGame(playerId, gameId, client);
         if (game) {
-            if (game.gameStatus.status === 'waiting')
+            if (game.id === this.inTheQueue)
             {
-                if (game.id === this.inTheQueue)
-                    this.inTheQueue = null;
-                this.gameMap.delete(gameId);
+                this.inTheQueue = null;
+                this.gameMap.delete(game.id);
             }
+            else
             {
                 if (playerId === game.player1.id)
                     game.player1.inThegame = false;

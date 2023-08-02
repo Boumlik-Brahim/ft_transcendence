@@ -19,7 +19,7 @@ const Friends = ({ _name, setName, setIsRandom, setOponent } : Props) => {
         .then((res) => res.json())
         .then((users) => {
             setUsers(users);
-        })
+        });
     }, []);
 
     const handleClick = (id : string) => {

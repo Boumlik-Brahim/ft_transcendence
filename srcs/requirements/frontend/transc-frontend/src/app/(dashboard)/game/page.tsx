@@ -3,11 +3,12 @@ import React, { useEffect, useState } from 'react'
 import Popup from './waiting'
 import Player from './player';
 import Friends from './friends';
-import { OnlineFriends } from '../../../../constant';
+import OnlineFriends from './onlineFriends';
 import Image from 'next/image';
 import { socket } from './socket';
 import { useRouter } from 'next/navigation';
 import { getCookie } from 'cookies-next';
+import { vs } from '../../../../public';
 
 interface CreateGameType {
   invitedId? : String, 
@@ -26,11 +27,11 @@ const Game = () => {
 
   console.log(typeof(getCookie('id')), 'type')
 
-  const createGame = (isRamdomOponent : boolean) : void => {
+  const createGame = (isRamdomOponent : boolean, id : string | undefined) : void => {
     if (!socket.connected) return ;
     if (myId) {
       const data : CreateGameType = {
-        invitedId : oponentId,
+        invitedId : id,
         creatorId : myId,
         isRamdomOponent
       }
@@ -57,55 +58,38 @@ const Game = () => {
       socket.off('error')
       socket.disconnect();
     }
-  }, []);
+  }, [myId]);
 
 
   return (
       <div className='flex items-start justify-center lg:gap-2 w-full h-[100vh]'>
         <div className='mt-5 h-auto w-full flex flex-col items-center justify-center lg:w-[70%] '>
           <h1 className='text-[30px] text-center text-primary m-10 font-bold game_font'>Play</h1>
-          <div className='md:flex items-sart justify-center gap-2 m-auto'>
+          <div className='md:flex items-sart justify-center gap-2 m-auto md:max-h-[348px] relative'>
             <div className='flex flex-col-reverse md:flex-col'>
               <Player playerId={myId}  inputValue={oponentName} setInputValue={setOponentName} />
             </div>
+           <div className='absolute top-[50%] md:block hidden'>
+            <Image src={vs} height='50' width='100' alt='no player' />
+           </div>
             <div className='flex flex-col'>
               <Player  playerId={oponentId} inputValue={oponentName} setInputValue={setOponentName}/>
-              <Friends _name={oponentName} setName={setOponentName} setIsRandom={setIsramdom} setOponent={setIOponnentId}/>
-            </div>
-          </div>
-          {
-            oponentName === '' ? (
-              <button 
-                className='border-2 gradient-bg shadow-xl ml-auto mr-auto md:mr-0 text-primary text-[20px] p-2 w-[268px] h-[61px] rounded-[40px] md:ml-4 mt-10 hover:bg-primary ease-in duration-300 hover:text-white hover:border-none' 
-              onClick={() => createGame(isRamdom)}>
-                { isRamdom ?  "Random player" : "Send Him Invitation" }
-              </button>
-            )
-            : (<></>)
-          }
-        </div>
-        <div className='w-[30%] h-full hidden lg:flex justify-center items-center '>
-          <div className='h-[90%] m-2 border w-[400px] rounded-[40px] gradient-bg p-4 '>
-            <h1 className='game_font mt-5 text-center '> Online  Players ({OnlineFriends?.length})</h1>
-            <div className='mt-10'>
               {
-                OnlineFriends.map((user, index) => (
-                  <div className='w-full flex justify-between items-center mt-5' key={index}>
-                    <div className='flex gap-3 items-center w-[50%]'>
-                      <div className='h-auto m-auto'>
-                        <Image src={user.avarat} height='61' width='61' alt='no player' />
-                      </div>
-                      <h1 className='text-primary text-[12px] font-[700]'>{user.name}</h1>
-                    </div>
-                    <button className='p-1 border text-[10px] text-primary border-primary rounded-[40px] w-[80px] hover:bg-primary hover:text-white'>
-                      challenge
-                    </button>
-                  </div>
-                ))
+                oponentName !== '' && <Friends _name={oponentName} setName={setOponentName} setIsRandom={setIsramdom} setOponent={setIOponnentId}/>
               }
             </div>
           </div>
+          {
+            oponentName === '' && (
+              <button 
+                className='border-2 gradient-bg shadow-xl ml-auto mr-auto md:mr-0 text-primary text-[20px] p-2 w-[268px] h-[61px] rounded-[40px] md:ml-4 mt-10 hover:bg-primary ease-in duration-300 hover:text-white hover:border-none' 
+              onClick={() => createGame(isRamdom, oponentId)}>
+                { isRamdom ?  "Random player" : "Send Him Invitation" }
+              </button>
+            )
+          }
         </div>
+        <OnlineFriends  createGame={createGame} />
       </div>
 
   )
