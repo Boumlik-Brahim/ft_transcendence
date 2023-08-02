@@ -44,9 +44,14 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   @SubscribeMessage('joinPublicChannel')
   async joinPublicChannel(@MessageBody() payload: { userID: string, channelID: string }, @ConnectedSocket() socket: Socket) : Promise<void> {
     const channel = await this.channelService.findOneChannel(payload.channelID);
-    await this.channelService.createChannelMember({"userId": payload.userID, "channelId": payload.channelID, "role": 'MEMBER'});
-    socket.join(payload.channelID);
-    this.server.to(payload.channelID).emit('onMessage', `${socket.id} has joined ${payload.channelID}`);
+    if (channel.channelType === 'PUBLIC'){
+      await this.channelService.createChannelMember({"userId": payload.userID, "channelId": payload.channelID, "role": 'MEMBER'});
+      socket.join(payload.channelID);
+      this.server.to(payload.channelID).emit('onMessage', `${socket.id} has joined ${payload.channelID}`);
+    }
+    else{
+      console.log(`Invalid channel`);
+    }
   }
   
   @SubscribeMessage('joinProtectedChannel')
@@ -67,9 +72,14 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   @SubscribeMessage('joinPrivateChannel')
   async joinPrivateChannel(@MessageBody() payload: { userID: string, channelID: string}, @ConnectedSocket() socket: Socket): Promise<void> {
     const channel = await this.channelService.findOneChannel(payload.channelID);
-    await this.channelService.createChannelMember({"userId": payload.userID, "channelId": payload.channelID, "role": 'MEMBER'});
-    socket.join(payload.channelID);
-    this.server.to(payload.channelID).emit('onMessage', `${socket.id} has joined ${payload.channelID}`);
+    if (channel.channelType === 'PRIVATE'){
+      await this.channelService.createChannelMember({"userId": payload.userID, "channelId": payload.channelID, "role": 'MEMBER'});
+      socket.join(payload.channelID);
+      this.server.to(payload.channelID).emit('onMessage', `${socket.id} has joined ${payload.channelID}`);
+    }
+    else{
+      console.log(`Invalid channel`);
+    }
   }
   
   @SubscribeMessage('messageChannel')
@@ -80,42 +90,66 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   
   @SubscribeMessage('kickMember')
   async handleKickMember(@MessageBody() payload: CreateKickedMemberDto , @ConnectedSocket() socket: Socket): Promise<void> {
-    await this.channelService.createKickedMember(payload);
-    await this.channelService.removeChannelMember(payload.channelId, payload.userId);
-    this.server.to(payload.channelId).emit('onMessage', `${socket.id} is kicked from ${payload.channelId}`);
+    const member = await this.channelService.findOneChannelMember(payload.channelId, payload.userId);
+    if (member)
+    {
+      await this.channelService.createKickedMember(payload);
+      await this.channelService.removeChannelMember(payload.channelId, payload.userId);
+      this.server.to(payload.channelId).emit('onMessage', `${socket.id} is kicked from ${payload.channelId}`);
+    }
   }
 
   @SubscribeMessage('createAdmin')
   async handleCreateAdmin(@MessageBody() payload: { channelId: string, memberId: string }, @ConnectedSocket() socket: Socket): Promise<void> {
     const member = await this.channelService.findOneChannelMember(payload.channelId, payload.memberId);
-    member.role = 'ADMIN';
-    await this.channelService.updateChannelMember(payload.channelId, payload.memberId, member);
-    this.server.to(payload.channelId).emit('onMessage', `${socket.id} is Admin of ${payload.channelId}`);
+    if (member && member.role === 'MEMBER')
+    {
+      member.role = 'ADMIN';
+      await this.channelService.updateChannelMember(payload.channelId, payload.memberId, member);
+      this.server.to(payload.channelId).emit('onMessage', `${socket.id} is Admin of ${payload.channelId}`);
+    }
+  }
+
+  @SubscribeMessage('createMember')
+  async handleCreateMember(@MessageBody() payload: { channelId: string, memberId: string }, @ConnectedSocket() socket: Socket): Promise<void> {
+    const member = await this.channelService.findOneChannelMember(payload.channelId, payload.memberId);
+    if (member && member.role === 'ADMIN')
+    {
+      member.role = 'MEMBER';
+      await this.channelService.updateChannelMember(payload.channelId, payload.memberId, member);
+      this.server.to(payload.channelId).emit('onMessage', `${socket.id} is Admin of ${payload.channelId}`);
+    }
   }
   
   @SubscribeMessage('banMember')
   async handleBanMember(@MessageBody() payload: { channelId: string, memberId: string, bannedTime: string }, @ConnectedSocket() socket: Socket): Promise<void> {
-    // const member = await this.channelService.findOneChannelMember(payload.channelId, payload.memberId);
-    // member.role = 'BANNED_MEMBER';
-    // await this.channelService.updateChannelMember(payload.channelId, payload.memberId, member);
-    const member =  await this.channelService.updateChannelMemberBannedTime(payload.channelId, payload.memberId, payload.bannedTime);
-    this.server.to(payload.channelId).emit('onMessage', `${socket.id} is banned from ${payload.channelId}`);
+    const member = await this.channelService.findOneChannelMember(payload.channelId, payload.memberId);
+    if(member && member.role === 'MEMBER')
+    {
+      await this.channelService.updateChannelMemberBannedTime(payload.channelId, payload.memberId, payload.bannedTime);
+      this.server.to(payload.channelId).emit('onMessage', `${socket.id} is banned from ${payload.channelId}`);
+    }
   }
 
   @SubscribeMessage('muteMember')
   async handleMuteMember(@MessageBody() payload: { channelId: string, memberId: string, mutedTime: string }, @ConnectedSocket() socket: Socket): Promise<void> {
-    // const member = await this.channelService.findOneChannelMember(payload.channelId, payload.memberId);
-    // member.role = 'MUTED_MEMBER'
-    // await this.channelService.updateChannelMember(payload.channelId, payload.memberId, member);
-    const member =  await this.channelService.updateChannelMemberMutedTime(payload.channelId, payload.memberId, payload.mutedTime);
-    this.server.to(payload.channelId).emit('onMessage', `${socket.id} is muted from ${payload.channelId}`);
+    const member = await this.channelService.findOneChannelMember(payload.channelId, payload.memberId);
+    if(member && member.role === 'MEMBER')
+    {
+      await this.channelService.updateChannelMemberMutedTime(payload.channelId, payload.memberId, payload.mutedTime);
+      this.server.to(payload.channelId).emit('onMessage', `${socket.id} is muted from ${payload.channelId}`);
+    }
   }
 
   @SubscribeMessage('leaveChannel')
   async handleLeaveChannel(@MessageBody() payload: { channelId: string, memberId: string }, @ConnectedSocket() socket: Socket): Promise<void> {
-    await this.channelService.removeChannelMember(payload.channelId, payload.memberId);
-    socket.leave(payload.channelId);
-    this.server.to(payload.channelId).emit('onMessage', `${socket.id} has leaved the channel`);
+    const member = await this.channelService.findOneChannelMember(payload.channelId, payload.memberId);
+    if(member && (member.role === 'MEMBER' || member.role === 'ADMIN'))
+    {
+      await this.channelService.removeChannelMember(payload.channelId, payload.memberId);
+      socket.leave(payload.channelId);
+      this.server.to(payload.channelId).emit('onMessage', `${socket.id} has leaved the channel`);
+    }
   }
 
   handleDisconnect(client: Socket) {
