@@ -3,7 +3,7 @@ import { configureStore } from "@reduxjs/toolkit"
 
 
 
-import { createChannelToggleReducer, createChannelPopUpToggleReducer, togglePrivateReducer,toggleShowContactListReducer,toggleShowChannelMembersReducer , EditUserIdsReducer,refreshFetchMessagesReducer} from './reducer';
+import { createChannelToggleReducer, createChannelPopUpToggleReducer, togglePrivateReducer,toggleShowContactListReducer,toggleShowChannelMembersReducer , EditUserIdsReducer,refreshFetchMessagesReducer,selectContactConversationReducer,roomIdReducer} from './reducer';
 
 
 
@@ -15,7 +15,9 @@ const store = configureStore({
     toggleShowContactList: toggleShowContactListReducer,
     toggleShowChannelMembers: toggleShowChannelMembersReducer,
     EditUserIdsSlice: EditUserIdsReducer,
-    refreshFetchMessagesSlice: refreshFetchMessagesReducer
+    refreshFetchMessagesSlice: refreshFetchMessagesReducer,
+    selectContactConversationSlice: selectContactConversationReducer,
+    roomIdSlice:roomIdReducer,
   },
 });
 const currentState = store.getState();

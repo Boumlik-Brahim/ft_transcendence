@@ -2,9 +2,9 @@
 import Image from "next/image";
 
 import { useDispatch, useSelector } from 'react-redux';
-import { show, hide, setRefreshOn } from '../../store/reducer';
+import { show, hide, setRefreshOn } from '@/app/store/reducer';
 
-import { RootState } from '../../store/store';
+import { RootState } from '@/app/store/store';
 
 import { useState } from 'react';
 import axios from "axios";
@@ -42,8 +42,7 @@ function MessageInputBox({ inputRef }: Props) {
     }
 
     //* function that submits and sends the message typed in the input
-    const handleSubmit = async (event: React.KeyboardEvent<HTMLInputElement>) => {
-        event.preventDefault();
+    const handleSubmit = async () => {
         if (!message.content)
             return;
         // & sending the message in the socket 
@@ -57,7 +56,7 @@ function MessageInputBox({ inputRef }: Props) {
         setMessage({ ...message, content: '' });
     };
 
-    // //* function that sets the message typed in the input
+    //* function that sets the message typed in the input
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setMessage({
             ...message,
@@ -65,11 +64,10 @@ function MessageInputBox({ inputRef }: Props) {
         });
     };
 
-    // //* function that watch if enter clicked to send th message
+    //* function that watch if enter clicked to send th message
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {
-            event.preventDefault();
-            handleSubmit(event);
+            handleSubmit();
         }
     };
 
@@ -97,9 +95,9 @@ function MessageInputBox({ inputRef }: Props) {
                             md:pl-[10px] md:w-[10%] 
             '>
 
-                <Image src={"./send_b.svg"} alt="send message" width={24} height={24} className="text-primary text-[17px]    cursor-pointer 
-                            md:text-[23px]" onClick={(e) => { handleSubmit }} />
-                <Image src={"./contacts_b.svg"} alt="send message" width={24} height={24} className=" text-primary text-[20px] ml-2.5 cursor-pointer 
+                <Image src={"/send_b.svg"} alt="send message" width={24} height={24} className="text-primary text-[17px]    cursor-pointer 
+                            md:text-[23px]" onClick={handleSubmit} />
+                <Image src={"/contacts_b.svg"} alt="show-friendList" width={24} height={24} className=" text-primary text-[20px] ml-2.5 cursor-pointer 
                             md:hidden" onClick={handleShowContactList} />
             </div>
         </div>

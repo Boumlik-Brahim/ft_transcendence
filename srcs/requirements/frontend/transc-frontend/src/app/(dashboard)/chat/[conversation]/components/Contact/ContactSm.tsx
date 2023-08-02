@@ -4,9 +4,10 @@ import Image from "next/image";
 
 
 import { useSelector, useDispatch } from 'react-redux';
-import { setCurrentUser, setOtherUser } from '@/app/store/reducer';
+import { setCurrentUser, setOtherUser, show, selectedOne, setRefreshOn, setRoomId } from '@/app/store/reducer';
 import { RootState } from '@/app/store/store';
 import { useEffect } from "react";
+import axios from "axios";
 
 //* Interface of Props 
 interface Props {
@@ -14,28 +15,52 @@ interface Props {
     name: string;
     profilePicturePath: string;
     unreadMessages: number;
+    activeButtonId: string | null;
     onClick: (buttonId: string) => void;
     inputRef: any
 }
 
-function ContactSm({ id, name, unreadMessages, profilePicturePath, onClick, inputRef }: Props) {
+
+function ContactSm({ id, name, unreadMessages, profilePicturePath, onClick, activeButtonId, inputRef }: Props) {
 
     //* States
     const currentUserId = useSelector((state: RootState) => state.EditUserIdsSlice.currentUserId);
+    const isActive = activeButtonId === id;
+    const otherUserId = useSelector((state: RootState) => state.EditUserIdsSlice.otherUserId);
+    const selectedOneBtn = useSelector((state: RootState) => state.selectContactConversationSlice.selectedBtn);
+    const isA = selectedOneBtn === id
 
     const dispatch = useDispatch();
 
 
     //^ ---------------- select contact + getting other user Id and emitting join room --------------------------------
-    const handleClick = () => {
+    const handleClick = async () => {
+
+        try {
+            const res = await axios.put(`http://localhost:3000/chat/${currentUserId}/${otherUserId}`, { "seen": true });
+
+        } catch (err) {
+            console.log(err);
+        }
+
         //* for styling the selected
         onClick(id);
         //* for getting the other user's ID
         dispatch(setOtherUser(id));
+        dispatch(show());
+        dispatch(selectedOne(id));
+        dispatch(setRefreshOn()); // 
+
         //* creating new room 
         inputRef.current.emit("joinRoom", {
             senderId: currentUserId,
             recieverId: id
+        });
+
+        //* updating number of unseen messages
+        inputRef.current.on("joined", (data: any) => {
+            dispatch(setRoomId(data.roomName))
+            dispatch(setRefreshOn()); // 
         });
     };
 
@@ -47,11 +72,15 @@ function ContactSm({ id, name, unreadMessages, profilePicturePath, onClick, inpu
                     {name}
                 </div>
             </div>
-            <div className="w-[20px] h-[20px] bg-red-500 rounded-full mr-[11.5%] flex items-center justify-center">
-                <span className="text-white text-xs font-poppins font-semibold">
-                    {unreadMessages}
-                </span>
-            </div>
+            {
+                (unreadMessages != 0 && !isA) &&
+                <div className="w-[20px] h-[20px] bg-red-500 rounded-full mr-[11.5%] flex items-center justify-center">
+                    <span className="text-white text-xs font-poppins font-semibold">
+                        {unreadMessages}
+                    </span>
+                </div>
+
+            }
         </div>
     );
 }
