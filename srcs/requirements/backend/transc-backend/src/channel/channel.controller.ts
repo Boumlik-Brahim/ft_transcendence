@@ -16,31 +16,37 @@ export class ChannelController {
 
   //* -------------------------------------------------------------channelCRUDOp-------------------------------------------------------- *//
   @Post()
-  async create(@Body() createChannelDto: CreateChannelDto): Promise<Channel> {
+  async createChannel(@Body() createChannelDto: CreateChannelDto): Promise<Channel> {
     const channel = await this.channelService.createChannel(createChannelDto)
     return channel;
   }
   
   @Get()
-  async findAll(): Promise<Channel[]> {
+  async findAllChannels(): Promise<Channel[]> {
     const channels = await this.channelService.findAllChannels();
     return channels;
   }
 
+  @Get(':userId/channelMember')
+  async findMyAllChannels(@Param('userId') userId: string): Promise<Channel[]> {
+    const mychannels = await this.channelService.findMyAllChannels(userId);
+    return mychannels;
+  }
+
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<Channel> {
+  async findOneChannel(@Param('id') id: string): Promise<Channel> {
     const channel = await this.channelService.findOneChannel(id);
     return channel;
   }
   
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateChannelDto: UpdateChannelDto): Promise<Channel> {
+  async updateChannel(@Param('id') id: string, @Body() updateChannelDto: UpdateChannelDto): Promise<Channel> {
     const updatedChannel = await this.channelService.updateChannel(id, updateChannelDto);
     return updatedChannel;
   }
   
   @Delete(':id')
-  async remove(@Param('id') id: string): Promise<void> {
+  async removeChannel(@Param('id') id: string): Promise<void> {
     await this.channelService.removeChannel(id);
   }
   //* -------------------------------------------------------------channelCRUDOp-------------------------------------------------------- *//

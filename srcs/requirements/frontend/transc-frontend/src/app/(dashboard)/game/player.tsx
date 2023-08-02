@@ -10,10 +10,11 @@ import axios from 'axios'
 interface Props {
     playerId? : string,
     inputValue? : string,
-    setInputValue : (params : string) => void 
+    setInputValue : (params : string) => void,
+    waiting? : boolean,
 }
 
-const Player = ({playerId, inputValue, setInputValue} : Props) => {
+const Player = ({playerId, inputValue, setInputValue, waiting} : Props) => {
 
     const [user, setUser] = useState<any>();
 
@@ -35,7 +36,7 @@ const Player = ({playerId, inputValue, setInputValue} : Props) => {
                     {
                         user ? 
                         (
-                            <Image src={avatar} height='200' width='200' alt='player' />
+                            <Image src={user.Avatar} height='200' width='200' className='rounded-full' alt='player' />
                         )
                         :
                         (
@@ -58,9 +59,11 @@ const Player = ({playerId, inputValue, setInputValue} : Props) => {
                     ) 
                     :
                     (
-                        <form className='mr-auto ml-auto'>
-                            <input value={inputValue} onChange={(e) => setInputValue(e.target.value)} className='block m-auto w-[220px] p-2 h-[45px] border file:border-solid border-primary rounded-[42px]' placeholder='choose your oponent...' />
-                        </form>
+                        !waiting && (
+                            <form className='mr-auto ml-auto'>
+                                <input value={inputValue} onChange={(e) => setInputValue(e.target.value)} className='block m-auto w-[220px] p-2 h-[45px] border file:border-solid border-primary rounded-[42px]' placeholder='choose your oponent...' />
+                            </form>
+                        )
                     )
                 }
             </div>
