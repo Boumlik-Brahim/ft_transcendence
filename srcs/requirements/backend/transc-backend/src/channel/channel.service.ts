@@ -143,6 +143,13 @@ export class ChannelService {
       });
     });
   }
+
+  async getPrivateChannelUUID(id: string): Promise<string> {
+    const channel = await this.findOneChannel(id);
+    if (channel.channelType === 'PRIVATE'){
+      return channel.channelName;
+    }
+  }
   //* -------------------------------------------------------------channelServices-------------------------------------------------------- *//
 
   //* ----------------------------------------------------------channelMemberServices----------------------------------------------------- *//
@@ -219,7 +226,21 @@ export class ChannelService {
 
   async updateChannelMemberBannedTime(channelId: string, userId: string, bannedTime: string): Promise<ChannelMember> {
     const unbanneTime = new Date();
-    unbanneTime.setMinutes(unbanneTime.getMinutes() + parseInt(bannedTime));
+    console.log("current time minutes", unbanneTime);
+    const bannTime = new Date(bannedTime);
+    if (bannTime.getMinutes() > unbanneTime.getMinutes())
+    {
+      console.log("banned time", bannTime.getMinutes() - unbanneTime.getMinutes());
+      console.log("banne time minutes", bannTime.getMinutes());
+      unbanneTime.setMinutes(unbanneTime.getMinutes() + (bannTime.getMinutes() - unbanneTime.getMinutes()));
+      console.log("unbanne time", unbanneTime);
+    }
+    else
+    {
+      console.log("banne time minutes", bannTime.getMinutes());
+      unbanneTime.setMinutes(bannTime.getMinutes());
+      console.log("unbanne time", unbanneTime);
+    }
 
     return this.prisma.channelMember.update({
       where: {
@@ -241,6 +262,25 @@ export class ChannelService {
       }, HttpStatus.INTERNAL_SERVER_ERROR, {
         cause: error
       });
+    });
+  }
+
+  @Cron(CronExpression.EVERY_30_SECONDS)
+  async handleUnbanneMember(): Promise<void> {
+    const currentDate = new Date();
+    // console.log(currentDate);
+    await this.prisma.channelMember.updateMany({
+      where: {
+        role: 'BANNED_MEMBER',
+        unbanneTime: {
+          lte: currentDate
+        },
+      },
+      data: {
+        role: 'MEMBER',
+        bannedTime: new Date(0),
+        unbanneTime: new Date(0)
+      }
     });
   }
 
@@ -285,24 +325,6 @@ export class ChannelService {
         role: 'MEMBER',
         mutedTime: "",
         unmuteTime: ""
-      }
-    });
-  }
-
-  @Cron(CronExpression.EVERY_30_SECONDS)
-  async handleUnbanneMember(): Promise<void> {
-    const currentDate = new Date();
-    await this.prisma.channelMember.updateMany({
-      where: {
-        role: 'BANNED_MEMBER',
-        unbanneTime: {
-          lte: currentDate
-        },
-      },
-      data: {
-        role: 'MEMBER',
-        bannedTime: new Date(0),
-        unbanneTime: new Date(0)
       }
     });
   }
