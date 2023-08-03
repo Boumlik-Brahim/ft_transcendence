@@ -82,7 +82,7 @@ function page() {
                   </div>
                 </div>
         
-                <FriendAction userId={userId} userSessionId={userSession} />
+               { (userId !== userSession) && <FriendAction userId={userId} userSessionId={userSession} />}
 
               </div>
               <Achievements userId={userId} userSessionId={userSession} />
