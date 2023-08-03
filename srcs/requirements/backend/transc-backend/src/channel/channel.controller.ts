@@ -21,13 +21,13 @@ export class ChannelController {
     return channel;
   }
   
-  @Get()
-  async findAllChannels(): Promise<Channel[]> {
-    const channels = await this.channelService.findAllChannels();
+  @Get(':userId/allChannels')
+  async findAllChannels(@Param('userId') userId: string): Promise<Channel[]> {
+    const channels = await this.channelService.findAllChannels(userId);
     return channels;
   }
 
-  @Get(':userId/channelMember')
+  @Get(':userId/myAllChannels')
   async findMyAllChannels(@Param('userId') userId: string): Promise<Channel[]> {
     const mychannels = await this.channelService.findMyAllChannels(userId);
     return mychannels;
