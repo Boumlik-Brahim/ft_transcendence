@@ -60,7 +60,9 @@ model User {
   playerB GamesHistories[] @relation("playerB")
   senders  DirectMessage[] @relation("sendeMessage")
   receivers DirectMessage[] @relation("receiveMessage")
-  channel Channel[]
+  channelOwner Channel[] @relation("channelOwner")
+  channelMember ChannelMember[] @relation("channelMember")
+  kickedMember KickedMember[] @relation("kickedMember")
   created_at  DateTime  @default(now())
   updated_at  DateTime  @updatedAt
 }
@@ -135,8 +137,8 @@ model Channel {
   channelPassword String?
   created_at  DateTime  @default(now())
   updated_at  DateTime  @updatedAt
+  user  User @relation("channelOwner", fields: [channelOwnerId], references: [id])
   channelOwnerId  String
-  user  User[]
   channelMember ChannelMember[] @relation("channelMember")
   kickedMember  KickedMember[]  @relation("kickedMember")
   recievers  ChannelMessage[]  @relation("receiverRelation")
@@ -144,6 +146,7 @@ model Channel {
 
 model ChannelMember {
   id  String @id @default(uuid())
+  user  User @relation("channelMember", fields: [userId], references: [id])
   userId  String
   channel Channel @relation("channelMember", fields: [channelId], references: [id])
   channelId String
@@ -159,6 +162,7 @@ model ChannelMember {
 
 model KickedMember {
   id  String @id @default(uuid())
+  user  User @relation("kickedMember", fields: [userId], references: [id])
   userId  String
   channel Channel @relation("kickedMember", fields: [channelId], references: [id])
   channelId String
