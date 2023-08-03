@@ -24,7 +24,6 @@ export class AuthController {
     async callback(@Req() req: any, @Res() res: any) : Promise<any>{
         try {
             let user = await this.authService.getUser(req);
-            console.log(user);
             const token = await this.authService.signToken(req);
             res.cookie('id', user.id);
             res.cookie('accessToken', token);
@@ -45,7 +44,7 @@ export class AuthController {
     @Post('2fa/turn-on')
     async turnOnTwoFactorAuthentication(@Query('userId') userId: string, @Query('authCode') authCode: string){
         const userAuthentified = await this.userService.findOne(userId);
-        const isCodeValid = this.authService.isTwoFactorAuthenticationCodeValid(authCode, userAuthentified);
+        const isCodeValid = await this.authService.isTwoFactorAuthenticationCodeValid(authCode, userAuthentified);
         if (!isCodeValid){
             throw new UnauthorizedException('Wrong authentication code');
         }
