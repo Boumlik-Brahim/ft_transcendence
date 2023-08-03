@@ -7,7 +7,7 @@ export class ConnectedClientsService {
     private connectedClients: Map<string, string> = new Map();
 
     addClient(client: Socket) {
-        const userId = client.handshake.query.userId as string;
+        const userId = client.handshake.auth.userId as string;
         this.connectedClients.set(client.id, userId);
         this.connectedClients.forEach((value, key) => {
             console.log(`User: ${key}, Socket ID: ${value}`);

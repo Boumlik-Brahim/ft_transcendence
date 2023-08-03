@@ -85,3 +85,61 @@ function ContactSm({ id, name, unreadMessages, profilePicturePath, onClick, acti
     );
 }
 export default ContactSm;
+
+
+
+// div className="card_friend gradients" onClick={() => handleSubmit({userSessionId, userId})}>
+//                                {  <Link  href={`/chat/${roomId}` }>
+//                                     <Image src={send_b} width={30} alt="avatar"  />
+//                                 </Link>}
+//                         </div>
+
+// import axios from "axios";
+// import Link from "next/link";
+
+
+
+// import { useSelector, useDispatch } from 'react-redux';
+// import { setCurrentUser, setOtherUser,selectedOne , setRefreshOn} from '@/app/store/reducer';
+// import { RootState } from '@/app/store/store';
+
+// interface MessageData {
+//     content: string;
+//     senderId: string;
+//     recieverId: string;
+// }
+    // // &--------------------------------------  CHAT PART ------------------------------------
+    
+    // const [roomId, setRoomId] = useState("");
+    
+    
+    // const dispatch = useDispatch();
+    // useEffect(() => {
+    //     socket.emit("joinRoom", {
+    //         senderId: userSessionId,
+    //         recieverId: userId
+    //     });
+        
+    //     socket.on("joined", (data) => {
+    //         setRoomId(data.roomName);
+            
+    //     });
+    
+    // },[ userId, userSessionId])
+    
+    // const handleSubmit = async ({userSessionId,userId} : {userSessionId : string ,userId : string}) => {
+    //     dispatch(setOtherUser(userId));
+    //     dispatch(selectedOne(userId));
+    //     dispatch(setRefreshOn());
+        
+    //     try {
+    //         const res = await axios.put(`http://localhost:3000/chat/${userSessionId}/${userId}`, {"seen": true});
+    
+    //       } catch (err) {
+    //         console.log(err);
+    //       }
+    // }
+    
+    
+    
+    // // &--------------------------------------------------------------------------------------
