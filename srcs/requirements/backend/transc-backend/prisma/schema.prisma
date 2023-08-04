@@ -63,6 +63,7 @@ model User {
   channelOwner Channel[] @relation("channelOwner")
   channelMember ChannelMember[] @relation("channelMember")
   kickedMember KickedMember[] @relation("kickedMember")
+  channelMessage ChannelMessage[] @relation("sendChannelMessage")
   created_at  DateTime  @default(now())
   updated_at  DateTime  @updatedAt
 }
@@ -150,7 +151,6 @@ model ChannelMember {
   userId  String
   channel Channel @relation("channelMember", fields: [channelId], references: [id])
   channelId String
-  sender  ChannelMessage[]  @relation("senderRelation")
   role Role @default(MEMBER)
   bannedTime DateTime?
   unbanneTime DateTime?
@@ -173,12 +173,11 @@ model KickedMember {
 model ChannelMessage {
   id  String @id @default(uuid())
   content String
-  sender  ChannelMember @relation("senderRelation", fields: [memberId], references: [id])
-  memberId  String
+  sender  User @relation("sendChannelMessage", fields: [userId], references: [id])
+  userId  String
   recievers  Channel @relation("receiverRelation", fields: [channelId], references: [id])
   channelId String
   created_at  DateTime  @default(now())
-  @@unique([memberId, channelId], name: "senderAndChannel")
 }
 
 //* ---------------------------------------------------------------------------------------------------------------------------- *//
