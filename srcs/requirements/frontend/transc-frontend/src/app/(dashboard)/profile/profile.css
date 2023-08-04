@@ -30,5 +30,5 @@
 
 .history{
     @apply flex justify-between items-center rounded-full;
-    @apply w-full h-[80px] px-[15px] md:h-[100px];
+    @apply w-full h-[80px] px-[15px] md:h-[100px] min-w-[300px];
 }
