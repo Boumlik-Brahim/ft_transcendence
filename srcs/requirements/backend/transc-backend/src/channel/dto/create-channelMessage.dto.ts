@@ -11,7 +11,7 @@ export class CreateChannelMessageDto {
     @ApiProperty()
     @IsString()
     @IsNotEmpty()
-    memberId: string;
+    userId: string;
     
     @ApiProperty()
     @IsString()
