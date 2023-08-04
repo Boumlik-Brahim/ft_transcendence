@@ -22,6 +22,7 @@ import Cookies from 'universal-cookie';
 
 import { setCurrentUser, setOtherUser, setRefreshOn, setRoomId } from '@/app/store/reducer';
 import { useRouter } from 'next/router'
+import Sidebar from '@/../components/Sidebar'
 
 interface Message {
   id?: string;
@@ -169,13 +170,10 @@ function Page({ params }: any) {
     });
   }, [dispatch]);
 
-
-
   useEffect(() => {
 
     socket.current?.on("refresh", () => {
       dispatch(setRefreshOn());
-
     });
   }, [dispatch]);
 
@@ -186,6 +184,8 @@ function Page({ params }: any) {
 
 
   return (
+<>
+    <Sidebar/>
     <div className="w-full h-[85vh] md:h-screen flex">
       <div className={`${!isContactListHidden.showContactListToggled ? "w-full h-full " : "hidden"} `}>
 
@@ -214,6 +214,7 @@ function Page({ params }: any) {
 
 
     </div>
+    </>
   );
 }
 export default Page;

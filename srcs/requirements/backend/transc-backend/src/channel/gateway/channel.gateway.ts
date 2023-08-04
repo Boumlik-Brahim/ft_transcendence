@@ -7,6 +7,8 @@ import { CreateChannelDto } from '../dto/create-channel.dto';
 import { CreateChannelMessageDto } from '../dto/create-channelMessage.dto';
 import { CreateKickedMemberDto } from '../dto/create-kickedMember.dto';
 import { ConnectedClientsService } from 'src/connected-clients.service';
+import { createHash } from 'crypto';
+import { PrismaService } from 'prisma/prisma.service';
 
 @WebSocketGateway({
   cors: {
@@ -17,7 +19,8 @@ import { ConnectedClientsService } from 'src/connected-clients.service';
 export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
 
   constructor(private readonly channelService: ChannelService,
-    private readonly connectedClientsService: ConnectedClientsService) {}
+    private readonly connectedClientsService: ConnectedClientsService,
+    private prisma: PrismaService) {}
 
   @WebSocketServer()
   server: Server;
@@ -35,10 +38,29 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
 
   @SubscribeMessage('createChannel')
   async handleCreateChannel(@MessageBody() payload: CreateChannelDto, @ConnectedSocket() socket: Socket): Promise<void> {
-    const channel = await this.channelService.createChannel(payload);
-    await this.channelService.createChannelOwner(channel.channelOwnerId, channel.id);
-    socket.join(channel.id);
-    this.server.to(channel.id).emit('onMessage', `${socket.id} has create ${channel.channelName}`);
+    try{
+      if(payload.channelPassword)
+      {
+        const hachedChannelPswd = createHash('sha256').update(payload.channelPassword).digest('hex');
+        const channelProtected = await this.prisma.channel.create({ data: {
+          channelName: payload.channelName,
+          channelType: payload.channelType,
+          channelPassword: hachedChannelPswd,
+          channelOwnerId: payload.channelOwnerId
+        }});
+        await this.channelService.createChannelOwner(channelProtected.channelOwnerId, channelProtected.id);
+        socket.join(channelProtected.id);
+        // this.server.to(channelProtected.id).emit('onMessage', `${socket.id} has create ${channelProtected.channelName}`);
+      }else{
+        const channel = await this.channelService.createChannel(payload);
+        await this.channelService.createChannelOwner(channel.channelOwnerId, channel.id);
+        socket.join(channel.id);
+        // this.server.to(channel.id).emit('onMessage', `${socket.id} has create channel: ${channel.channelName}`);
+      }
+      this.server.to(socket.id).emit('refrechCreateChannel');
+    }catch(error){
+      throw error;
+    }
   }
   
   @SubscribeMessage('joinPublicChannel')

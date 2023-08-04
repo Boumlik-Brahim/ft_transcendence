@@ -15,6 +15,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning={true}>
       <body suppressHydrationWarning={true} >
         <ReduxProvider>
+          
           {children}
         </ReduxProvider>
       </body>

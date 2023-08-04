@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { CreateChannelDto } from './dto/create-channel.dto';
 import { UpdateChannelDto } from './dto/update-channel.dto';
@@ -34,7 +35,7 @@ export class ChannelService {
     // return channel;
   }
   
-  async findAllChannels(): Promise<Channel[]> {
+  async findAllChannels(userId: string): Promise<Channel[]> {
     return this.prisma.channel.findMany({
       where: {
         OR: [
@@ -45,6 +46,11 @@ export class ChannelService {
             channelType: 'PROTECTED',
           },
         ],
+        channelMember: {
+          none: {
+            userId: userId
+          }
+        },
       },
       include: {
         _count: {
@@ -69,12 +75,14 @@ export class ChannelService {
 
   async findMyAllChannels(userId: string): Promise<Channel[]> {
     return this.prisma.channel.findMany({
-      include: {
+      where: {
         channelMember: {
-          where: {
+          some: {
             userId: userId,
-          },
-        },
+          }
+        }
+      },
+      include: {
         _count: {
           select: {
             channelMember: {}
@@ -99,6 +107,13 @@ export class ChannelService {
     return this.prisma.channel.findUniqueOrThrow({
       where: {
         id
+      },
+      include: {
+        _count: {
+          select: {
+            channelMember: {}
+          }
+        }
       },
     })
     .catch (error => {

@@ -6,6 +6,9 @@ import { RootState } from '../../store/store';
 import { constrainedMemory } from "process";
 import { use, useEffect, useState } from "react";
 import axios from "axios";
+import {setCurrentUser,setRefreshChannelsOn,createChannelPopUpOff } from '@/app/store/reducer';
+import { io } from "socket.io-client";
+
 
 function CreatePrvPbcChannel() {
     const isPrivateChannelOn = useSelector((state: RootState) => state.togglePrivate);
@@ -31,12 +34,9 @@ interface Channel{
     channelPassword: string
 }
 interface Channels{
-  id: string
   channelName: string
   channelType: string
   channelPassword: string
-  created_at: string
-  updated_at: string
   channelOwnerId: string
 }
     const [channelData, setChannelData] = useState<Channel>({
@@ -44,14 +44,15 @@ interface Channels{
         channelType: '',
         channelPassword:''
     });
-    const [channels, setChannels] = useState<Channels[]>([])
+    const [channels, setChannels] = useState<Channels>()
 
     function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
         const { name, value } = event.target;
+        setEmptyChannelNameError(false)
         setChannelData((prevData) => ({
           ...prevData,
           [name]: value
-        }));
+        })); 
       }
       useEffect(()=>{
         isPrivateChannelOn.privateToggled ? 
@@ -66,17 +67,32 @@ interface Channels{
           }))
 
         console.log("channel name : ",channelData.channelName, " type : ", channelData.channelType);
-      },[channelData.channelName, channelData.channelType, isPrivateChannelOn.privateToggled])
+    },[channelData.channelName, channelData.channelType, isPrivateChannelOn.privateToggled])
+    
+    const currentUserId = useSelector((state: RootState) => state.EditUserIdsSlice.currentUserId);
+    const refreshStatus = useSelector((state: RootState) => state.refreshFetchChannels.refreshFetchChannels);
+    const socketTest= io("ws://localhost:3000");
 
-
+    const [emptyChannelNameError, setEmptyChannelNameError] = useState(false);
 const handleSubmit = async () => {
-    try {
-      const res = await axios.post("http://localhost:3000/channel", channelData);
-      setChannels([...channels, res.data]);
-    } catch (err) {
-      console.log(err);
+    if (!channelData.channelName) {
+        setEmptyChannelNameError(true)
+        return;
     }
-  };
+     // & sending the message in the socket 
+     socketTest.emit("createChannel", {
+        channelName: channelData.channelName,
+        channelType: channelData.channelType,
+        channelPassword: channelData.channelPassword,
+        channelOwnerId:currentUserId,
+    } );
+    setChannelData({ ...channelData, channelName: '' });
+    socketTest.on("refrechCreateChannel", (data: any) => {
+        console.log("results ------- > ");
+        dispatch(createChannelPopUpOff());
+        dispatch(setRefreshChannelsOn());
+    });
+  }
 //^ --------------------------------------------------------------------------------------
 
     return (
@@ -118,14 +134,10 @@ const handleSubmit = async () => {
                 value={channelData.channelName} 
                 onChange={handleChange}
             /> */}
-             <input placeholder={`name`} type={`text`} className="w-full h-[37px] text-primary-900 text-xs tracking-wide	font-poppins font-bold rounded-[3px] mb-[15px] pl-[22px]
-                focus:outline-none 
-                placeholder:font-poppins placeholder:font-bold placeholder:text-light-900 placeholder:text-xs 
-                md:h-[45px]
-                "
+             <input placeholder={`${!emptyChannelNameError ? "Channel Name" : "Please Enter A Name For The Channel "}`} type={`text`} className={`${`w-full h-[37px] text-primary text-xs tracking-wide font-poppins font-normal rounded-[3px] mb-[15px] pl-[22px]  placeholder:font-poppins placeholder:font-normal ${emptyChannelNameError ? "placeholder:text-red-500 outline outline-[2px] outline-red-500" : "focus:outline-none placeholder:text-date"}  placeholder:text-xs  md:h-[45px]`}`}
                 name="channelName" value={channelData.channelName} onChange={handleChange}
             />
-            <button className="w-full text-white font-poppins font-semibold text-xs  leading-4 tracking-widest rounded-full  h-[37px] btn-background md:h-[43px] md:border-2 lg:h-[55px] lg:text-[14px]">
+            <button className="w-full text-white font-poppins font-semibold text-xs  leading-4 tracking-widest rounded-full  h-[37px] btn-background md:h-[43px] md:border-2 lg:h-[55px] lg:text-[14px]" onClick={handleSubmit}>
                 Create
             </button>
             
