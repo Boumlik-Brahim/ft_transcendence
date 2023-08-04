@@ -56,11 +56,16 @@ import question from "./question.png"
 import GIF from './wait.gif'
 import bgMain from './bg_main.png'
 
+import vs from "./VS.svg";
+import closeCircle from './closecircle.png'
+ 
 
 
 
 export {
   bgMain,
+  closeCircle,
+  vs,
   logo_b,
   profile_b,
   leaderboard_b,
