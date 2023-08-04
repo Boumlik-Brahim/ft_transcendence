@@ -25,44 +25,49 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
         this.logger.log('APP server Initialized!');
     }
 
-    handleConnection(client: Socket) {
+    handleConnection(client: Socket) {z
         this.connectedClientsService.addClient(client);
         this.logger.log(`Client connected to APP server: ${client.id}`);
     }
 
-    @SubscribeMessage('friendRequest')
+    @SubscribeMessage('RequestFriendShip')
     handleFriendRequest(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
-        console.log("From AppGateway: Data ====> " , data)
-        this.server.emit('friendRequest', data);
+        this.server.emit('RequestFriendShip', data);
     }
-    @SubscribeMessage('friendCancel')
+    @SubscribeMessage('CancelFriendShip')
     handleFriendCancel(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
-        this.server.emit('friendCancel', data);
+        this.server.emit('CancelFriendShip', data);
     }
-    @SubscribeMessage('friendDeletion')
+    @SubscribeMessage('DeleteRequest')
     handleFriendDelete(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
-        this.server.emit('friendDeletion', data);
+        this.server.emit('DeleteRequest', data);
     }
-    
-    @SubscribeMessage('friendCreation')
+ 
+    @SubscribeMessage('AcceptRequest')
     handleFriendCreate(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
-        this.server.emit('friendCreation', data);
+        this.server.emit('AcceptRequest', data);
     }
-    
-    @SubscribeMessage('blockfriend')
+  
+    @SubscribeMessage('DeleteFriendShip')
+    handleFriendShipDelete(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
+        this.server.emit('DeleteFriendShip', data);
+    }
+
+    @SubscribeMessage('BlockFriend')
     handleBlockfriend(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
-        this.server.emit('blockfriend', data);
+        this.server.emit('BlockFriend', data);
     }
-    
-    @SubscribeMessage('unblockfriend')
+   
+    @SubscribeMessage('UnblockFriend')
     handleUnblockfriend(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
-        this.server.emit('unblockfriend', data);
+        this.server.emit('UnblockFriend', data);
     }
-    
-    @SubscribeMessage('gameInvitation')
-    handleGameInvitation(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
-        this.server.emit('gameInvitation', data);
-    }
+
+    // @SubscribeMessage('gameInvitation')
+    // handleGameInvitation(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
+    //     this.server.emit('gameInvitation', data);
+    // }
+
 
     /*user invitation notification*/
     // @SubscribeMessage('inviteUser')

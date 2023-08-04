@@ -68,16 +68,20 @@ export async function deleteFriend(userId: string, friendId: string) {
   return false;
 }
 
-export function usePendingUsers(friendShip: friendShip[]): users_int[] | null {
+export function usePendingUsers(friendShip: friendShip[], userSession: string): users_int[] | null {
   const [pendingUsers, setPendingUsers] = useState<users_int[] | null>(null);
 
   useEffect(() => {
     // Get an array of all the friendIds
-    const friendIds = friendShip.map((friend) => friend.userId);
+    const friendIds = friendShip.map((friend) => {
+      return (userSession === friend.friendId) ? friend.userId : friend.friendId
+    }
+    );
 
     // Use Promise.all to fetch user data for all the friendIds at once
     const fetchUsers = async () => {
       try {
+        
         const userResponses = await Promise.all(
           friendIds.map((friendId) => axios.get(`http://127.0.0.1:3000/users/${friendId}`))
         );

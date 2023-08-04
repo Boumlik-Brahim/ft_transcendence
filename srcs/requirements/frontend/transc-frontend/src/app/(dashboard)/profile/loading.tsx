@@ -1,7 +1,8 @@
-import Friendsbar from '../../../../components/Friendsbar'
-
 function loading() {
   return (
+    <>
+    {/* <div className='bg-red-100 h-screen w-[50%]'>
+    </div> */}
     <div className="layouts">
       <div className="my_container loading_animation">
         <div className="wrapper relative rounded-2xl">
@@ -34,8 +35,11 @@ function loading() {
           </ul>
         </div>
       </div>
-      <Friendsbar />
+
+      <div className='bg-green-100 h-screen w-[50%]'>
+      </div>
     </div>
+    </>
   )
 }
 
