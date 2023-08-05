@@ -46,7 +46,6 @@ model User {
   IntraId String @unique
   Avatar  String?
   status  Status @default(ONLINE)
-  twoFa   Boolean @default(true)
   isAuth  Boolean @default(true)
   twoFactorAuthSecret String?
   isTwoFactorEnabled Boolean @default(false)

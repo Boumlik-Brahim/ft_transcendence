@@ -13,9 +13,8 @@ import {
 export const SideLinks = [
     { name: "profile", icon_b: profile_b, icon_w: profile_w },
     { name: "leaderboard", icon_b: leaderboard_b, icon_w: leaderboard_w },
-    { name: "achievements", icon_b: achivements_b, icon_w: achivements_w },
+    // { name: "achievements", icon_b: achivements_b, icon_w: achivements_w },
     { name: "channels", icon_b: channels_b, icon_w: channels_w },
-    { name: "friends", icon_b: friends_b, icon_w: friends_w },
     { name: "setting", icon_b: setting_b, icon_w: setting_w },
     { name: "game", icon_b: play_b, icon_w: play_w },
 ]
