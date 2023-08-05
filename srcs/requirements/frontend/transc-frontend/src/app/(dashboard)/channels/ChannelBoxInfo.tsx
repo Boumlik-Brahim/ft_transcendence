@@ -1,7 +1,5 @@
 interface ChannelProps {
     id: number;
-    bg_color: string;
-    txt_color: string;
     channel_name: string;
     channel_owner: string;
     channel_members: number;
@@ -9,7 +7,14 @@ interface ChannelProps {
 }
 
 
-function ChannelBoxInfo({id,bg_color,txt_color,channel_name,channel_owner, channel_members, channel_mode} : ChannelProps) {
+function ChannelBoxInfo({id,channel_name,channel_owner, channel_members, channel_mode} : ChannelProps) {
+    let channelTypeStyling = "";
+   ( channel_mode === "PUBLIC"  || channel_mode === "PRIVATE")
+    ?
+    channelTypeStyling = 'bg-channel-800 text-primary'
+    :
+    channelTypeStyling = "bg-channel-100 text-channel-300"
+
     return (
         <div className="w-full h-[46px] border-2 border-primary rounded-full text-white flex items-center justify-between pl-[19px] pr-[11px] mb-[9px] cursor-pointer   md:h-[78px]     lg:h-[70px] ">
             <div className="w-[80px] h-[25px]  flex flex-col justify-center md:w-[100px] md:h-[35px] lg:h-[40px] ">
@@ -28,8 +33,8 @@ function ChannelBoxInfo({id,bg_color,txt_color,channel_name,channel_owner, chann
                     Member
                 </span>
             </div>
-            <div className={`w-[65px] h-[25px]   ${bg_color} flex justify-center items-center rounded-full  md:w-[84px] md:h-[35px]`}>
-                <div className={` text-[8px] ${txt_color} font-bold leading-tight tracking-wider uppercase md:text-[11px] `}>
+            <div className={`w-[65px] h-[25px]   ${channelTypeStyling} flex justify-center items-center rounded-full  md:w-[84px] md:h-[35px]`}>
+                <div className={` text-[8px] font-bold leading-tight tracking-wider uppercase md:text-[11px] `}>
                     {channel_mode}
                 </div>
             </div>

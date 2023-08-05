@@ -25,6 +25,12 @@ import axios from "axios";
 export const socket = io("http://localhost:3000", {
   transports: ["websocket"],
 });
+//& -----chat part --------
+import Link from "next/link";
+import { useSelector, useDispatch } from 'react-redux';
+import { setCurrentUser, setOtherUser,selectedOne , setRefreshOn} from '@/app/store/reducer';
+import { RootState } from '@/app/store/store';
+//& --------------------------
 
 type Props = {
   userId: string;
@@ -32,6 +38,45 @@ type Props = {
 };
 
 function FriendAction({ userId, userSessionId }: Props) {
+
+
+
+  // &--------------------------------------  CHAT PART ------------------------------------
+        
+  const [roomId, setRoomId] = useState("");
+        
+        
+  const dispatch = useDispatch();
+  useEffect(() => {
+      socket.emit("joinRoom", {
+          senderId: userSessionId,
+          recieverId: userId
+      });
+      
+      socket.on("joined", (data) => {
+          setRoomId(data.roomName);
+          
+      });
+  
+  },[ userId, userSessionId])
+  
+  const handleSubmit = async ({userSessionId,userId} : {userSessionId : string ,userId : string}) => {
+      dispatch(setOtherUser(userId));
+      dispatch(selectedOne(userId));
+      dispatch(setRefreshOn());
+      
+      try {
+          const res = await axios.put(`http://localhost:3000/chat/${userSessionId}/${userId}`, {"seen": true});
+  
+        } catch (err) {
+          console.log(err);
+        }
+  }
+  
+  
+  
+  // &--------------------------------------------------------------------------------------
+
   const [notification, setNotification] = useState<string>("");
   const [friendShipStatus, setFriendShipStatus] = useState<string>("");
 
@@ -219,9 +264,11 @@ function FriendAction({ userId, userSessionId }: Props) {
               >
                 <Image src={block_r} width={30} alt="avatar" />
               </div>
-              <div className="card_friend gradients">
-                <Image src={send_b} width={30} alt="avatar" />
-              </div>
+              <div className="card_friend gradients" onClick={() => handleSubmit({ userSessionId, userId })}>
+                {<Link href={`/chat/${roomId}`}>
+                  <Image src={send_b} width={30} alt="avatar" />
+                  –</Link>}
+              </div> 
               <div className="card_friend gradients">
                 <Image src={game_b} width={30} alt="avatar" />
               </div>

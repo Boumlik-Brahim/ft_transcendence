@@ -99,6 +99,9 @@ function page() {
                     </div>
                   </div>
                 </div>
+        
+               { (userId !== userSession) && <FriendAction userId={userId} userSessionId={userSession} />}
+
               </div>
 
               <FriendAction userId={userId} userSessionId={userSession} />

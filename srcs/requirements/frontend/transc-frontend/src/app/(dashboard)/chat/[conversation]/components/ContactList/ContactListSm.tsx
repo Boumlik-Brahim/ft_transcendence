@@ -2,14 +2,13 @@
 
 import Image from "next/image";
 import ContactSm from "../Contact/ContactSm";
-import { contactFriendList, ContactFriend } from '../../TempData/contacts'
 import { useDispatch, useSelector } from 'react-redux';
 import { show, hide } from '@/app/store/reducer';
 
 import { RootState } from '@/app/store/store';
 
 import { useState, useEffect } from 'react';
-import { setCurrentUser, setOtherUser } from '@/app/store/reducer';
+import { setCurrentUser, setOtherUser,setRoomId, setRefreshOn, selectedOne } from '@/app/store/reducer';
 
 import axios from "axios";
 
@@ -36,26 +35,41 @@ function ContactListSm({ inputRef }: any) {
     const [cont, setCont] = useState<Contact[]>([]);
     const currentUserId = useSelector((state: RootState) => state.EditUserIdsSlice.currentUserId);
     const isContactListHidden = useSelector((state: RootState) => state.toggleShowContactList);
+    const [activeButtonId, setActiveButtonId] = useState<string | null>(null);
+    const refreshStatus = useSelector((state: RootState) => state.refreshFetchMessagesSlice.refreshFetchMessages);
+    const otherUserId = useSelector((state: RootState) => state.EditUserIdsSlice.otherUserId);
 
     const dispatch = useDispatch();
 
     //* select conversation
-    const handleButtonClick = (buttonId: string) => {
+    const handleButtonClick = async (buttonId: string) => {
         dispatch(setOtherUser(buttonId));
+        setActiveButtonId(buttonId);
+        dispatch(selectedOne(buttonId))
+        try {
+            const res = await axios.put(`http://localhost:3000/chat/${currentUserId}/${buttonId}`, { "seen": true });
+
+        } catch (err) {
+            console.log(err);
+        }
+        inputRef.current.on("joined", (data: any) => {
+            dispatch(setRoomId(data.roomName))
+            dispatch(setRefreshOn()); // 
+        });
     };
 
     //* fetching contact List 
     useEffect(() => {
         async function fetchContact() {
             try {
-                const response = currentUserId &&  await axios.get<Contact[]>(`http://localhost:3000/users/${currentUserId}/receiver`);
+                const response = currentUserId && await axios.get<Contact[]>(`http://localhost:3000/users/${currentUserId}/receivers`);
                 response && setCont(response.data);
             } catch (error) {
                 console.error(error);
             }
         }
         fetchContact();
-    }, [currentUserId]);
+    }, [currentUserId, refreshStatus]);
 
 
     // ^ ------------------------ filling contact component with data ---------------------
@@ -69,6 +83,7 @@ function ContactListSm({ inputRef }: any) {
                 profilePicturePath={contact.Avatar}
                 inputRef={inputRef}
                 onClick={handleButtonClick}
+                activeButtonId={activeButtonId}
             />
         );
     });
@@ -81,7 +96,7 @@ function ContactListSm({ inputRef }: any) {
     return (
         <div className={`${isContactListHidden.showContactListToggled ? "w-full h-full bg-primary" : "hidden"}`}>
             <div className="w-full h-[12%] pr-[12%]  flex items-end justify-end">
-                <Image key={1} src={"./close_w.svg"} width={25} height={25} alt={"test"} className="md:w-[34px] md:h-[34px] cursor-pointer" onClick={handleShowContactList} />
+                <Image key={1} src={"/close_w.svg"} width={25} height={25} alt={"test"} className="md:w-[34px] md:h-[34px] cursor-pointer" onClick={handleShowContactList} />
             </div>
             <div className="w-full h-[88%] ">
                 <div className="w-full  h-[5%]">

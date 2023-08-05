@@ -8,18 +8,26 @@ interface ToggleState {
     showContactListToggled: boolean;
     showChannelMembersToggled:boolean;
     refreshFetchMessages:boolean;
+    refreshFetchChannels:boolean;
+    roomId:string  | null;
    
 }
 interface EditUsersState {
     currentUserId: string;
     otherUserId: string;
-  }
+}
+interface selectState{
+    selectedBtn: string | null;
+}
+const selectedInitialState: selectState ={
+    selectedBtn : null
+}
 
-  const userInitialState: EditUsersState = {
-    currentUserId: "",
-    otherUserId: "",
-  };
-
+const userInitialState: EditUsersState = {
+      currentUserId: "",
+      otherUserId: "",
+    };
+    
 const initialState: ToggleState = {
     
     createChannelBtnToggled: false,
@@ -28,6 +36,8 @@ const initialState: ToggleState = {
     showContactListToggled: false,
     showChannelMembersToggled: false,
     refreshFetchMessages:false,
+    refreshFetchChannels : false,
+    roomId:null,
    
 };
 
@@ -97,6 +107,26 @@ const toggleShowChannelMembersSlice = createSlice({
     },
 });
 
+const selectContactConversationSlice = createSlice({
+    name: 'selectedContact',
+    initialState :selectedInitialState ,
+    reducers: {
+        selectedOne:(state, action: PayloadAction<string | null>) => {
+            state.selectedBtn = action.payload;
+          },
+    },
+});
+
+const roomIdSlice = createSlice({
+    name: 'roomId',
+    initialState ,
+    reducers: {
+        setRoomId:(state, action: PayloadAction<string | null>) => {
+            state.roomId = action.payload;
+          },
+    },
+});
+
 
 
 const EditUserIdsSlice = createSlice({
@@ -113,8 +143,6 @@ const EditUserIdsSlice = createSlice({
   });
 
 
-
-
   const refreshFetchMessagesSlice = createSlice({
     name: 'refreshFetchMessages',
     initialState,
@@ -124,6 +152,20 @@ const EditUserIdsSlice = createSlice({
         },
         setRefreshOff: (state) => {
             state.refreshFetchMessages = false;
+        },
+    },
+});
+
+
+const refreshFetchChannelsSlice = createSlice({
+    name: 'refreshFetchChannels',
+    initialState,
+    reducers: {
+        setRefreshChannelsOn: (state) => {
+            state.refreshFetchChannels = !state.refreshFetchChannels;
+        },
+        setRefreshChannelsOff: (state) => {
+            state.refreshFetchChannels = false;
         },
     },
 });
@@ -144,9 +186,18 @@ export const toggleShowChannelMembersReducer = toggleShowChannelMembersSlice.red
 export const { ShowChannelMembers, HideChannelMembers } = toggleShowChannelMembersSlice.actions;
 
 
+export const refreshFetchChannelsReducer = refreshFetchChannelsSlice.reducer;
+export const { setRefreshChannelsOn, setRefreshChannelsOff } = refreshFetchChannelsSlice.actions;
+
+export const refreshFetchMessagesReducer = refreshFetchMessagesSlice.reducer;
+export const { setRefreshOn, setRefreshOff } = refreshFetchMessagesSlice.actions;
+
 export const EditUserIdsReducer = EditUserIdsSlice.reducer;
 export const { setCurrentUser, setOtherUser } = EditUserIdsSlice.actions;
 
 
-export const refreshFetchMessagesReducer = refreshFetchMessagesSlice.reducer;
-export const { setRefreshOn, setRefreshOff } = refreshFetchMessagesSlice.actions;
+export const selectContactConversationReducer = selectContactConversationSlice.reducer;
+export const { selectedOne } = selectContactConversationSlice.actions;
+
+export const roomIdReducer = roomIdSlice.reducer;
+export const { setRoomId } = roomIdSlice.actions;

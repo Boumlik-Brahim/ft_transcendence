@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { CreateChannelDto } from './dto/create-channel.dto';
 import { UpdateChannelDto } from './dto/update-channel.dto';
@@ -98,6 +99,13 @@ export class ChannelService {
     return this.prisma.channel.findUniqueOrThrow({
       where: {
         id
+      },
+      include: {
+        _count: {
+          select: {
+            channelMember: {}
+          }
+        }
       },
     })
     .catch (error => {
