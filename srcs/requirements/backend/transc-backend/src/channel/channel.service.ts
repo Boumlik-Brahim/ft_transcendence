@@ -25,14 +25,6 @@ export class ChannelService {
         cause: error
       });
     });
-    // await this.createChannelMember({
-    //   "userId": channel.channelOwnerId,
-    //   "channelId": channel.id,
-    //   "role": "OWNER",
-    //   "bannedTime": new Date(null),
-    //   "mutedTime": new Date(null)
-    // });
-    // return channel;
   }
   
   async findAllChannels(userId: string): Promise<Channel[]> {
@@ -126,12 +118,14 @@ export class ChannelService {
     });
   }
   
-  async updateChannel(id: string, updateChannelDto: UpdateChannelDto): Promise<Channel> {
+  async updateChannel(id: string, channelName: string): Promise<Channel> {
     return this.prisma.channel.update({
       where: {
         id
       },
-      data: updateChannelDto
+      data: {
+        channelName: channelName,
+      }
     })
     .catch (error => {
       throw new HttpException({
@@ -162,7 +156,7 @@ export class ChannelService {
   async getPrivateChannelUUID(id: string): Promise<string> {
     const channel = await this.findOneChannel(id);
     if (channel.channelType === 'PRIVATE'){
-      return channel.channelName;
+      return channel.id;
     }
   }
   //* -------------------------------------------------------------channelServices-------------------------------------------------------- *//
@@ -241,20 +235,10 @@ export class ChannelService {
 
   async updateChannelMemberBannedTime(channelId: string, userId: string, bannedTime: string): Promise<ChannelMember> {
     const unbanneTime = new Date();
-    console.log("current time minutes", unbanneTime);
     const bannTime = new Date(bannedTime);
     if (bannTime.getMinutes() > unbanneTime.getMinutes())
     {
-      console.log("banned time", bannTime.getMinutes() - unbanneTime.getMinutes());
-      console.log("banne time minutes", bannTime.getMinutes());
       unbanneTime.setMinutes(unbanneTime.getMinutes() + (bannTime.getMinutes() - unbanneTime.getMinutes()));
-      console.log("unbanne time", unbanneTime);
-    }
-    else
-    {
-      console.log("banne time minutes", bannTime.getMinutes());
-      unbanneTime.setMinutes(bannTime.getMinutes());
-      console.log("unbanne time", unbanneTime);
     }
 
     return this.prisma.channelMember.update({
@@ -283,7 +267,6 @@ export class ChannelService {
   @Cron(CronExpression.EVERY_30_SECONDS)
   async handleUnbanneMember(): Promise<void> {
     const currentDate = new Date();
-    // console.log(currentDate);
     await this.prisma.channelMember.updateMany({
       where: {
         role: 'BANNED_MEMBER',
@@ -301,8 +284,13 @@ export class ChannelService {
 
   async updateChannelMemberMutedTime(channelId: string, userId: string, mutedTime: string): Promise<ChannelMember> {
     const unmuteTime = new Date();
-    unmuteTime.setMinutes(unmuteTime.getMinutes() + parseInt(mutedTime));
-
+    const muteTime = new Date(mutedTime);
+    if(muteTime.getMinutes() > unmuteTime.getMinutes())
+    {
+      console.log('dkhl lhna');
+      unmuteTime.setMinutes(unmuteTime.getMinutes() + (muteTime.getMinutes() - unmuteTime.getMinutes()));
+    }
+    
     return this.prisma.channelMember.update({
       where: {
         userAndChannel: {
@@ -329,7 +317,7 @@ export class ChannelService {
   @Cron(CronExpression.EVERY_30_SECONDS)
   async handleUnmuteMember(): Promise<void> {
     const currentDate = new Date();
-    this.prisma.channelMember.updateMany({
+    await this.prisma.channelMember.updateMany({
       where: {
         role: 'MUTED_MEMBER',
         unmuteTime: {
@@ -338,8 +326,8 @@ export class ChannelService {
       },
       data: {
         role: 'MEMBER',
-        mutedTime: "",
-        unmuteTime: ""
+        mutedTime: new Date(0),
+        unmuteTime: new Date(0)
       }
     });
   }
@@ -351,6 +339,22 @@ export class ChannelService {
           userId,
           channelId
         },
+      }
+    })
+    .catch (error => {
+      throw new HttpException({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        error: 'InternalServerErrorException',
+      }, HttpStatus.INTERNAL_SERVER_ERROR, {
+        cause: error
+      });
+    });
+  }
+
+  async removeAllChannelMembers(channelId: string): Promise<void> {
+    await this.prisma.channelMember.deleteMany({
+      where: {
+        channelId: channelId
       }
     })
     .catch (error => {
@@ -433,6 +437,22 @@ export class ChannelService {
       });
     });
   }
+
+  async removeAllKickedMembers(channelId: string): Promise<void> {
+    await this.prisma.kickedMember.deleteMany({
+      where: {
+        channelId: channelId,
+      }
+    })
+    .catch (error => {
+      throw new HttpException({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        error: 'InternalServerErrorException',
+      }, HttpStatus.INTERNAL_SERVER_ERROR, {
+        cause: error
+      });
+    });
+  }
   //* ----------------------------------------------------------kickedMemberServices------------------------------------------------------ *//
   
   //* ----------------------------------------------------------channelMessageServices---------------------------------------------------- *//
@@ -467,32 +487,10 @@ export class ChannelService {
     });
   }
   
-  async findOneChannelMessage(channelId: string, memberId: string): Promise<ChannelMessage> {
-    return this.prisma.channelMessage.findUniqueOrThrow({
+  async removeAllChannelMessages(channelId: string): Promise<void> {
+    await this.prisma.channelMessage.deleteMany({
       where: {
-        senderAndChannel: {
-          memberId,
-          channelId
-        },
-      }
-    })
-    .catch (error => {
-      throw new HttpException({
-        status: HttpStatus.NOT_FOUND,
-        error: 'NotFoundException',
-      }, HttpStatus.NOT_FOUND, {
-        cause: error
-      });
-    });
-  }
-
-  async removeChannelMessage(channelId: string, memberId: string): Promise<void> {
-    await this.prisma.channelMessage.delete({
-      where: {
-        senderAndChannel: {
-          memberId,
-          channelId
-        },
+        channelId: channelId,
       }
     })
     .catch (error => {

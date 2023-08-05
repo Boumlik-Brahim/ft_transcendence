@@ -15,5 +15,5 @@ export class userDto {
     
     @IsString()
     @IsNotEmpty()
-    avatarUrl: string;
+    Avatar: string;
 }
