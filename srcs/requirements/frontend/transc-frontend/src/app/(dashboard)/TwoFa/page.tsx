@@ -59,11 +59,11 @@ export default function TwoFa () {
       </div>
       <div>
         <form action="" method="post" onSubmit={handleSubmit} className="flex flex-col items-center justify-center">
-            <div className="w-[80%] flex flex-row items-center justify-evenly mx-auto">
+            <div className="w-[80%] flex flex-row items-center justify-evenly mx-auto no-scrollbar">
               {inputFieldIds.map((fieldId, index) => (
                 <div className="w-16 h-16" key={fieldId}>
                   <input
-                    className="w-full h-full flex flex-col items-center justify-center text-center px-5 outline-none rounded-xl border border-gray-200 text-sm bg-white focus:bg-gray-200 focus:ring-1 ring-[#3E3B6A]"
+                    className=" no-scrollbar w-full h-full flex flex-col items-center justify-center text-center px-5 outline-none rounded-xl border border-gray-200 text-sm bg-white focus:bg-gray-200 focus:ring-1 ring-[#3E3B6A]"
                     type="number"
                     name={fieldId}
                     id={fieldId}

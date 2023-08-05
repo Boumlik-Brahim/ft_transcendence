@@ -21,7 +21,7 @@ export default function page()  {
     async function checkTwoFa() {
       try{
         if (userId !== undefined) {
-          const res = await axios.get(`http://localhost:3100/users/${userId}`);
+          const res = await axios.get(`http://localhost:3000/users/${userId}`);
           if (res.data.isTwoFactorEnabled)
             setTwoFa(true);
         }
@@ -33,14 +33,15 @@ export default function page()  {
     checkTwoFa();
   },[])
   let showLogin = "";
-  let showPage = "";
   twoFa ? showLogin = "hidden" : showLogin = "";
-  accessTokenCookie ? showPage = "hidden" : showPage = "";
-  if (accessTokenCookie) {
-    return router.push(`/profile/${userId}`);
-  }
+  useEffect(()=>{
+    if (accessTokenCookie) {
+      return router.push(`/profile/${userId}`);
+    }
+
+  },[])
   return (
-    <div className={` ${showPage} w-full h-screen flex flex-col justify-around items-center bg-gray-200 py-[10%]`}>
+    <div className={` w-full h-screen flex flex-col justify-around items-center bg-gray-200 py-[10%]`}>
       <div className="w-full flex justify-evenly items-center pr-[15%]">
         <Link href="/" className="">
           <Image src={"/HOME.svg"} width={25} height={25} alt="" />
