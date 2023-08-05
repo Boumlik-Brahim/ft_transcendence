@@ -16,23 +16,21 @@ export class IntraStrategy extends PassportStrategy(Strategy, '42') {
             callbackURL: configService.get('REDIRECT_URI'),
             profileFields: {
                 'username': 'login',
-                'emails.value': 'email',
+                'email': 'email',
                 'id' : 'id',
-                'photos.0.value': 'image_url'
+                'avatar': 'image.link',
             }
         }); // Config
     }
     
     async validate(accessToken: string, refreshToken: string, profile: any, done: Function): Promise<any> {
-        const {username, emails, id, photos} = profile;
+        const {username, email, id, avatar} = profile;
         const user: userDto = {
             username: username,
-            email: emails.value,
+            email: email,
             id: id.toString(),
-            avatarUrl : photos[0].value,
-
+            Avatar: avatar,
         }
-        console.log("----------------------");
         done(null, user);
     }
 
