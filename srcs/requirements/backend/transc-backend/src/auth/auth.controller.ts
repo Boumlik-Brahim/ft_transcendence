@@ -1,10 +1,12 @@
-import { Controller, Req, Res, Get, UseGuards, Redirect, Post, Body, UnauthorizedException, Response, Query } from "@nestjs/common";
+import { Controller, Req, Res, Get, UseGuards, Post, UnauthorizedException, Query, UploadedFile, UseInterceptors } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { UserInter } from "../users/user.interface";
 import { AuthGuard } from "@nestjs/passport";
 import { JwtPayload } from "./type/jwt-payload.type"
 import { ApiTags } from "@nestjs/swagger";
 import { UsersService } from "src/users/users.service";
+import { FileInterceptor } from '@nestjs/platform-express';
+
 
 @ApiTags('auth')
 @Controller('auth')
@@ -12,10 +14,15 @@ export class AuthController {
     constructor (private authService: AuthService,
         private userService: UsersService) {}
 
+    // @Post()
+    // @UseInterceptors(FileInterceptor('file'))
+    // async uploadFile(@UploadedFile() file: Express.Multer.File) {
+    // //   return this.uploadService.saveFile(file);
+    // }
+
     @Get()
     @UseGuards(AuthGuard('42'))
     login(@Res() res: any, user: UserInter) : Promise<any> {
-        // console.log("before return");
         return this.authService.redirectBasedOnTwoFa(res, user);
     }
     
@@ -24,7 +31,6 @@ export class AuthController {
     async callback(@Req() req: any, @Res() res: any) : Promise<any>{
         try {
             let user = await this.authService.getUser(req);
-            console.log(user);
             const token = await this.authService.signToken(req);
             res.cookie('id', user.id);
             res.cookie('accessToken', token);
@@ -43,13 +49,14 @@ export class AuthController {
     }
     
     @Post('2fa/turn-on')
-    async turnOnTwoFactorAuthentication(@Query('userId') userId: string, @Query('authCode') authCode: string){
+    async turnOnTwoFactorAuthentication(@Res() res: any, @Query('userId') userId: string, @Query('authCode') authCode: string){
         const userAuthentified = await this.userService.findOne(userId);
-        const isCodeValid = this.authService.isTwoFactorAuthenticationCodeValid(authCode, userAuthentified);
+        const isCodeValid = await this.authService.isTwoFactorAuthenticationCodeValid(authCode, userAuthentified);
         if (!isCodeValid){
             throw new UnauthorizedException('Wrong authentication code');
         }
         await this.authService.turnOnTwoFactorAuthentication(userAuthentified.id);
+        // return res.redirect(SETTING_REDIRECT_URL);
     }
     
     @Post('2fa/authenticate')
