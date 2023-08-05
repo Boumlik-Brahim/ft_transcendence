@@ -1,12 +1,11 @@
 /* eslint-disable prettier/prettier */
 import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common';
-import { Achievement, BlockedUser, Friend, User, UserStat } from '@prisma/client';
+import { Achievement, BlockedUser, Friend, GamesHistories, User, UserStat } from '@prisma/client';
 import { ApiTags } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateFriendDto } from './dto/create-friend.dto';
-import { UpdateFriendDto } from './dto/update-Friend.dto';
 import { CreateUserStatDto } from './dto/create-userStat.dto';
 import { UpdateUserStatDto } from './dto/update-userStat.dto';
 import { CreateAchievementDto } from './dto/create-achievement.dto';
@@ -47,6 +46,12 @@ export class UsersController {
     const updateUser = await this.usersService.update(id, updateUserDto);
     return updateUser;
   }
+
+  @Patch(':id/userStatus')
+  async updateUserStatus(@Param('id') id: string, @Body('status') status: 'ONLINE' | 'OFFLINE' | 'INAGAME'): Promise<User> {
+    const updateUser = await this.usersService.updateUserStatus(id, status);
+    return updateUser;
+  }
   
   @Delete(':id')
   async remove(@Param('id') id: string): Promise<void> {
@@ -60,10 +65,12 @@ export class UsersController {
     const userStat = await this.usersService.createUserStat(createUserStatDto);
     return userStat;
   }
-  
+
   @Get('/:userId/userStat')
   async findOneUserStat(@Param('userId') userId: string): Promise<UserStat> {
+    console.log("ENDPOINT ===> BB", userId)
     const userStat = await this.usersService.findOneUserStat(userId);
+    console.log("ENDPOINT ===>", userStat)
     return userStat;
   }
   
@@ -78,7 +85,21 @@ export class UsersController {
     await this.usersService.removeUserStat(userId);
   }
   //* ---------------------------------------------------------------userStatCRUDOp------------------------------------------------------- *//
+
+  //* ---------------------------------------------------------------getGamesByUser------------------------------------------------------- *//
+
+  @Get('/getGames/:userId')
+  async getUserGames(@Param('userId') userId : string) : Promise<GamesHistories[]> {
+    try {
+      const games = await this.usersService.getUsergames(userId);
+      return games;
+    }
+    catch (error) {
+      throw (error);
+    }
+  } 
   
+
   //* -------------------------------------------------------------achievementCRUDOp------------------------------------------------------ *//
   @Post('/achievement')
   async createAchievement(@Body() createAchievementDto: CreateAchievementDto): Promise<Achievement> {
@@ -97,7 +118,6 @@ export class UsersController {
   @Post('/blockedUser')
   async createBlockedUser(@Body() createBlockedUserDto: CreateBlockedUserDto): Promise<BlockedUser> {
     const blockedUser = await this.usersService.createBlockedUser(createBlockedUserDto);
-    console.log("blochsdds")
     return blockedUser;
   }
   
@@ -107,9 +127,10 @@ export class UsersController {
     return blockedUsers;
   }
 
-  @Get('/:userId/blockedUserOne')
-  async findBlockedUser(@Param('userId') userId: string): Promise<BlockedUser[]> {
-    const blockedUsers = await this.usersService.findBlockedUser(userId);
+  
+  @Get('/:userId/block/:friendId')
+  async findBlockedUser(@Param('userId') userId: string, @Param('friendId') blockedId: string): Promise<BlockedUser[]> {
+    const blockedUsers = await this.usersService.findBlockedUser(userId, blockedId);
     return blockedUsers;
   }
  
@@ -155,6 +176,23 @@ export class UsersController {
     await this.usersService.removeFriend(userId, friendId);
   }
   //* ---------------------------------------------------------------friendCRUDOp--------------------------------------------------------- *//
+  
+
+  // //* ---------------------------------------------------------------- USER_STAT --------------------------------------------------------- *//
+  // @Get('/:userId/stats')
+  // async getUserStats(@Param('userId') userId: string): Promise<UserStat[]>{
+  //   const userStats = await this.usersService.getUserStats(userId);
+  //   return userStats;
+  // }
+  
+  // @Post('/:userId/stat')
+  // async setUserStat(@Body() createUserStat: CreateFriendDto): Promise<UserStat>{
+    //   const userStat = await this.usersService.getUserStats(userId);
+    //   return userStat;
+    // }
+    // //* ---------------------------------------------------------------- USER_STAT --------------------------------------------------------- *//
+
+
 
   //* ---------------------------------------------------------------updateUsersFields--------------------------------------------------------- *//
   @Patch(':id/two-factor')

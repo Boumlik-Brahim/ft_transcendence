@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { Achievement, BlockedUser, Friend, Prisma, User, UserStat } from '@prisma/client';
+import { Achievement, BlockedUser, Friend, GamesHistories, Prisma, User, UserStat } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -68,6 +68,11 @@ export class UsersService {
             }, 
           },
         ],
+        blockedUser: {
+          none: {
+            userId: senderID,
+          },
+        },
       },
       include: {
         senders: {
@@ -94,6 +99,14 @@ export class UsersService {
         }
       },
     })
+    .catch (error => {
+      throw new HttpException({
+        status: HttpStatus.NOT_FOUND,
+        error: 'NotFoundException',
+      }, HttpStatus.NOT_FOUND, {
+        cause: error
+      });
+    });
 
     const sortedUsers = (await users).sort((userA, userB) => {
       const lastMessageTimeA = Math.max(
@@ -108,17 +121,7 @@ export class UsersService {
     
       return lastMessageTimeB - lastMessageTimeA;
     });
-
     return sortedUsers;
-  
-    // .catch (error => {
-    //   throw new HttpException({
-    //     status: HttpStatus.NOT_FOUND,
-    //     error: 'NotFoundException',
-    //   }, HttpStatus.NOT_FOUND, {
-    //     cause: error
-    //   });
-    // });
   }
   
   async findOne(id: string): Promise<User> {
@@ -150,6 +153,25 @@ export class UsersService {
         id
       },
       data: updateUserDto
+    })
+    .catch (error => {
+      throw new HttpException({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        error: 'InternalServerErrorException',
+      }, HttpStatus.INTERNAL_SERVER_ERROR, {
+        cause: error
+      });
+    });
+  }
+
+  async updateUserStatus(id: string, status: 'ONLINE' | 'OFFLINE' | 'INAGAME' ): Promise<User> {
+    return this.prisma.user.update({
+      where: {
+        id
+      },
+      data: {
+        status: status,
+      },
     })
     .catch (error => {
       throw new HttpException({
@@ -193,7 +215,7 @@ export class UsersService {
   }
   
   async findOneUserStat(userID: string): Promise<UserStat> {
-    return this.prisma.userStat.findUniqueOrThrow({
+    return this.prisma.userStat.findUnique({
       where: {
         userId: userID
       },
@@ -312,13 +334,13 @@ export class UsersService {
     });
   }
   
-  async findBlockedUser(userID: string): Promise<BlockedUser[]> {
+  async findBlockedUser(userID: string, blockedID: string): Promise<BlockedUser[]> {
     return this.prisma.blockedUser.findMany({
       where: {
-      OR: [
-        { userId: userID },
-        { blockedUserId: userID },
-      ]
+        OR: [
+          { userId: userID, blockedUserId: blockedID },
+          { userId: blockedID, blockedUserId: userID },
+        ],
       },
       orderBy: {
         created_at: 'asc',
@@ -414,8 +436,10 @@ export class UsersService {
   async friendShip(userID: string, friendID: string): Promise<Friend[]> {
     return this.prisma.friend.findMany({
       where: {
-        userId: userID,
-        friendId: friendID
+        OR: [
+          { userId: userID, friendId: friendID },
+          { userId: friendID, friendId: userID },
+        ],
       },
       orderBy: {
         created_at: 'asc',
@@ -454,13 +478,13 @@ export class UsersService {
   }
 
   async removeFriend(userID: string, friendID: string,): Promise<void> {
-    await this.prisma.friend.delete({
+    await this.prisma.friend.deleteMany({
       where: {
-        userAndFriend: {
-          userId: userID,
-          friendId: friendID
-        },
-      }
+        OR: [
+          { userId: userID, friendId: friendID },
+          { userId: friendID, friendId: userID },
+        ],
+      },
     })
     .catch (error => {
       throw new HttpException({
@@ -473,5 +497,23 @@ export class UsersService {
   }
 
   //* ------------------------------------------------------------friendServices---------------------------------------------------------- *//
+  //* ------------------------------------------------------------GetUserGamesService---------------------------------------------------------- *//
+  async getUsergames(userId : string) : Promise<GamesHistories[]> {
+    try {
+      const games = await this.prisma.gamesHistories.findMany(
+        {
+          where : {
+            OR : [
+              { playerA_id : userId, playerB_id : userId }
+            ]
+          }
+        }
+      )
+      return games;
+    }
+    catch (error) {
+      throw (error);
+    }
+  }
 
 }

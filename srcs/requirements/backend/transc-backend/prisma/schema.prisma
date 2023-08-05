@@ -55,9 +55,14 @@ model User {
   blockedUser   BlockedUser[] @relation("blocked")
   user    Friend[]  @relation("user")
   friend  Friend[]  @relation("friend")
-  senders   DirectMessage[] @relation("sendeMessage")
+  playerA GamesHistories[] @relation("playerA")
+  playerB GamesHistories[] @relation("playerB")
+  senders  DirectMessage[] @relation("sendeMessage")
   receivers DirectMessage[] @relation("receiveMessage")
-  channel Channel[]
+  channelOwner Channel[] @relation("channelOwner")
+  channelMember ChannelMember[] @relation("channelMember")
+  kickedMember KickedMember[] @relation("kickedMember")
+  channelMessage ChannelMessage[] @relation("sendChannelMessage")
   created_at  DateTime  @default(now())
   updated_at  DateTime  @updatedAt
 }
@@ -78,6 +83,17 @@ model Achievement {
   user  User @relation(fields: [userId], references: [id])
   userId  String @unique
   created_at  DateTime  @default(now())
+}
+
+model GamesHistories {
+  id  String @id @default(uuid())
+  playerA_Score Int
+  playerB_Score Int
+  created_at  DateTime  @default(now())
+  playerA User @relation("playerA", fields: [playerA_id], references : [id])
+  playerA_id String
+  playerB User @relation("playerB", fields: [playerB_id], references : [id])
+  playerB_id String
 }
 
 model BlockedUser {
@@ -116,13 +132,13 @@ model DirectMessage {
 
 model Channel {
   id  String @id @default(uuid())
-  channelName String
+  channelName String @unique
   channelType ChannelType @default(PUBLIC)
   channelPassword String?
   created_at  DateTime  @default(now())
   updated_at  DateTime  @updatedAt
+  user  User @relation("channelOwner", fields: [channelOwnerId], references: [id])
   channelOwnerId  String
-  user  User[]
   channelMember ChannelMember[] @relation("channelMember")
   kickedMember  KickedMember[]  @relation("kickedMember")
   recievers  ChannelMessage[]  @relation("receiverRelation")
@@ -130,19 +146,22 @@ model Channel {
 
 model ChannelMember {
   id  String @id @default(uuid())
+  user  User @relation("channelMember", fields: [userId], references: [id])
   userId  String
   channel Channel @relation("channelMember", fields: [channelId], references: [id])
   channelId String
-  sender  ChannelMessage[]  @relation("senderRelation")
   role Role @default(MEMBER)
   bannedTime DateTime?
+  unbanneTime DateTime?
   mutedTime DateTime?
+  unmuteTime DateTime?
   created_at  DateTime  @default(now())
   @@unique([userId, channelId], name: "userAndChannel")
 }
 
 model KickedMember {
   id  String @id @default(uuid())
+  user  User @relation("kickedMember", fields: [userId], references: [id])
   userId  String
   channel Channel @relation("kickedMember", fields: [channelId], references: [id])
   channelId String
@@ -153,12 +172,11 @@ model KickedMember {
 model ChannelMessage {
   id  String @id @default(uuid())
   content String
-  sender  ChannelMember @relation("senderRelation", fields: [memberId], references: [id])
-  memberId  String
+  sender  User @relation("sendChannelMessage", fields: [userId], references: [id])
+  userId  String
   recievers  Channel @relation("receiverRelation", fields: [channelId], references: [id])
   channelId String
   created_at  DateTime  @default(now())
-  @@unique([memberId, channelId], name: "senderAndChannel")
 }
 
 //* ---------------------------------------------------------------------------------------------------------------------------- *//

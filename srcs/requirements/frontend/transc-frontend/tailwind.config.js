@@ -23,12 +23,14 @@ module.exports = {
           400: '#FF2626',
           500 : ' #b9b7cf',
           600 : '#F6F6F6',
-          700 : '#E3E2F0'
+          700 : '#E3E2F0',
+          800: '#e7f1fd',
         },
       }
     },
     screens: {
       xs: "395px",
+      s: "561px",
       md: "768px",
       lg: "1200px",
       xl: "1900px",

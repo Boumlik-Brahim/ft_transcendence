@@ -4,14 +4,97 @@ import { useDispatch, useSelector } from 'react-redux';
 import { prvChannelOn, prvChannelOff } from '../../store/reducer';
 import { RootState } from '../../store/store';
 import { constrainedMemory } from "process";
+import { use, useEffect, useState } from "react";
+import axios from "axios";
+import {setCurrentUser,setRefreshChannelsOn,createChannelPopUpOff } from '@/app/store/reducer';
+import { io } from "socket.io-client";
+
 
 function CreatePrvPbcChannel() {
     const isPrivateChannelOn = useSelector((state: RootState) => state.togglePrivate);
     const dispatch = useDispatch();
     const handleClick = () => {
-       
             dispatch(prvChannelOn())
     }
+    const [channelCreationType, setChannelCreationType] = useState("");
+    useEffect(() => {
+        isPrivateChannelOn.privateToggled
+        ?
+        setChannelCreationType("Private")
+        :
+        setChannelCreationType("Public")
+
+    },[isPrivateChannelOn.privateToggled])
+
+//^ -------------------------- creating channel : (post) ------------------------------------
+
+interface Channel{
+    channelName: string,
+    channelType: string,
+    channelPassword: string
+}
+interface Channels{
+  channelName: string
+  channelType: string
+  channelPassword: string
+  channelOwnerId: string
+}
+    const [channelData, setChannelData] = useState<Channel>({
+        channelName: '',
+        channelType: '',
+        channelPassword:''
+    });
+    const [channels, setChannels] = useState<Channels>()
+
+    function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
+        const { name, value } = event.target;
+        setEmptyChannelNameError(false)
+        setChannelData((prevData) => ({
+          ...prevData,
+          [name]: value
+        })); 
+      }
+      useEffect(()=>{
+        isPrivateChannelOn.privateToggled ? 
+        setChannelData((prevData) => ({
+            ...prevData,
+            channelType : "PRIVATE"
+          }))
+          :
+          setChannelData((prevData) => ({
+            ...prevData,
+            channelType : "PUBLIC"
+          }))
+
+        console.log("channel name : ",channelData.channelName, " type : ", channelData.channelType);
+    },[channelData.channelName, channelData.channelType, isPrivateChannelOn.privateToggled])
+    
+    const currentUserId = useSelector((state: RootState) => state.EditUserIdsSlice.currentUserId);
+    const refreshStatus = useSelector((state: RootState) => state.refreshFetchChannels.refreshFetchChannels);
+    const socketTest= io("ws://localhost:3000");
+
+    const [emptyChannelNameError, setEmptyChannelNameError] = useState(false);
+const handleSubmit = async () => {
+    if (!channelData.channelName) {
+        setEmptyChannelNameError(true)
+        return;
+    }
+     // & sending the message in the socket 
+     socketTest.emit("createChannel", {
+        channelName: channelData.channelName,
+        channelType: channelData.channelType,
+        channelPassword: channelData.channelPassword,
+        channelOwnerId:currentUserId,
+    } );
+    setChannelData({ ...channelData, channelName: '' });
+    socketTest.on("refrechCreateChannel", (data: any) => {
+        console.log("results ------- > ");
+        dispatch(createChannelPopUpOff());
+        dispatch(setRefreshChannelsOn());
+    });
+  }
+//^ --------------------------------------------------------------------------------------
+
     return (
         <>
             <div className="w-full h-[20%] flex items-center justify-between mb-[15px] ">
@@ -43,11 +126,18 @@ function CreatePrvPbcChannel() {
                     </label>
                 </div>
             </div>
-            <Input
+            {/* <Input
                 holder="name"
                 type="text"
+                name="channelName" 
+                label="Channel Name" 
+                value={channelData.channelName} 
+                onChange={handleChange}
+            /> */}
+             <input placeholder={`${!emptyChannelNameError ? "Channel Name" : "Please Enter A Name For The Channel "}`} type={`text`} className={`${`w-full h-[37px] text-primary text-xs tracking-wide font-poppins font-normal rounded-[3px] mb-[15px] pl-[22px]  placeholder:font-poppins placeholder:font-normal ${emptyChannelNameError ? "placeholder:text-red-500 outline outline-[2px] outline-red-500" : "focus:outline-none placeholder:text-date"}  placeholder:text-xs  md:h-[45px]`}`}
+                name="channelName" value={channelData.channelName} onChange={handleChange}
             />
-            <button className="w-full text-white font-poppins font-semibold text-xs  leading-4 tracking-widest rounded-full  h-[37px] btn-background md:h-[43px] md:border-2 lg:h-[55px] lg:text-[14px]">
+            <button className="w-full text-white font-poppins font-semibold text-xs  leading-4 tracking-widest rounded-full  h-[37px] btn-background md:h-[43px] md:border-2 lg:h-[55px] lg:text-[14px]" onClick={handleSubmit}>
                 Create
             </button>
             
