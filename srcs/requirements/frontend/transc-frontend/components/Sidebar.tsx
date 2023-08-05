@@ -16,6 +16,8 @@ import Notification from './Notification';
 function getPath(nav: string, id: string) {
     if (nav === 'profile')
         return `profile/${id}`
+    else if (nav === 'achievements')
+        return `achievements/${id}`
     return nav
 }
 

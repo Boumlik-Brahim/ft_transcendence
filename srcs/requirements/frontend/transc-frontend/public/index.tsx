@@ -20,7 +20,6 @@ import forbidden_r from "./forbidden_r.svg";
 import game_b from "./game_b.svg";
 import send_b from "./send_b.svg";
 import send_w from "./send_w.svg";
-import contacts_b from "./contacts_b.svg";
 import trash from './trash.svg'
 import moreCircle from "./morecircle.svg"
 import search_b from "./search_b.svg";
@@ -55,6 +54,8 @@ import bulr_c2 from "./blur_color_2.svg";
 import bulr_c3 from "./blur_color_3.svg";
 import question from "./question.png"
 import GIF from './wait.gif'
+import bgMain from './bg_main.png'
+
 import vs from "./VS.svg";
 import closeCircle from './closecircle.png'
  
@@ -62,6 +63,7 @@ import closeCircle from './closecircle.png'
 
 
 export {
+  bgMain,
   closeCircle,
   vs,
   logo_b,
@@ -118,8 +120,20 @@ export {
   bulr_c3,
   trash,
   moreCircle,
-
+  
 };
+
+
+/* -------------------------------- classment ------------------------------- */
+import first from "./first.png"
+import second from "./second.png"
+import theerd from "./theerd.png"
+export {
+  first,
+  second,
+  theerd
+}
+/* -------------------------------- classment ------------------------------- */
 
 /* ------------------------------ Achievements ------------------------------ */
 import _create_account from "./achievements/create_account.svg"

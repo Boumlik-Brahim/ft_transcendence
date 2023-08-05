@@ -9,7 +9,7 @@ function OnlineFriends() {
   const isCreateChannelPopUpOn = useSelector((state: RootState) => state.createChannelPopUpToggle);
 
     return (
-        <div className={`${isCreateChannelPopUpOn.createChannelPopUpToggled ? "blur-sm bg-gray-400" : ""} ${"w-[25%] h-full bg-primary"} `}>
+        <div className={`${isCreateChannelPopUpOn.createChannelPopUpToggled ? "blur-sm bg-gray-400" : ""} ${"w-[25%] h-screen bg-primary"} `}>
 
         </div>
     )

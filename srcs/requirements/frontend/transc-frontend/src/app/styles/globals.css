@@ -42,9 +42,13 @@ body {
   align-items: center;
 }
 
+.bg_main
+{
+  background-image: url("../../../public/bg_main.png")
+}
 
 .my_container{
-  @apply flex flex-1 flex-col items-center gap-[100px];
+  @apply flex flex-1 flex-col items-center lg:gap-[100px];
   @apply py-[100px] overflow-scroll overflow-x-hidden;
 }
 
@@ -216,3 +220,19 @@ body {
     
   }
 }
+@keyframes show-up {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-show-up {
+  animation-name: show-up;
+  animation-duration: 0.8s;
+}
+
