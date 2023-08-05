@@ -100,11 +100,13 @@ function page() {
                   </div>
                 </div>
         
-               { (userId !== userSession) && <FriendAction userId={userId} userSessionId={userSession} />}
+               {/* { (userId !== userSession) && <FriendAction userId={userId} userSessionId={userSession} />} */}
 
               </div>
 
-              <FriendAction userId={userId} userSessionId={userSession} />
+             {/* {   <FriendAction userId={userId} userSessionId={userSession} />} */}
+             { (userId !== userSession) && <FriendAction userId={userId} userSessionId={userSession} />}
+
             </div>
             <Achievements userId={userId} userSessionId={userSession} />
             <div className="wrapper">

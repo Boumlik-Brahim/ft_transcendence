@@ -267,7 +267,7 @@ function FriendAction({ userId, userSessionId }: Props) {
               <div className="card_friend gradients" onClick={() => handleSubmit({ userSessionId, userId })}>
                 {<Link href={`/chat/${roomId}`}>
                   <Image src={send_b} width={30} alt="avatar" />
-                  –</Link>}
+                  </Link>}
               </div> 
               <div className="card_friend gradients">
                 <Image src={game_b} width={30} alt="avatar" />
