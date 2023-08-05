@@ -136,6 +136,13 @@ export class UsersService {
       });
     });
   }
+
+  async updateTwoFactorStatus(userId: string, isTwoFactorEnabled: boolean): Promise<void> {
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { isTwoFactorEnabled: isTwoFactorEnabled },
+    });
+  }
   
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
     return this.prisma.user.update({

@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common';
 import { Achievement, BlockedUser, Friend, User, UserStat } from '@prisma/client';
 import { ApiTags } from '@nestjs/swagger';
 import { UsersService } from './users.service';
@@ -155,4 +155,14 @@ export class UsersController {
     await this.usersService.removeFriend(userId, friendId);
   }
   //* ---------------------------------------------------------------friendCRUDOp--------------------------------------------------------- *//
+
+  //* ---------------------------------------------------------------updateUsersFields--------------------------------------------------------- *//
+  @Patch(':id/two-factor')
+  async updateTwoFactorStatus(
+    @Param('id') userId: string,
+    @Body('isTwoFactorEnabled') isTwoFactorEnabled: boolean,
+  ) {
+    console.log("twofa :", isTwoFactorEnabled);
+    await this.usersService.updateTwoFactorStatus(userId, isTwoFactorEnabled);
+  }
 }
