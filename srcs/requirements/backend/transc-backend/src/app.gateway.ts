@@ -25,7 +25,7 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
         this.logger.log('APP server Initialized!');
     }
 
-    handleConnection(client: Socket) {z
+    handleConnection(client: Socket) {
         this.connectedClientsService.addClient(client);
         this.logger.log(`Client connected to APP server: ${client.id}`);
     }

@@ -1,7 +1,6 @@
 "use client"
 import Image from "next/image";
 import MessageInputBox from './MessageInputBox'
-import { conversation } from "./TempData/conversation"
 import MessageBox from "./MessageBox";
 import ContactListSm from "./components/ContactList/ContactListSm";
 import ContactListMd from "./components/ContactList/ContactListMd";
@@ -11,8 +10,8 @@ import Header from "./components/others/Header";
 import { useMediaQuery } from 'react-responsive';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { show, hide } from '../../store/reducer';
-import { RootState } from '../../store/store';
+import { show, hide } from '@/app/store/reducer';
+import { RootState } from '@/app/store/store';
 import { useEffect, useState, useRef, useReducer } from "react";
 
 import axios from "axios";
@@ -21,8 +20,9 @@ import { io, Socket } from 'socket.io-client'
 import Cookies from 'universal-cookie';
 
 
-import { setCurrentUser, setOtherUser } from '@/app/store/reducer';
-
+import { setCurrentUser, setOtherUser, setRefreshOn, setRoomId } from '@/app/store/reducer';
+import { useRouter } from 'next/router'
+import Sidebar from '@/../components/Sidebar'
 
 interface Message {
   id?: string;
@@ -39,11 +39,20 @@ interface MessageData {
   recieverId: string;
 }
 
-function Page() {
+
+function Page({ params }: any) {
+
+
 
   const isContactListHidden = useSelector((state: RootState) => state.toggleShowContactList);
-  const refreshStatus = useSelector((state: RootState) => state.refreshFetchMessagesSlice.refreshFetchMessages);
-  const [currentRoomId, setCurrentRoomId] = useState("");
+
+  const roomIdFromParam = useSelector((state: RootState) => state.roomIdSlice.roomId);
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(setRoomId(params.conversation))
+  }, [dispatch, params.conversation])
 
 
   //^ ---------------------------  screen sizes states ----------------------------
@@ -60,9 +69,14 @@ function Page() {
     setIsLgScreen(isLgScreen);
   }, [isMdScreen, isLgScreen]);
   //^ -------------------------------------------------------------------------------
-  
-  const dispatch = useDispatch();
-  (isMdScreenState || isLgScreenState) && dispatch(hide());
+
+
+  //* useEffect to hide contact List in Lg mad Md screen
+  useEffect(() => {
+    (isMdScreenState || isLgScreenState) && dispatch(hide());
+  }, [dispatch, isLgScreenState, isMdScreenState])
+
+
   //^ ---------------------------  get user Id  part ----------------------------
 
   const otherUserId = useSelector((state: RootState) => state.EditUserIdsSlice.otherUserId);
@@ -82,9 +96,11 @@ function Page() {
   const [messages, setMessages] = useState<Message[]>([]);
   //* useEffect for fetching data of a Room
   useEffect(() => {
+
+
     async function fetchMessages() {
       try {
-        const response = await axios.get<Message[]>(`http://localhost:3000/chat?hashedRoomId=${currentRoomId}`);
+        const response = await axios.get<Message[]>(`http://localhost:3000/chat?hashedRoomId=${roomIdFromParam}`);
         setMessages(response.data);
 
       } catch (error) {
@@ -93,7 +109,7 @@ function Page() {
     }
     fetchMessages();
 
-  }, [currentRoomId]);
+  }, [roomIdFromParam, params.conversation]);
 
 
   //^ ----------------------------------------------------------------------------------------------
@@ -113,11 +129,14 @@ function Page() {
   const conversations = messages.map((item, i) => {
     return (
       <div key={i} ref={autoScrollRef} >
-        <MessageBox
-          userId={item.senderId}
-          messageContent={item.content}
-          date={item.created_at}
-        />
+        {
+          item.content &&
+          <MessageBox
+            userId={item.senderId}
+            messageContent={item.content}
+            date={item.created_at}
+          />
+        }
       </div>
     )
   });
@@ -128,12 +147,11 @@ function Page() {
   const socket = useRef<Socket>();
 
 
+
   //* useEffect for creating socket
   useEffect(() => {
-    socket.current = io("ws://localhost:3000");
-    return () => {
-      socket.current?.disconnect();
-    }
+    const cookies = new Cookies();
+    socket.current = io("ws://localhost:3000", { auth: { userId: cookies.get('id') } });
   }, [])
 
   //* useEffect for getting message from socket
@@ -141,19 +159,33 @@ function Page() {
     socket.current?.on("getMessage", (data) => {
       setMessages((prev) => [...prev, { senderId: data.senderId, content: data.text, recieverId: data.receiverId, created_at: new Date().toISOString(), room: data.room }])
     });
+
   }, [socket]);
 
   //* useEffect for getting channel Id from socket
   useEffect(() => {
+
     socket.current?.on("joined", (data) => {
-      setCurrentRoomId(data.roomName);
+      dispatch(setRoomId(data.roomName))
     });
-  }, []);
+  }, [dispatch]);
+
+  useEffect(() => {
+
+    socket.current?.on("refresh", () => {
+      dispatch(setRefreshOn());
+    });
+  }, [dispatch]);
+
+
+
   //^ -----------------------------------------------------------------------------------------
 
 
 
   return (
+<>
+    <Sidebar/>
     <div className="w-full h-[85vh] md:h-screen flex">
       <div className={`${!isContactListHidden.showContactListToggled ? "w-full h-full " : "hidden"} `}>
 
@@ -168,20 +200,21 @@ function Page() {
         <MessageInputBox
           inputRef={socket} />
       </div>
-        {<ContactListSm 
-          inputRef={socket}
-        />
-        }
-      {(isMdScreenState && !isLgScreenState) && <ContactListMd 
-          inputRef={socket}
+      {<ContactListSm
+        inputRef={socket}
+      />
+      }
+      {(isMdScreenState && !isLgScreenState) && <ContactListMd
+        inputRef={socket}
       />}
       {isLgScreenState && <ContactListLg
         inputRef={socket}
       />}
-      
+
 
 
     </div>
+    </>
   );
 }
 export default Page;

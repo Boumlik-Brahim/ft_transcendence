@@ -33,3 +33,8 @@ export interface userStat
     rate: number
 }
 
+    interface MessageData {
+        content: string;
+        senderId: string;
+        recieverId: string;
+    }

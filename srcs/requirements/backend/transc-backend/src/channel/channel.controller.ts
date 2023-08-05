@@ -21,13 +21,13 @@ export class ChannelController {
     return channel;
   }
   
-  @Get()
-  async findAllChannels(): Promise<Channel[]> {
-    const channels = await this.channelService.findAllChannels();
+  @Get(':userId/allChannels')
+  async findAllChannels(@Param('userId') userId: string): Promise<Channel[]> {
+    const channels = await this.channelService.findAllChannels(userId);
     return channels;
   }
 
-  @Get(':userId/channelMember')
+  @Get(':userId/myAllChannels')
   async findMyAllChannels(@Param('userId') userId: string): Promise<Channel[]> {
     const mychannels = await this.channelService.findMyAllChannels(userId);
     return mychannels;
@@ -40,8 +40,8 @@ export class ChannelController {
   }
   
   @Patch(':id')
-  async updateChannel(@Param('id') id: string, @Body() updateChannelDto: UpdateChannelDto): Promise<Channel> {
-    const updatedChannel = await this.channelService.updateChannel(id, updateChannelDto);
+  async updateChannel(@Param('id') id: string, @Body() channelName: string): Promise<Channel> {
+    const updatedChannel = await this.channelService.updateChannel(id, channelName);
     return updatedChannel;
   }
   
@@ -120,15 +120,9 @@ export class ChannelController {
     return channelMessages;
   }
 
-  @Get('/:channelId/channelMessage/:id')
-  async findOneChannelMessage(@Param('channelId') channelId: string, @Param('id') id: string): Promise<ChannelMessage> {
-    const channelMessage = await this.channelService.findOneChannelMessage(channelId, id);
-    return channelMessage;
-  }
-
-  @Delete('/:channelId/channelMessage/:id')
-  async removeChannelMessage(@Param('channelId') channelId: string, @Param('id') id: string): Promise<void> {
-    await this.channelService.removeChannelMessage(channelId, id);
+  @Delete('/:channelId/channelMessages')
+  async removeChannelMessages(@Param('channelId') channelId: string): Promise<void> {
+    await this.channelService.removeAllChannelMessages(channelId);
   }
   //* ----------------------------------------------------------channelMessageCRUDOp---------------------------------------------------- *//
 
