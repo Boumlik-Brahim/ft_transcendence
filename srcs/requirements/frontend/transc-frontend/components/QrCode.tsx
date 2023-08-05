@@ -3,10 +3,9 @@ import { useEffect, useState } from 'react';
 
 interface Props {
     userId: string,
-    blur: string,
 }
 
-const QRCodePage = ({userId, blur}: Props) => {
+const QRCodePage = ({userId}: Props) => {
   const [qrCodeData, setQRCodeData] = useState('');
   
   useEffect(() => {
@@ -27,7 +26,7 @@ const QRCodePage = ({userId, blur}: Props) => {
 
   return (
     <div>
-      {qrCodeData && <img className={`${blur}`} src={qrCodeData} alt="QR Code" />}
+      {qrCodeData && <img src={qrCodeData} alt="QR Code" />}
     </div>
   );
 };
