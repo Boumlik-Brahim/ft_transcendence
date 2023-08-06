@@ -1,6 +1,8 @@
 /* eslint-disable prettier/prettier */
-import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UploadedFile, UseInterceptors  } from '@nestjs/common';
 import { Achievement, BlockedUser, Friend, GamesHistories, User, UserStat } from '@prisma/client';
+import { diskStorage } from 'multer';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -200,7 +202,31 @@ export class UsersController {
     @Param('id') userId: string,
     @Body('isTwoFactorEnabled') isTwoFactorEnabled: boolean,
   ) {
-    console.log("twofa :", isTwoFactorEnabled);
     await this.usersService.updateTwoFactorStatus(userId, isTwoFactorEnabled);
   }
+
+  @Post('upload')
+    @UseInterceptors(
+    FileInterceptor('file', {
+        storage: diskStorage({
+            destination: 'public/img',
+            filename: (req, file, cb) => {
+            cb(null, file.originalname);
+            },
+        }),
+        }),
+    )
+    async local(@UploadedFile() file: Express.Multer.File) {
+        return {
+        statusCode: 200,
+        data: file,
+        };
+    }
+
+    @Post(':userId/update/username')
+    async updateUserName(@Param("userId") userId: string, @Body("userName") userName: string){
+      console.log("From endpoint");
+      await this.usersService.updateUserName(userId, userName);
+    }
+    
 }
