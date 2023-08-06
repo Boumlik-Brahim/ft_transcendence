@@ -65,9 +65,7 @@ interface Channels{
             ...prevData,
             channelType : "PUBLIC"
           }))
-
-        console.log("channel name : ",channelData.channelName, " type : ", channelData.channelType);
-    },[channelData.channelName, channelData.channelType, isPrivateChannelOn.privateToggled])
+    },[ isPrivateChannelOn.privateToggled])
     
     const currentUserId = useSelector((state: RootState) => state.EditUserIdsSlice.currentUserId);
     const refreshStatus = useSelector((state: RootState) => state.refreshFetchChannels.refreshFetchChannels);

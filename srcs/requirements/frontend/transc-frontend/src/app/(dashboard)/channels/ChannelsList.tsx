@@ -12,6 +12,7 @@ import { useMediaQuery } from 'react-responsive';
 import { useEffect, useState } from "react";
 
 import Image from "next/image"
+import axios from "axios";
 
 function ChannelsList() {
   const isCreateChannelOn = useSelector((state: RootState) => state.createChannelToggle);
@@ -29,20 +30,20 @@ function ChannelsList() {
   }, [isMdScreen, isLgScreen]);
 
 
-  const channels = channelsData.map((channel: channelProps) => {
-    return (
-      <ChannelBoxInfo
-        key={channel.id}
-        id={channel.id}
-        channel_name={channel.channel_name}
-        channel_owner={channel.channel_owner}
-        channel_members={channel.channel_members}
-        channel_mode={channel.channel_mode}
-      />
-      );
-    });
-    if (channels.length == 0)
-    console.log("Empty channels")
+  // const channelsList = channelsData.map((channel: channelProps) => {
+  //   return (
+  //     <ChannelBoxInfo
+  //       key={channel.id}
+  //       id={channel.channel_name}
+  //       channel_name={channel.channel_name}
+  //       channel_owner={channel.channel_owner}
+  //       channel_members={channel.channel_members}
+  //       channel_mode={channel.channel_mode}
+  //     />
+  //     );
+  //   });
+    // if (channels.length == 0)
+    // console.log("Empty channels")
   
   //@ ------------------ handle click get private channel by ID --------------------
 
@@ -51,6 +52,87 @@ function ChannelsList() {
   }
   //@ ------------------------------------------------------------------------------
 const wrongChannelIdStyling = "red-400"
+
+//^ ---------------------------------- fetch  channels --------------------------------
+    interface channel{
+    id: string
+    channelName : string,
+    channelType : string,
+    channelPassword : string,
+    channelOwnerId : string,
+    _count: any
+    }
+
+  //& ------------------------------- fetch my channels ----------------------------
+  const currentUserId = useSelector((state: RootState) => state.EditUserIdsSlice.currentUserId);
+  const refreshStatus = useSelector((state: RootState) => state.refreshFetchChannels.refreshFetchChannels);
+
+    const [channels, setChannels] = useState<channel[]>([]);
+
+  //* fetching  MY Channel List 
+  useEffect(() => {
+    async function fetchChannels() {
+      try {
+        const response = currentUserId && await axios.get<channel[]>(`http://localhost:3000/channel/${currentUserId}/myAllChannels`);
+        response && console.log(response.data) 
+        response && setChannels(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    fetchChannels();
+  }, [currentUserId, refreshStatus]);
+
+    const MyChannelsList = channels.map((channel:channel, i) => {
+    return (
+      <ChannelBoxInfo
+        key={channel.id}
+        id={channel.id}
+        channel_name={channel.channelName}
+        channel_owner={channel.channelOwnerId}
+        channel_members={channel._count.channelMember}
+        channel_mode={channel.channelType}
+      />
+      );
+    });
+  //& --------------------------------------------------------------------------------
+
+
+  //& ------------------------------- fetch General channels ----------------------------
+    const [generalChannels, setGeneralChannels] = useState<channel[]>([]);
+    
+    //* fetching  MY Channel List 
+  useEffect(() => {
+    async function fetchChannels() {
+      try {
+        const response = currentUserId && await axios.get<channel[]>(`http://localhost:3000/channel/${currentUserId}/allChannels`);
+        response && console.log(response.data) 
+        response && setGeneralChannels(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    fetchChannels();
+  }, [ refreshStatus]);
+
+    const GeneralChannelsList = generalChannels.map((channel:channel, i) => {
+    return (
+      <ChannelBoxInfo
+        key={channel.id}
+        id={channel.id}
+        channel_name={channel.channelName}
+        channel_owner={channel.channelOwnerId}
+        channel_members={channel._count.channelMember}
+        channel_mode={channel.channelType}
+      />
+      );
+    });
+  //& -----------------------------------------------------------------------------------
+
+
+
+//^ ----------------------------------------------------------------------------------
+
 
 
   return (
@@ -84,14 +166,14 @@ const wrongChannelIdStyling = "red-400"
               </div>
 
               <div className="h-[10vh] w-full  flex items-center ">
-                <ChannelBoxInfo
+                {/* <ChannelBoxInfo
                   key={15}
-                  id={15}
+                  id={"15"}
                   channel_name={"Worriers"}
                   channel_owner={"Bilal Ben Aouad"}
                   channel_members={130}
                   channel_mode={"protected"}
-                />
+                /> */}
               </div>
             </div>
           </>
@@ -106,13 +188,13 @@ const wrongChannelIdStyling = "red-400"
 
             <div className="w-full h-[82%] overflow-auto no-scrollbar  py-[7px] px-[2px] lg:py-[10px] lg:px-[48px]">
               {
-                (channels.length == 0)
+                (MyChannelsList.length == 0)
                   ?
                   <div className=" w-full  h-full text-primary text-xl flex items-center justify-center p-0 m-0 font-poppins ">
                     You are not currently a member of any channels
                   </div>
                   :
-                  channels
+                  MyChannelsList
               }
               {/*----------------------------------------- channel info box ------------------------------------------------------------------------------------------------------------- */}
               {/* {channels} */}
@@ -130,13 +212,13 @@ const wrongChannelIdStyling = "red-400"
               {/*----------------------------------------- channel info box ------------------------------------------------------------------------------------------------------------- */}
               {/* {channels} */}
               {
-                (channels.length == 0)
+                (GeneralChannelsList.length == 0)
                   ?
                   <div className=" w-full  h-full text-primary text-xl flex items-center justify-center p-0 m-0 font-poppins ">
                     No channels available to join at this time !
                   </div>
                   :
-                  channels
+                  GeneralChannelsList
               }
               {/*-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- */}
             </div>

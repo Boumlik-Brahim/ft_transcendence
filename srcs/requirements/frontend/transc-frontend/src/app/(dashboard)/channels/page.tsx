@@ -31,9 +31,7 @@ function Page() {
         return (
             <ChannelBoxInfo
                 key={channel.id}
-                id={channel.id}
-                bg_color={channel.bg_color}
-                txt_color={channel.txt_color}
+                id={channel.channel_name}
                 channel_name={channel.channel_name}
                 channel_owner={channel.channel_owner}
                 channel_members={channel.channel_members}
@@ -63,6 +61,7 @@ const cookies = new Cookies();
     socket.current = io("ws://localhost:3000");
   }, [])
 //^ ----------------------------------------------------------------------------------------
+
 
     return (
         <>
