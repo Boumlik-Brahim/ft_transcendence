@@ -265,9 +265,9 @@ export class ChannelService {
   }
 
   @Cron(CronExpression.EVERY_30_SECONDS)
-  async handleUnbanneMember(): Promise<void> {
+  async handleUnbanneMember(): Promise<{ count: number }> {
     const currentDate = new Date();
-    await this.prisma.channelMember.updateMany({
+    const updatedChannelMembers = await this.prisma.channelMember.updateMany({
       where: {
         role: 'BANNED_MEMBER',
         unbanneTime: {
@@ -280,6 +280,7 @@ export class ChannelService {
         unbanneTime: new Date(0)
       }
     });
+    return updatedChannelMembers;
   }
 
   async updateChannelMemberMutedTime(channelId: string, userId: string, mutedTime: string): Promise<ChannelMember> {
@@ -315,9 +316,9 @@ export class ChannelService {
   }
 
   @Cron(CronExpression.EVERY_30_SECONDS)
-  async handleUnmuteMember(): Promise<void> {
+  async handleUnmuteMember(): Promise<{ count: number }> {
     const currentDate = new Date();
-    await this.prisma.channelMember.updateMany({
+    const updatedChannelMembers = await this.prisma.channelMember.updateMany({
       where: {
         role: 'MUTED_MEMBER',
         unmuteTime: {
@@ -330,6 +331,7 @@ export class ChannelService {
         unmuteTime: new Date(0)
       }
     });
+    return updatedChannelMembers;
   }
   
   async removeChannelMember(channelId: string, userId: string): Promise<void> {

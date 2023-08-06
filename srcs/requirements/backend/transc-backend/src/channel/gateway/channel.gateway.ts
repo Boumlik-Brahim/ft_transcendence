@@ -10,6 +10,7 @@ import { ConnectedClientsService } from 'src/connected-clients.service';
 import { createHash } from 'crypto';
 import { PrismaService } from 'prisma/prisma.service';
 import { UsersService } from 'src/users/users.service';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @WebSocketGateway({
   cors: {
@@ -29,6 +30,8 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
  
   private logger: Logger = new Logger('Channel Gateway Log');
 
+  private clientId;
+
   //* ----------------------------------------------------------------Connection----------------------------------------------------------- *//
   afterInit(server: any) {
     this.logger.log('Channel Server Initialized!');
@@ -36,6 +39,7 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   
   handleConnection(client: Socket) {
     this.connectedClientsService.addClient(client);
+    this.clientId = client.id;
     this.logger.log(`Client connected to Channel server: ${client.id}`);
   }
   //* ----------------------------------------------------------------Connection----------------------------------------------------------- *//
@@ -71,76 +75,39 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   
   //* ---------------------------------------------------------------JoinChannel----------------------------------------------------------- *//
   @SubscribeMessage('joinChannel')
-  async joinChannel(@MessageBody() payload: { userId: string, channelId: string }, @ConnectedSocket() socket: Socket) : Promise<void> {
+  async joinChannel(@MessageBody() payload: { userId: string, channelId: string, channelPasword: string }, @ConnectedSocket() socket: Socket) : Promise<void> {
     try{
-      const member = await this.channelService.findOneChannelMember(payload.channelId, payload.userId);
+      const channel = await this.channelService.findOneChannel(payload.channelId);
+      const member = await this.prisma.channelMember.findUnique({
+        where: {
+          userAndChannel: {
+            userId: payload.userId,
+            channelId: payload.channelId
+          },
+        },
+      });
       if (member){
-        const channel = await this.channelService.findOneChannel(payload.channelId);
         socket.join(channel.id);
       }else{
-        this.server.to(socket.id).emit('error', 'Invalid Member');
-      }
-    }catch(error){
-      this.server.to(socket.id).emit('error', error);
-    }
-  }
-  
-  @SubscribeMessage('joinPublicChannel')
-  async joinPublicChannel(@MessageBody() payload: { userId: string, channelId: string }, @ConnectedSocket() socket: Socket) : Promise<void> {
-    try{
-      const channel = await this.channelService.findOneChannel(payload.channelId);
-      if (channel.channelType === 'PUBLIC'){
-        await this.channelService.createChannelMember({"userId": payload.userId, "channelId": payload.channelId, "role": 'MEMBER'});
         const user = await this.usersService.findOne(payload.userId);
-        socket.join(payload.channelId);
-        this.server.to(payload.channelId).emit('onMessage', `${user.name} has joined channel: ${channel.channelName}`);
-        this.server.to(socket.id).emit('refrechMember');
-      }
-      else{
-        this.server.to(socket.id).emit('error', 'Invalid channel');
-      }
-    }catch(error){
-      this.server.to(socket.id).emit('error', error);
-    }
-  }
-  
-  @SubscribeMessage('joinProtectedChannel')
-  async joinProtectedChannel(@MessageBody() payload: { userId: string, channelId: string, channelPasword: string }, @ConnectedSocket() socket: Socket): Promise<void> {
-    try{
-      const hachedChannelPswd = createHash('sha256').update(payload.channelPasword).digest('hex');
-      const channel = await this.channelService.findOneChannel(payload.channelId);
-      if (channel.channelType === 'PROTECTED'){
-        if (channel.channelPassword === hachedChannelPswd){
+        if (channel.channelType === 'PUBLIC' || channel.channelType === 'PRIVATE'){
           await this.channelService.createChannelMember({"userId": payload.userId, "channelId": payload.channelId, "role": 'MEMBER'});
-          const user = await this.usersService.findOne(payload.userId);
           socket.join(payload.channelId);
           this.server.to(payload.channelId).emit('onMessage', `${user.name} has joined channel: ${channel.channelName}`);
           this.server.to(socket.id).emit('refrechMember');
         }
-        else{
-          this.server.to(socket.id).emit('error', `Invalid password ${payload.channelPasword}`);
+        else if (channel.channelType === 'PROTECTED' && payload.channelPasword){
+          console.log("channelpswd: ===> ", payload.channelPasword);
+          const hachedChannelPswd = createHash('sha256').update(payload.channelPasword).digest('hex');
+          if (channel.channelPassword === hachedChannelPswd){
+            await this.channelService.createChannelMember({"userId": payload.userId, "channelId": payload.channelId, "role": 'MEMBER'});
+            socket.join(payload.channelId);
+            this.server.to(payload.channelId).emit('onMessage', `${user.name} has joined channel: ${channel.channelName}`);
+            this.server.to(socket.id).emit('refrechMember');
+          }else{
+            this.server.to(socket.id).emit('error', `Invalid password ${payload.channelPasword}`);
+          }
         }
-      }else{
-        this.server.to(socket.id).emit('error', 'Invalid channel');
-      }
-    }catch(error){
-      this.server.to(socket.id).emit('error', error);
-    }
-  }
-  
-  @SubscribeMessage('joinPrivateChannel')
-  async joinPrivateChannel(@MessageBody() payload: { userId: string, channelId: string}, @ConnectedSocket() socket: Socket): Promise<void> {
-    try{
-      const channel = await this.channelService.findOneChannel(payload.channelId);
-      if (channel.channelType === 'PRIVATE'){
-        await this.channelService.createChannelMember({"userId": payload.userId, "channelId": payload.channelId, "role": 'MEMBER'});
-        const user = await this.usersService.findOne(payload.userId);
-        socket.join(payload.channelId);
-        this.server.to(payload.channelId).emit('onMessage', `${user.name} has joined channel: ${channel.channelName}`);
-        this.server.to(socket.id).emit('refrechMember');
-      }
-      else{
-        this.server.to(socket.id).emit('error', 'Invalid channel');
       }
     }catch(error){
       this.server.to(socket.id).emit('error', error);
@@ -239,7 +206,15 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
       this.server.to(socket.id).emit('error', error);
     }
   }
-
+  
+  @Cron(CronExpression.EVERY_30_SECONDS)
+  async handleUnBanMember(): Promise<void> {
+    const Count = await this.channelService.handleUnbanneMember();
+    if (Count.count === 1){
+      this.server.to(this.clientId).emit('refrechMember');
+    }
+  }
+  
   @SubscribeMessage('muteMember')
   async handleMuteMember(@MessageBody() payload: { channelId: string, userId: string, mutedTime: string }, @ConnectedSocket() socket: Socket): Promise<void> {
     try{
@@ -256,6 +231,14 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
       }
     }catch(error){
       this.server.to(socket.id).emit('error', error);
+    }
+  }
+
+  @Cron(CronExpression.EVERY_30_SECONDS)
+  async handleUnMuteMember(): Promise<void> {
+    const Count = await this.channelService.handleUnmuteMember();
+    if (Count.count === 1){
+      this.server.to(this.clientId).emit('refrechMember');
     }
   }
   //* --------------------------------------------------------------ChannelRoles---------------------------------------------------------- *//
