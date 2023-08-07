@@ -17,12 +17,16 @@ export class UsersService {
 
   //* --------------------------------------------------------------userServices---------------------------------------------------------- *//
   
-  async findOneWithMail(email: string): Promise<any>{
-    return await this.prisma.user.findUnique({ 
-      where: {
-        email: email,
-      }
-    })
+  async findOneWithId(_intraId: string): Promise<any>{
+    if (_intraId !== undefined){
+      return await this.prisma.user.findUnique({ 
+        where: {
+          intraId: _intraId,
+        }
+      })
+    }
+    else 
+      return null;
   }
   
   async createUser(createUserDto: CreateUserDto): Promise<User> {
@@ -197,6 +201,20 @@ export class UsersService {
         cause: error
       });
     });
+  }
+
+  async updateUserName(userId: string, userName: string){
+    await this.prisma.user.update({
+      where: {
+        id: userId
+      },
+      data: {
+        name: userName
+      }
+    })
+    // .catch((error) => {
+
+    // })
   }
 
 //* --------------------------------------------------------------userServices---------------------------------------------------------- *//

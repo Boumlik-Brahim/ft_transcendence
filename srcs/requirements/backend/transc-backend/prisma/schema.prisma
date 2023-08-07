@@ -43,7 +43,7 @@ model User {
   id  String @id @default(uuid())
   name  String? @unique
   email String @unique
-  IntraId String @unique
+  intraId String @unique
   Avatar  String?
   status  Status @default(ONLINE)
   isAuth  Boolean @default(true)

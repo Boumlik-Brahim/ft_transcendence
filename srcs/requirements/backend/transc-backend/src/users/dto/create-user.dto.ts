@@ -17,7 +17,7 @@ export class CreateUserDto {
     @ApiProperty()
     @IsString()
     @IsNotEmpty()
-    IntraId: string
+    intraId: string
     
     @ApiProperty()
     @IsString()
