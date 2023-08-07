@@ -87,7 +87,16 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
         },
       });
       if (member){
-        socket.join(channel.id);
+        if (channel.channelType === 'PROTECTED' && payload.channelPasword){
+          const hachedChannelPswd = createHash('sha256').update(payload.channelPasword).digest('hex');
+          if (channel.channelPassword === hachedChannelPswd){
+            socket.join(channel.id);
+          }else{
+            this.server.to(socket.id).emit('error', `Invalid password ${payload.channelPasword}`);
+          }
+        }else{
+          socket.join(channel.id);
+        }
       }else{
         const user = await this.usersService.findOne(payload.userId);
         if (channel.channelType === 'PUBLIC' || channel.channelType === 'PRIVATE'){
@@ -299,7 +308,7 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
       const user = await this.usersService.findOne(payload.userId);
       if(member && member.role === 'OWNER')
       {
-        const channel = await this.channelService.updateChannel(payload.channelId, payload.updatedChannelName);
+        const channel = await this.channelService.updateChannel(payload.channelId, {"channelName": payload.updatedChannelName });
         this.server.to(channel.id).emit('onMessage', `${user.name} update the channel name to: ${channel.channelName}`);
       }else{
         this.server.to(socket.id).emit('error', 'Invalid Owner');
