@@ -9,7 +9,7 @@ import { ConnectedClientsService } from 'src/connected-clients.service';
 
 
 @WebSocketGateway({
-  // namespace : "game",
+  namespace : "game",
   cors : {
     origin : 'http://localhost:5173/game'
   }
@@ -30,9 +30,12 @@ export class GameGateway {
   }
 
   handleConnection(client : Socket) {
-    this.connectedClientsService.addClient(client);
-    this.logger.log(`Client connected to Game server: ${client.id}`);
-  }
+    const userId = client.handshake.auth.userId as string;
+    console.log('new connection');
+    if (userId) {
+      this.gameService.addUser(userId, client);
+    }
+  };
   
   @SubscribeMessage('createGame')
   createGame(@MessageBody() data: CreateGameDto, @ConnectedSocket() client: Socket) {
@@ -40,8 +43,18 @@ export class GameGateway {
     this.gameService.createGame(data, client);
   }
 
+  @SubscribeMessage('rejectInvitation')
+  rejectInvitaion(@MessageBody() data: JoinGameDto, @ConnectedSocket() client: Socket) {
+    const { gameId, userId } = data;
+    this.gameService.rejectInvitation(client, gameId, userId);
+  }
+
+
+
+
   @SubscribeMessage('joinGame')
   async joinGame(@MessageBody() data: JoinGameDto, @ConnectedSocket() client: Socket) {
+    console.log("size : ", this.connectedClientsService.getAllClients().size)
     if (!data) return;
     const { gameId, userId } = data;
     if (gameId && userId ) {
@@ -104,8 +117,7 @@ export class GameGateway {
   }
 
   handleDisconnect(client : Socket) {
-    this.connectedClientsService.removeClient(client);
-    this.logger.log(`Client disconnected from Game server: ${client.id}`);
+    this.gameService.deleteUser(client);
   }
 
 }

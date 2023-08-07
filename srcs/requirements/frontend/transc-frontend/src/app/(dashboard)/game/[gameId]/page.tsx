@@ -4,13 +4,17 @@
 import { useEffect, useState } from 'react'
 import { avatar } from '../../../../../public'
 import Image from 'next/image'
-import { socket } from '../socket'
+// import { socket } from '../socket'
 import Canvas from './canva'
 import { useRouter } from 'next/navigation';
 import Waiting from '../waiting';
 import { getCookie } from 'cookies-next';
 import Players from './players';
 import { Link } from 'react-router-dom';
+import Sidebar from "../../../../../components/Sidebar";
+import Notification from '../../../../../components/Notification';
+import { useSocket } from '@/app/socket';
+
 
 export interface GameEntity {
     id : String,
@@ -51,19 +55,7 @@ const Page = ( {params} : any) => {
     const userId = getCookie('id') as string;
     const oponentId = userId === gameData?.player1.id ? gameData.player2.id : gameData?.player1.id;
     const id = params.gameId;
-
-    const createGame = (isRamdomOponent : boolean) : void => {
-        if (!socket.connected) return ;
-        const invitedId = userId === gameData?.player1.id ? gameData?.player2.id : gameData?.player1.id;
-        if (userId) {
-          const data : CreateGameType = {
-            invitedId : invitedId,
-            creatorId : userId,
-            isRamdomOponent
-          }
-          socket.emit('createGame', data);
-        }
-    }
+    const socket = useSocket();
 
     const handlePause = () => {
         if (!socket.connected) return;
@@ -76,7 +68,6 @@ const Page = ( {params} : any) => {
     }
 
     useEffect(() => {
-        socket.connect();
         socket.emit('joinGame', {gameId : id, userId});
         
         document.addEventListener('keydown', (event) => {
@@ -114,8 +105,18 @@ const Page = ( {params} : any) => {
         }, []);
 
         return (
+            <>
+            
+                <Sidebar/> 
             <div className='layouts'>
-                <div className='w-full h-full flex flex-col items-center justify-center gap-1 relative'>
+            <div className="my_container"> 
+                <div className="wrraper bg-slate-300">
+                <div className="md:block hidden absolute top-[150px] right-[200px]">
+                    <Notification userId={userId} userSession={userId}/>
+                </div>
+                </div>
+            
+                <div className='w-full h-full flex flex-col items-center justify-center gap-1 relative bg-red-200'>
                     {
                         (gameSate === 'started' || gameSate === 'pause' || gameSate === 'stopped') && (
                             <div className='flex flex-col flex-1 w-full justify-center items-center bg-[#E8E8E8] '>
@@ -166,7 +167,9 @@ const Page = ( {params} : any) => {
                         )
                     }
                 </div>
+                </div>
             </div>
+            </>
         )
 }
 

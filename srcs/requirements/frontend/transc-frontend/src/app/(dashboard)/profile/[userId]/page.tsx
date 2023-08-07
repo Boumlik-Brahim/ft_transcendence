@@ -10,12 +10,15 @@ import Search from "../../../../../components/Search";
 import { useEffect, useState } from "react";
 import { users_int } from "../../../../../interfaces";
 import FriendAction from "../../../../../components/FriendAction";
+import Cookies from "universal-cookie";
 import Notification from "../../../../../components/Notification";
 import { io } from "socket.io-client";
+
+const cookies = new Cookies();
 export const socket = io("http://localhost:3000", {
-  transports: ["websocket"],
+  auth: { userId: cookies.get('id') },
 });
-import Cookies from "universal-cookie";
+
 import Achievements from "../../../../../components/Achievements";
 import Sidebar from "../../../../../components/Sidebar";
 import { bgMain } from "../../../../../public";
@@ -105,7 +108,7 @@ function page() {
               </div>
 
              {/* {   <FriendAction userId={userId} userSessionId={userSession} />} */}
-             { (userId !== userSession) && <FriendAction userId={userId} userSessionId={userSession} />}
+             { (true) && <FriendAction userId={userId} userSessionId={userSession} />}
 
             </div>
             <Achievements userId={userId} userSessionId={userSession} />

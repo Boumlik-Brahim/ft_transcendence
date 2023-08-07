@@ -7,10 +7,24 @@ import { Server, Socket } from 'socket.io';
 @Injectable()
 export class GameService {
     private gameMap = new Map<String, GameEntity>();
+    private usersConnected = new Map<string, Socket>();
     private inTheQueue : String | null;
 
     constructor(private prisma : PrismaService) {}
 
+    addUser(id : string, socket : Socket) {
+        this.usersConnected.set(id, socket);
+        console.log(this.usersConnected.size, " -- size ---");
+    }
+
+    deleteUser(socket : Socket) {
+        for (const [key, value] of this.gameMap.entries()) {
+            if (socket.id === value.id) {
+                this.gameMap.delete(key);
+                return ;
+            }
+        }
+    }
 
     /**
      * Logique for inviting your friend to play Check if the Oponent is your friend
@@ -19,36 +33,70 @@ export class GameService {
      * @param client 
      * @returns 
      */
-    async inviteAfriend(creatorId : string, invitedId : string, client : Socket) {
-        if (creatorId === invitedId)
+    async inviteAfriend(senderId : string, receiverId : string, client : Socket) {
+        const senderSocket : Socket = this.usersConnected.get(receiverId);
+        if (!senderSocket) {
+            client.emit('userNotconnected', 'This user is not connected');
+            return ;
+        }
+        if (senderId === receiverId)
                 return ;
         try {
-            const friend = await this.prisma.friend.findMany({
+            const sender = await this.prisma.user.findUnique({
+                where : {
+                    id : senderId
+                }
+            });
+            const receiver = await this.prisma.friend.findMany({
                 where : {
                     AND : [
                         {
-                            userId : creatorId
+                            userId : senderId
                         },
                         {
-                            friendId : invitedId
+                            friendId : receiverId
                         }
                     ]
                 }
             });
-            if (!friend.length)
+            if (!receiver.length)
             {
                 client.emit('error', 'You are not allowed to play against this one');
                 return ;
             }
-            const game : GameEntity = this.getGameInitValue(creatorId, invitedId);
+            const game : GameEntity = this.getGameInitValue(senderId, receiverId);
             this.gameMap.set(game.id, game);
             client.emit("Success", {id : game.id});
+            senderSocket.emit('gameInvitation', {gameId : game.id, message : `you are invited to play by  ${sender.name}`});
         }
         catch (error) {
             client.emit("error", error);
         }
     }
 
+
+    async rejectInvitation (client : Socket, gameId : string, userId : string) {
+        try {
+            const user = await this.prisma.user.findUnique({
+                where : {
+                    id : userId,
+                }
+            });
+            const game = this.gameMap.get(gameId);
+            if (!game || game.gameStatus.status !== 'waiting') return ;
+            const { player1, player2 } = game;
+            if (player2.id !== userId) return ;
+            this.gameMap.delete(game.id);
+            const senderSocket = this.usersConnected.get(player1.id as string);
+            if (senderSocket)
+            {
+                senderSocket.emit('rejectInvitation', `Your invitation is rejected by ${user.name}`);
+            }
+        }
+        catch (error) {
+            client.emit("error", error);
+        }
+    }
 
     /**
      * Here is The logique about maching and joining a queue to wait a Oponent

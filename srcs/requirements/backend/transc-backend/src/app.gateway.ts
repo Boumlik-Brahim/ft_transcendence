@@ -70,16 +70,17 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
 
 
     /*user invitation notification*/
-    // @SubscribeMessage('inviteUser')
-    // async handleInviteUser(@MessageBody() payload: CreateFriendDto, @ConnectedSocket() socket: Socket): Promise<void> {
-    //     const user = await this.usersService.findOne(payload.userId);
-    //     for (const [key, val] of this.connectedClientsService.getAllClients()) {
-    //         if (val === payload.friendId) {
-    //             this.server.to(key).emit('invitation', `${user.name} send you a friend request`);
-    //         }
-    //     };
-    //     await this.usersService.createFriend(payload);
-    // }
+    @SubscribeMessage('inviteUser')
+    async handleInviteUser(@MessageBody() payload: CreateFriendDto, @ConnectedSocket() socket: Socket): Promise<void> {
+        console.log(payload);
+        const user = await this.usersService.findOne(payload.userId);
+        for (const [key, val] of this.connectedClientsService.getAllClients()) {
+            if (val === payload.friendId) {
+                this.server.to(key).emit('invitation', `${user.name} send you a friend request`);
+            }
+        };
+        await this.usersService.createFriend(payload);
+    }
 
     // @SubscribeMessage('accept')
     // async handleInvitationAccepted(@MessageBody() payload: {senderId: string, receiverId: string}, @ConnectedSocket() socket: Socket): Promise<void> {
@@ -93,25 +94,36 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
     // }
     
     /*game invitation notification*/
-    // @SubscribeMessage('inviteUserToGame')
-    // async handleInviteUserToGame(@MessageBody() payload: {senderId: string, receiverId: string}, @ConnectedSocket() socket: Socket): Promise<void> {
-    //     const user = await this.usersService.findOne(payload.senderId);
-    //     for (const [key, val] of this.connectedClientsService.getAllClients()) {
-    //         if (val === payload.receiverId) {
-    //             this.server.to(key).emit('gameInvitation', `${user.name} invite you to play a PING PONG GAME`);
-    //         }
-    //     };
-    // }
+    @SubscribeMessage('inviteUserToGame')
+    async handleInviteUserToGame(@MessageBody() payload: {creatorId: string, invitedId: string}, @ConnectedSocket() socket: Socket): Promise<void> {
+        const user = await this.usersService.findOne(payload.creatorId);
+        console.log("fode");
+        if (user) {
+            try {
+                const gameId = await this.connectedClientsService.inviteAfriendToPlay(payload.creatorId, payload.invitedId, socket);
+                const data = {
+                    gameId : gameId,
+                    message : `${user.name} invite you to play a PING PONG GAME`
+                }
+                for (const [key, val] of this.connectedClientsService.getAllClients()) {
+                    if (val === payload.invitedId) {
+                        this.server.to(key).emit('gameInvitation', data);
+                    }
+                };
+            }
+            catch (error) {}
+        }
+    }
 
-    // @SubscribeMessage('rejectGameInvitation')
-    // async handleRejectGameInvitation(@MessageBody() payload: {senderId: string, receiverId: string}, @ConnectedSocket() socket: Socket): Promise<void> {
-    //     const user = await this.usersService.findOne(payload.receiverId);
-    //     for (const [key, val] of this.connectedClientsService.getAllClients()) {
-    //         if (val === payload.senderId) {
-    //             this.server.to(key).emit('gameInvitationRejected', `${user.name} reject your invitation to play a PING PONG GAME`);
-    //         }
-    //     };
-    // }
+    @SubscribeMessage('rejectGameInvitation')
+    async handleRejectGameInvitation(@MessageBody() payload: {senderId: string, receiverId: string}, @ConnectedSocket() socket: Socket): Promise<void> {
+        const user = await this.usersService.findOne(payload.receiverId);
+        for (const [key, val] of this.connectedClientsService.getAllClients()) {
+            if (val === payload.senderId) {
+                this.server.to(key).emit('gameInvitationRejected', `${user.name} reject your invitation to play a PING PONG GAME`);
+            }
+        };
+    }
 
     handleDisconnect(client: Socket) {
         this.connectedClientsService.removeClient(client);

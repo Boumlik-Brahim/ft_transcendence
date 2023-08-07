@@ -10,6 +10,7 @@ import { close_r, notification_b } from "../public";
 import Image from "next/image";
 import { socket } from "@/app/(dashboard)/profile/[userId]/page";
 
+
 type props = {
   userId: string;
   userSession: string;
@@ -69,6 +70,15 @@ function Notification({ userId, userSession }: props) {
     socket.on("DeleteFriendShip", (data) => {
       setNotification(data.userId + data.stats + data.friendId);
     });
+ 
+    socket.on("notifMessage", (data) => {
+      // setNotification(data.userId + data.stats + data.friendId);
+      console.log("notifMessage ===> ", data)
+    });
+
+    socket.on("gameInvitation", (data) => {
+      console.log(data);
+    })
 
     return () => {
       socket.off("friendRequest");
