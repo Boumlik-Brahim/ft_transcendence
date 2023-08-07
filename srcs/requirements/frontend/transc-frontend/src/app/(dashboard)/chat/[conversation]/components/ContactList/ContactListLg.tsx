@@ -17,7 +17,7 @@ interface Contact {
     id: string
     name: string
     email: string
-    IntraId: string
+    intraId: string
     Avatar: string
     status: string
     created_at: string
