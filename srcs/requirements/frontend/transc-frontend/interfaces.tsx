@@ -33,8 +33,20 @@ export interface userStat
     rate: number
 }
 
-    interface MessageData {
-        content: string;
-        senderId: string;
-        recieverId: string;
-    }
+export interface history 
+{
+    playerA_Score: number,
+    playerB_Score: number,
+    created_at: string,
+    playerA: users_int,
+    playerB: users_int,
+    playerA_id: string
+    playerB_id: string
+}
+
+export interface MessageData 
+{
+    content: string;
+    senderId: string;
+    recieverId: string;
+}

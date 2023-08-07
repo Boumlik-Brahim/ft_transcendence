@@ -128,7 +128,6 @@ export function usePendingUsers(
 }
 
 export async function block(userId: string, blockedId: string) {
-  console.log("~~~~~~~~~~~~BLOCK");
   try {
     const response = await fetch(`http://127.0.0.1:3000/users/blockedUser`, {
       method: "POST",
@@ -150,7 +149,6 @@ export async function block(userId: string, blockedId: string) {
 }
 
 export async function unblock(userId: string, blockedId: string) {
-  console.log("~~~~~~~~~~~~UNBLOCK");
   try {
     const response = await fetch(
       `http://127.0.0.1:3000/users/${userId}/unBlockedUser/${blockedId}`,

@@ -97,8 +97,8 @@ export class UsersController {
     catch (error) {
       throw (error);
     }
-  } 
-  
+  }
+
 
   //* -------------------------------------------------------------achievementCRUDOp------------------------------------------------------ *//
   @Post('/achievement')

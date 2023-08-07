@@ -44,9 +44,8 @@ function FriendAction({ userId, userSessionId }: Props) {
   // &--------------------------------------  CHAT PART ------------------------------------
         
   const [roomId, setRoomId] = useState("");
-        
-        
   const dispatch = useDispatch();
+  userId !== userSessionId && (
   useEffect(() => {
       socket.emit("joinRoom", {
           senderId: userSessionId,
@@ -59,7 +58,7 @@ function FriendAction({ userId, userSessionId }: Props) {
       });
   
   },[ userId, userSessionId])
-  
+  )
   const handleSubmit = async ({userSessionId,userId} : {userSessionId : string ,userId : string}) => {
       dispatch(setOtherUser(userId));
       dispatch(selectedOne(userId));
@@ -116,7 +115,6 @@ function FriendAction({ userId, userSessionId }: Props) {
         const response = await axios.get(
           `http://127.0.0.1:3000/users/${userSessionId}/block/${userId}`
         );
-        console.log("response == ", response.data);
         if (response.data && response.data.length > 0) {
           setBlockStat(response.data);
           if (response.data[0].userId === userSessionId)
@@ -131,7 +129,6 @@ function FriendAction({ userId, userSessionId }: Props) {
       }
     };
     fetchblocked();
-    console.log("STAT == ", blockStatus);
   }, [blockStatus, notification]);
   /* ------------------------------------ - ----------------------------------- */
 
