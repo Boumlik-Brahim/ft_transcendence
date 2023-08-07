@@ -3,11 +3,11 @@ import { ChannelService } from './channel.service';
 import { ApiTags } from '@nestjs/swagger';
 import { Channel, ChannelMember, ChannelMessage, KickedMember } from '@prisma/client';
 import { CreateChannelDto } from './dto/create-channel.dto';
-import { UpdateChannelDto } from './dto/update-channel.dto';
 import { CreateChannelMemberDto } from './dto/create-channelMember.dto';
 import { UpdateChannelMemberDto } from './dto/update-channelMember.dto';
 import { CreateKickedMemberDto } from './dto/create-kickedMember.dto';
 import { CreateChannelMessageDto } from './dto/create-channelMessage.dto';
+import { UpdateChannelDto } from './dto/update-channel.dto';
 
 @ApiTags('channel')
 @Controller('channel')
@@ -40,8 +40,8 @@ export class ChannelController {
   }
   
   @Patch(':id')
-  async updateChannel(@Param('id') id: string, @Body() channelName: string): Promise<Channel> {
-    const updatedChannel = await this.channelService.updateChannel(id, channelName);
+  async updateChannel(@Param('id') id: string, @Body() updatedChannelDto: UpdateChannelDto): Promise<Channel> {
+    const updatedChannel = await this.channelService.updateChannel(id, updatedChannelDto);
     return updatedChannel;
   }
   
@@ -114,9 +114,15 @@ export class ChannelController {
     return channelMessage;
   }
   
-  @Get('/:channelId/channelMessage')
-  async findAllChannelMessages(@Param('channelId') channelId: string): Promise<ChannelMessage[]> {
-    const channelMessages = await this.channelService.findAllChannelMessages(channelId);
+  // @Get('/:channelId/channelMessage')
+  // async findAllChannelMessages(@Param('channelId') channelId: string): Promise<ChannelMessage[]> {
+  //   const channelMessages = await this.channelService.findAllChannelMessages(channelId);
+  //   return channelMessages;
+  // }
+
+  @Get('/:channelId/channelMessage/:senderId')
+  async findAllChannelMessages(@Param('channelId') channelId: string, @Param('senderId') senderId: string): Promise<ChannelMessage[]> {
+    const channelMessages = await this.channelService.findAllChannelNonBlockedMessages(channelId, senderId);
     return channelMessages;
   }
 
