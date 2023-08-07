@@ -10,6 +10,7 @@ import { CreateUserStatDto } from './dto/create-userStat.dto';
 import { UpdateUserStatDto } from './dto/update-userStat.dto';
 import { CreateAchievementDto } from './dto/create-achievement.dto';
 import { CreateBlockedUserDto } from './dto/create-blockedUser.dto';
+import { updateUserStatusDto } from './dto/update-user-status.dto';
 
 @ApiTags('users')
 @Controller('users')
@@ -48,8 +49,8 @@ export class UsersController {
   }
 
   @Patch(':id/userStatus')
-  async updateUserStatus(@Param('id') id: string, @Body('status') status: 'ONLINE' | 'OFFLINE' | 'INAGAME'): Promise<User> {
-    const updateUser = await this.usersService.updateUserStatus(id, status);
+  async updateUserStatus(@Param('id') id: string, @Body() updateUserStatusDto: updateUserStatusDto): Promise<User> {
+    const updateUser = await this.usersService.updateUserStatus(id, updateUserStatusDto);
     return updateUser;
   }
   
@@ -68,9 +69,7 @@ export class UsersController {
 
   @Get('/:userId/userStat')
   async findOneUserStat(@Param('userId') userId: string): Promise<UserStat> {
-    console.log("ENDPOINT ===> BB", userId)
     const userStat = await this.usersService.findOneUserStat(userId);
-    console.log("ENDPOINT ===>", userStat)
     return userStat;
   }
   
