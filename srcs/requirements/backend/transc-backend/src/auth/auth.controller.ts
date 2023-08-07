@@ -1,11 +1,11 @@
-import { Controller, Req, Res, Get, UseGuards, Post, UnauthorizedException, Query, UploadedFile, UseInterceptors } from "@nestjs/common";
+import { Controller, Req, Res, Get, UseGuards, Post, UnauthorizedException, Query} from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { UserInter } from "../users/user.interface";
 import { AuthGuard } from "@nestjs/passport";
 import { JwtPayload } from "./type/jwt-payload.type"
 import { ApiTags } from "@nestjs/swagger";
 import { UsersService } from "src/users/users.service";
-import { FileInterceptor } from '@nestjs/platform-express';
+import { User } from "@prisma/client";
 
 
 @ApiTags('auth')
@@ -13,12 +13,6 @@ import { FileInterceptor } from '@nestjs/platform-express';
 export class AuthController {
     constructor (private authService: AuthService,
         private userService: UsersService) {}
-
-    // @Post()
-    // @UseInterceptors(FileInterceptor('file'))
-    // async uploadFile(@UploadedFile() file: Express.Multer.File) {
-    // //   return this.uploadService.saveFile(file);
-    // }
 
     @Get()
     @UseGuards(AuthGuard('42'))
@@ -31,9 +25,11 @@ export class AuthController {
     async callback(@Req() req: any, @Res() res: any) : Promise<any>{
         try {
             let user = await this.authService.getUser(req);
-            const token = await this.authService.signToken(req);
+            if (!user.isTwoFactorEnabled){
+                const token = await this.authService.signToken(req.user);
+                res.cookie('accessToken', token);
+            }
             res.cookie('id', user.id);
-            res.cookie('accessToken', token);
             return this.login(res, user);
         }
         catch(e) {
@@ -60,12 +56,15 @@ export class AuthController {
     }
     
     @Post('2fa/authenticate')
-    async authenticate(@Query('userId') userId: string, @Query('authCode') authCode: string){
+    async authenticate(@Res() res: any, @Query('userId') userId: string, @Query('authCode') authCode: string){
         const userAuthentified = await this.userService.findOne(userId);
         const isCodeValid = this.authService.isTwoFactorAuthenticationCodeValid(authCode, userAuthentified);
         if (!isCodeValid){
             throw new UnauthorizedException('Wrong authentication code');
         }
-        return this.authService.loginWith2fa(userAuthentified);
+        const token = await this.authService.signToken(userAuthentified);
+        res.cookie('accessToken', token);
+        return this.login(res, userAuthentified);
+        // return this.authService.loginWith2fa(userAuthentified);
     }
 }
