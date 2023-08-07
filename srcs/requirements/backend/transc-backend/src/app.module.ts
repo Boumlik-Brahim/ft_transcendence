@@ -12,8 +12,16 @@ import { AppGateway } from './app.gateway';
 import { ConnectedClientsService } from './connected-clients.service';
 import { ScheduleModule } from '@nestjs/schedule';
 
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+
 @Module({
-  imports: [ScheduleModule.forRoot(), PrismaModule, GameModule, ChatModule, ChannelModule, AuthModule, UsersModule],
+  imports: [
+      ServeStaticModule.forRoot({
+        rootPath: join(__dirname, '..'),
+      }),
+    ScheduleModule.forRoot(), PrismaModule, GameModule, ChatModule, ChannelModule, AuthModule, UsersModule
+  ],
   controllers: [AppController],
   providers: [AppService, AppGateway, ConnectedClientsService],
 })
