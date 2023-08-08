@@ -27,6 +27,9 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
 
     handleConnection(client: Socket) {
         this.connectedClientsService.addClient(client);
+        this.connectedClientsService.getAllClients().forEach((value, key) => {
+            console.log(`Socket ID: ${key}, User: ${value} is connected on app gateway`);
+        });
         this.logger.log(`Client connected to APP server: ${client.id}`);
     }
 
@@ -115,6 +118,9 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
 
     handleDisconnect(client: Socket) {
         this.connectedClientsService.removeClient(client);
+        this.connectedClientsService.getAllClients().forEach((value, key) => {
+            console.log(`Socket ID: ${key}, User: ${value} is disconnected from app gateway`);
+        });
         this.logger.log(`Client disconnected from APP server: ${client.id}`);
     }
 }
