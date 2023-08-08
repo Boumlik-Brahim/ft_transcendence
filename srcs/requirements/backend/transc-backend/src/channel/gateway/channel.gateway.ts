@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { Logger } from '@nestjs/common';
 import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { ChannelService } from '../channel.service';
@@ -14,7 +13,7 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 
 @WebSocketGateway({
   cors: {
-    origin: 'http://localhost:5173/channels'
+    origin: '*'
   },
 })
 
@@ -38,7 +37,7 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   }
   
   handleConnection(client: Socket) {
-    this.connectedClientsService.addClient(client);
+    // this.connectedClientsService.addClient(client);
     this.clientId = client.id;
     this.logger.log(`Client connected to Channel server: ${client.id}`);
   }
@@ -321,7 +320,7 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   
   //* --------------------------------------------------------------Disconection---------------------------------------------------------- *//
   handleDisconnect(client: Socket) {
-    this.connectedClientsService.removeClient(client);
+    // this.connectedClientsService.removeClient(client);
     this.logger.log(`Client disconnected from Channel server: ${client.id}`);
   }
   //* --------------------------------------------------------------Disconection---------------------------------------------------------- *//
