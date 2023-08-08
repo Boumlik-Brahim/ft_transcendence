@@ -30,7 +30,7 @@ export class GameGateway {
   }
 
   handleConnection(client : Socket) {
-    this.connectedClientsService.addClient(client);
+    // this.connectedClientsService.addClient(client);
     this.logger.log(`Client connected to Game server: ${client.id}`);
   }
   
@@ -104,7 +104,7 @@ export class GameGateway {
   }
 
   handleDisconnect(client : Socket) {
-    this.connectedClientsService.removeClient(client);
+    // this.connectedClientsService.removeClient(client);
     this.logger.log(`Client disconnected from Game server: ${client.id}`);
   }
 
