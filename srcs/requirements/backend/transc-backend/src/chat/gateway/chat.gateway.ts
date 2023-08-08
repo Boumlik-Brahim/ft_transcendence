@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { Logger } from '@nestjs/common';
 import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
@@ -82,7 +81,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     await this.chatService.createChat(payload);
     for (const [key, val] of this.connectedClientsService.getAllClients()) {
       if (val === payload.recieverId) {
-          this.server.to(key).emit('refresh');
+        this.server.to(key).emit('refresh');
       }
     };
 
