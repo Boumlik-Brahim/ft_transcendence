@@ -8,10 +8,15 @@ export class ConnectedClientsService {
 
     addClient(client: Socket) {
         const userId = client.handshake.auth.userId as string;
-        this.connectedClients.set(client.id, userId);
-        this.connectedClients.forEach((value, key) => {
-            console.log(`User: ${key}, Socket ID: ${value}`);
-        });
+        if (userId && client.id){
+            if(!this.connectedClients.has(client.id))
+            {
+                this.connectedClients.set(client.id, userId);
+            }
+        }
+        // this.connectedClients.forEach((value, key) => {
+        //     console.log(`Socket ID: ${key}, User: ${value}`);
+        // });
     }
     
     isUserConnected(client: Socket): boolean {
@@ -24,8 +29,8 @@ export class ConnectedClientsService {
     
     removeClient(client: Socket) {
         this.connectedClients.delete(client.id);
-        this.connectedClients.forEach((value, key) => {
-            console.log(`User: ${key}, Socket ID: ${value}`);
-        });
+        // this.connectedClients.forEach((value, key) => {
+        //     console.log(`User: ${key}, Socket ID: ${value}`);
+        // });
     }
 }
