@@ -8,17 +8,20 @@ import { ConnectedClientsService } from 'src/connected-clients.service';
 import { PrismaService } from 'prisma/prisma.service';
 
 @WebSocketGateway( {
+  // namespace: 'chatGateway',
   cors: { 
-    origin: '*',
+    origin: 'http://localhost:5173/chat',
   },
 })
 
 export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
-
+  
   constructor(private readonly chatService: ChatService, 
     private readonly usersService: UsersService, 
     private readonly connectedClientsService: ConnectedClientsService,
     private prisma: PrismaService) {}
+  
+  private connectedClientsInChat: Map<string, string> = new Map();
 
   @WebSocketServer()
   server: Server ;
@@ -30,14 +33,22 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   }
 
   handleConnection(client: Socket): void {
-    this.connectedClientsService.addClient(client);
+    const userId = client.handshake.auth.userId as string;
+    if (userId && client.id){
+        if(!this.connectedClientsInChat.has(client.id))
+        {
+          this.connectedClientsInChat.set(client.id, userId);
+        }
+    }
+    this.connectedClientsInChat.forEach((value, key) => {
+      console.log(`Socket ID: ${key}, User: ${value} is connected on Chat gateway`);
+    });
     this.logger.log(`Client connected to Chat server: ${client.id}`);
   }
 
   @SubscribeMessage('joinRoom')
   async handleJoinRoom(@MessageBody() payload: { senderId: string, recieverId: string }, @ConnectedSocket() socket: Socket): Promise<void> {
     const hasshedRoomName = await this.chatService.generateHashedRommId(payload.senderId, payload.recieverId);
-
     const messages = await this.chatService.findAllChats(hasshedRoomName);
     if (messages.length === 0){
       await this.prisma.directMessage.create({ data: {
@@ -85,19 +96,23 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       }
     };
 
-    // if (!this.connectedClientsService.isUserConnected(socket))
+    // const sender = await this.usersService.findOne(payload.senderId);
+    // for (const [key, val] of this.connectedClientsService.getAllClients()) {
+    //   if (val === payload.recieverId && !this.connectedClientsInChat.has(key)) {
+    //     console.log('user mconnecti fl app wmamconnectich fchat');
+    //     this.server.to(key).emit('notifMessage',`you receive a message from ${sender.name}`);
+    //   }
+    // };
+    // if (this.connectedClientsService.isUserConnected(socket) && !this.connectedClientsInChat.has(socket.id))
     // {
-    //   const sender = await this.usersService.findOne(payload.senderId)
-    //   for (const [key, val] of this.connectedClientsService.getAllClients()) {
-    //     if (val === payload.recieverId) {
-    //       this.server.to(key).emit('notifMessage',`you receive a message from ${sender.name}`);  
-    //     }
-    //   };
     // }
   }
   
   handleDisconnect(client: Socket): void {
-    this.connectedClientsService.removeClient(client);
+    this.connectedClientsInChat.delete(client.id);
+    this.connectedClientsInChat.forEach((value, key) => {
+      console.log(`Socket ID: ${key}, User: ${value} is disconnected from Chat gateway`);
+    });
     this.logger.log(`Client disconnected from Chat server: ${client.id}`);
   }
 }
