@@ -6,6 +6,7 @@ import { ConnectedClientsService } from './connected-clients.service';
 import { CreateFriendDto } from './users/dto/create-friend.dto';
 
 @WebSocketGateway({
+//   namespace : "appGateway",
   cors: { 
     origin: 'http://localhost:5173',
   },
