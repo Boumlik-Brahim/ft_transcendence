@@ -12,8 +12,9 @@ import { UsersService } from 'src/users/users.service';
 import { Cron, CronExpression } from '@nestjs/schedule';
 
 @WebSocketGateway({
+  // namespace: 'channelGateway',
   cors: {
-    origin: '*'
+    origin: 'http://localhost:5173/channels',
   },
 })
 
