@@ -6,6 +6,7 @@ import { Logger, UsePipes } from '@nestjs/common';
 import { GameService } from './game.service';
 import { subscribe } from 'diagnostics_channel';
 import { ConnectedClientsService } from 'src/connected-clients.service';
+import { InvitationGameDto } from './dto/game-invitation.dto';
 
 
 @WebSocketGateway({
@@ -31,7 +32,7 @@ export class GameGateway {
 
   handleConnection(client : Socket) {
     const userId = client.handshake.auth.userId as string;
-    console.log('new connection');
+    console.log('new connection', userId);
     if (userId) {
       this.gameService.addUser(userId, client);
     }
@@ -44,18 +45,22 @@ export class GameGateway {
   }
 
   @SubscribeMessage('rejectInvitation')
-  rejectInvitaion(@MessageBody() data: JoinGameDto, @ConnectedSocket() client: Socket) {
-    const { gameId, userId } = data;
-    this.gameService.rejectInvitation(client, gameId, userId);
+  rejectInvitaion(@MessageBody() data: InvitationGameDto, @ConnectedSocket() client: Socket) {
+    const { invitationId , userId } = data;
+    this.gameService.rejectInvitation(client, invitationId, userId);
   }
 
-
-
+  @SubscribeMessage('acceptInvitation')
+  acceptInvitaion(@MessageBody() data: InvitationGameDto, @ConnectedSocket() client: Socket) {
+    const { invitationId , userId } = data;
+    this.gameService.AcceptInvitation(client, invitationId, userId);
+  }
 
   @SubscribeMessage('joinGame')
   async joinGame(@MessageBody() data: JoinGameDto, @ConnectedSocket() client: Socket) {
-    console.log("size : ", this.connectedClientsService.getAllClients().size)
+    console.log(data, "Join 5");
     if (!data) return;
+    console.log(data, "Join");
     const { gameId, userId } = data;
     if (gameId && userId ) {
        this.gameService.joinGame(userId, gameId, client, this.server);

@@ -9,6 +9,7 @@ import axios from "axios";
 import { close_r, notification_b } from "../public";
 import Image from "next/image";
 import { socket } from "@/app/(dashboard)/profile/[userId]/page";
+import { useSocket } from "@/app/socket";
 
 
 type props = {
@@ -19,6 +20,7 @@ type props = {
 function Notification({ userId, userSession }: props) {
   /* ------------------------------ toggle_notif ------------------------------ */
   const [toggle_notif, setToggle_notif] = useState<boolean>(false);
+  const gameSocket = useSocket();
   /* ------------------------------------ - ----------------------------------- */
 
   /* ------------------------------ notification ------------------------------ */
@@ -51,6 +53,11 @@ function Notification({ userId, userSession }: props) {
 
   /* -------------------------- friend requset socket ------------------------- */
   useEffect(() => {
+
+    gameSocket.on("gameInvitation", data => {
+      console.log(data);
+    })
+
     socket.on("DeleteRequest", (data) => {
       setNotification(data.userId + data.stats + data.friendId);
     });

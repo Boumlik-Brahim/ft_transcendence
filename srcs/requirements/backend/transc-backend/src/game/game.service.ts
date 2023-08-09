@@ -3,6 +3,7 @@ import { PrismaService } from 'prisma/prisma.service';
 import { GameEntity, Player } from './entity/game.entity';
 import { v4 as uuidv4 } from 'uuid';
 import { Server, Socket } from 'socket.io';
+import { CANCELLED } from 'dns';
 
 @Injectable()
 export class GameService {
@@ -14,7 +15,6 @@ export class GameService {
 
     addUser(id : string, socket : Socket) {
         this.usersConnected.set(id, socket);
-        console.log(this.usersConnected.size, " -- size ---");
     }
 
     deleteUser(socket : Socket) {
@@ -33,14 +33,9 @@ export class GameService {
      * @param client 
      * @returns 
      */
-    async inviteAfriend(senderId : string, receiverId : string, client : Socket) {
-        const senderSocket : Socket = this.usersConnected.get(receiverId);
-        if (!senderSocket) {
-            client.emit('userNotconnected', 'This user is not connected');
-            return ;
-        }
-        if (senderId === receiverId)
-                return ;
+    async inviteAfriend(senderId : string, receiverId : string, client : Socket, maxScore? : number) {
+        const receiverSocket : Socket = this.usersConnected.get(receiverId);
+        const socre = maxScore ? maxScore : 10;
         try {
             const sender = await this.prisma.user.findUnique({
                 where : {
@@ -49,12 +44,26 @@ export class GameService {
             });
             const receiver = await this.prisma.friend.findMany({
                 where : {
-                    AND : [
+                    OR : [
                         {
-                            userId : senderId
+                            AND : [
+                                {
+                                    userId : senderId
+                                },
+                                {
+                                    friendId : receiverId
+                                }
+                            ]
                         },
                         {
-                            friendId : receiverId
+                            AND : [
+                                {
+                                    userId : receiverId
+                                },
+                                {
+                                    friendId : senderId
+                                }
+                            ]
                         }
                     ]
                 }
@@ -64,10 +73,20 @@ export class GameService {
                 client.emit('error', 'You are not allowed to play against this one');
                 return ;
             }
-            const game : GameEntity = this.getGameInitValue(senderId, receiverId);
+            const game : GameEntity = this.getGameInitValue(senderId, receiverId, maxScore);
             this.gameMap.set(game.id, game);
+            const invitation = await this.prisma.gamesInvitation.create({
+                data : {
+                    senderId,
+                    receiverId,
+                    status : 'PENDING',
+                    gameId : game.id as string
+                }
+            });
             client.emit("Success", {id : game.id});
-            senderSocket.emit('gameInvitation', {gameId : game.id, message : `you are invited to play by  ${sender.name}`});
+            if (receiverSocket) {
+                receiverSocket.emit('gameInvitation', {id : invitation.id, message : `${sender.name} invite you to play a game`});
+            }
         }
         catch (error) {
             client.emit("error", error);
@@ -75,22 +94,62 @@ export class GameService {
     }
 
 
-    async rejectInvitation (client : Socket, gameId : string, userId : string) {
+    async rejectInvitation (client : Socket, invitationId : string, userId : string) {
         try {
             const user = await this.prisma.user.findUnique({
                 where : {
                     id : userId,
                 }
             });
-            const game = this.gameMap.get(gameId);
-            if (!game || game.gameStatus.status !== 'waiting') return ;
-            const { player1, player2 } = game;
-            if (player2.id !== userId) return ;
-            this.gameMap.delete(game.id);
-            const senderSocket = this.usersConnected.get(player1.id as string);
+            const invitation = await this.prisma.gamesInvitation.findUnique({
+                where : { id : invitationId }
+            })
+            if (!invitation || !user || invitation.status !== 'PENDING' || userId !== invitation.receiverId) return ;
+            const { gameId, senderId} = invitation;
+            this.gameMap.delete(gameId);
+            await this.prisma.gamesInvitation.update({
+                where : {
+                    gameId
+                }, 
+                data : {
+                    status : 'CANCELED'
+                }
+            });
+            const senderSocket = this.usersConnected.get(senderId);
             if (senderSocket)
             {
                 senderSocket.emit('rejectInvitation', `Your invitation is rejected by ${user.name}`);
+            }
+        }
+        catch (error) {
+            client.emit("error", error);
+        }
+    }
+
+    async AcceptInvitation (client : Socket, invitationId : string, userId : string) {
+        try {
+            const user = await this.prisma.user.findUnique({
+                where : {
+                    id : userId,
+                }
+            });
+            const invitation = await this.prisma.gamesInvitation.findUnique({
+                where : { id : invitationId }
+            })
+            if (!invitation || !user || invitation.status !== 'PENDING' || userId !== invitation.receiverId) return ;
+            const { gameId, receiverId} = invitation;
+            await this.prisma.gamesInvitation.update({
+                where : {
+                    gameId
+                }, 
+                data : {
+                    status : 'ACCEPTED'
+                }
+            });
+            const receiverSocket = this.usersConnected.get(receiverId);
+            if (receiverSocket)
+            {
+               receiverSocket.emit('AcceptedGame', {gameId : gameId});
             }
         }
         catch (error) {
@@ -105,8 +164,9 @@ export class GameService {
      * @returns 
      */
     async joinAqueue(creatorId : string, client : Socket) {
+        const maxScore = 10;
         if (this.inTheQueue == null) {
-            const game : GameEntity = this.getGameInitValue(creatorId, '');
+            const game : GameEntity = this.getGameInitValue(creatorId, '', 10);
             this.inTheQueue = game.id;
             this.gameMap.set(game.id, game);
             client.emit("Success", {id : game.id});
@@ -120,47 +180,60 @@ export class GameService {
             client.emit("Success", {id : gameJoined.id});
         }
     }
-
+    
     /**
      * Create a new game Or join a queue Loqigue
      * @param data 
      * @param client 
      * @returns 
-     */
-    async createGame(data, client : Socket)  {
-        const { invitedId, creatorId, isRamdomOponent } = data;
-        if (!isRamdomOponent) 
-            this.inviteAfriend(creatorId, invitedId, client);
-        else 
-            this.joinAqueue(creatorId, client);
-    }
+    */
+   async createGame(data, client : Socket)  {
+        const { invitedId, creatorId, isRamdomOponent, maxScore } = data;
+        if (!isRamdomOponent) this.inviteAfriend(creatorId, invitedId, client, maxScore);
+        else this.joinAqueue(creatorId, client);
+}
 
-
-    /**
-     * Here is the Logique about joining a game room
-     * if a user join the game can start if all players joined Or the user will wait for his Oponent
-     * @param userId 
-     * @param gameId 
-     * @param client 
-     * @param server 
-     * @returns 
-     */
-    async joinGame(userId : string, gameId : string, client : Socket, server : Server) {
-        try {
-            const game = this.gameMap.get(gameId);
-            if (!game) {
-                client.emit("error_access");
-                return;
+async updateUserSatusInTheGame (userId : string, inThegame : boolean) {
+    const status = inThegame ? 'INAGAME' : 'ONLINE';
+    try {
+        await this.prisma.user.update({
+            where : {
+                id : userId
+            },
+            data : {
+                status : status
             }
-            if (userId !== game.player1.id && userId !== game.player2.id) {
-                client.emit("error_access");
+        })
+    }
+    catch (error) {}
+}
+
+
+/**
+ * Here is the Logique about joining a game room
+ * if a user join the game can start if all players joined Or the user will wait for his Oponent
+ * @param userId 
+ * @param gameId 
+ * @param client 
+ * @param server 
+ * @returns 
+*/
+async joinGame(userId : string, gameId : string, client : Socket, server : Server) {
+    try {
+        const game = this.gameMap.get(gameId);
+        console.log(game);
+        if (!game) {
+            client.emit("error_access");
+            return;
+        }
+        if (userId !== game.player1.id && userId !== game.player2.id) {
+            client.emit("error_access");
                 return;
             }
             client.join(gameId);
+            console.log(game);
             client.emit('gameSate', {state : game.gameStatus.status});
             client.emit('gameData', game);
-            // const nbrClientRequire = 2;
-            // const rooms = server.adapter.rooms.get(gameId)
             if (userId === game.player1.id)
             {
                 game.player1.inThegame = true;
@@ -169,6 +242,7 @@ export class GameService {
             {
                 game.player2.inThegame = true;
             }
+            this.updateUserSatusInTheGame(userId, true);
             if (game.player1.inThegame && game.player2.inThegame)
             {
                 if (game.gameStatus.status !== 'pause' )
@@ -388,7 +462,7 @@ export class GameService {
      * @param player2Id 
      * @returns 
      */
-    getGameInitValue(player1Id : String, player2Id : String) : GameEntity {
+    getGameInitValue(player1Id : String, player2Id : String, maxScore : number) : GameEntity {
         // const ballDirectionX : number = Math.round(Math.random()) === 1 ? -1 : 1;
         const _id = uuidv4();
         const newGameValue : GameEntity =  {
@@ -417,7 +491,7 @@ export class GameService {
             w_paddle : 10,
             h_paddle : 20,
             playerSpeed : 8,
-            scoreLimit : 10,
+            scoreLimit : maxScore,
             ball_speed : 1,
             gameStatus  : {
                 update_t : new Date().getTime(),
@@ -585,7 +659,7 @@ export class GameService {
      * @param client 
      */
 
-    cancelGame(playerId : String, gameId : String, client : any) {
+    async cancelGame(playerId : String, gameId : String, client : any) {
         const game : GameEntity = this.getGame(playerId, gameId, client);
         if (game) {
             if (game.gameStatus.status === 'waiting')
@@ -604,6 +678,8 @@ export class GameService {
                 game.gameStatus.status = 'canceled';
                 this.gameMap.set(gameId, game)
             }
+            this.updateUserSatusInTheGame(playerId as string, false);
+            client.leave(gameId);
         }
     }
 
@@ -628,10 +704,15 @@ export class GameService {
                     game.player1.inThegame = false;
                 else
                     game.player2.inThegame = false;
-                game.gameStatus.status = 'stopped';
-                game.gameStatus.update_t = new Date().getTime();
-                this.gameMap.set(gameId, game);
+                if (game.gameStatus.status !== 'waiting')
+                {
+                    game.gameStatus.status = 'stopped';
+                    game.gameStatus.update_t = new Date().getTime();
+                    this.gameMap.set(gameId, game);
+                }
             }
+            this.updateUserSatusInTheGame(playerId as string, false);
+            client.leave(gameId);
         }
     }
 }

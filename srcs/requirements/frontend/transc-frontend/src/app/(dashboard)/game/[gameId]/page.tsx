@@ -76,11 +76,6 @@ const Page = ( {params} : any) => {
             socket.emit(code, {gameId : id, userId})
         }, false);
         
-        socket.on('Success', data => {
-            const { id } = data;
-            router.push(`/game/${id}`)
-        });
-        
         socket.on('error_access', () => {
             router.push('/game')
         })
@@ -93,17 +88,16 @@ const Page = ( {params} : any) => {
         })
 
         return () => {
-                socket.off('Success')
-                socket.off('joinGame')
+                socket.off('joinGame');
                 socket.off('error_access');
-                socket.off('gameData')
-                socket.off('gameSate')
+                socket.off('gameData');
+                socket.off('gameSate');
                 socket.emit('quiteGame', {gameId : id, userId});
                 document.addEventListener('keydown', () => {});
-                socket.disconnect();
             }
         }, []);
 
+        console.log(gameSate, gameData);
         return (
             <>
             
@@ -116,10 +110,10 @@ const Page = ( {params} : any) => {
                 </div>
                 </div>
             
-                <div className='w-full h-full flex flex-col items-center justify-center gap-1 relative bg-red-200'>
+                <div className='w-full h-full flex flex-col items-center justify-center gap-1 relative '>
                     {
                         (gameSate === 'started' || gameSate === 'pause' || gameSate === 'stopped') && (
-                            <div className='flex flex-col flex-1 w-full justify-center items-center bg-[#E8E8E8] '>
+                            <div className='flex flex-col flex-1 w-full justify-center items-center  '>
                                 {
                                     gameData && <Players userId_1={gameData.player1.id as string}  userId_2={gameData.player2.id as string} />
                                 }

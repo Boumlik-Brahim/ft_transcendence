@@ -70,7 +70,6 @@ const Game = () => {
       if (socket) {
         socket.off('Success');
         socket.off('error')
-        socket.disconnect();
       }
     }
   }, [myId]);
