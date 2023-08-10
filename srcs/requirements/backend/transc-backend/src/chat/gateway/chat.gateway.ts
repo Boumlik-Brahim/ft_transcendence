@@ -33,15 +33,19 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   }
 
   handleConnection(client: Socket): void {
-    const userId = client.handshake.auth.userId as string;
-    if (userId && client.id){
-        if(!this.connectedClientsInChat.has(client.id))
-        {
-          this.connectedClientsInChat.set(client.id, userId);
-        }
-    }
-    this.connectedClientsInChat.forEach((value, key) => {
-      console.log(`Socket ID: ${key}, User: ${value} is connected on Chat gateway`);
+    // const userId = client.handshake.auth.userId as string;
+    // if (userId && client.id){
+    //     if(!this.connectedClientsInChat.has(client.id))
+    //     {
+    //       this.connectedClientsInChat.set(client.id, userId);
+    //     }
+    // }
+    // this.connectedClientsInChat.forEach((value, key) => {
+    //   console.log(`Socket ID: ${key}, User: ${value} is connected on Chat gateway`);
+    // });
+    this.connectedClientsService.addClient(client);
+    this.connectedClientsService.getAllClients().forEach((value, key) => {
+      console.log(`Socket ID: ${key}, User: ${value} is connected on chat gateway`);
     });
     this.logger.log(`Client connected to Chat server: ${client.id}`);
   }
@@ -99,19 +103,17 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     const sender = await this.usersService.findOne(payload.senderId)
     for (const [key, val] of this.connectedClientsService.getAllClients()) {
       if (val === payload.recieverId) {
-        this.server.to(key).emit('notifMessage', payload);  
+        this.server.to(key).emit('notifMessage', payload);
       }
     };
-    // if (!this.connectedClientsService.isUserConnected(socket))
-    // {
-    // }
   }
   
   handleDisconnect(client: Socket): void {
-    this.connectedClientsInChat.delete(client.id);
-    this.connectedClientsInChat.forEach((value, key) => {
-      console.log(`Socket ID: ${key}, User: ${value} is disconnected from Chat gateway`);
-    });
+    // this.connectedClientsInChat.delete(client.id);
+    // this.connectedClientsInChat.forEach((value, key) => {
+    //   console.log(`Socket ID: ${key}, User: ${value} is disconnected from Chat gateway`);
+    // });
+    this.connectedClientsService.removeClient(client);
     this.logger.log(`Client disconnected from Chat server: ${client.id}`);
   }
 }

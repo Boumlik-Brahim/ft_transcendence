@@ -14,7 +14,7 @@ import { io } from "socket.io-client";
 import Cookies from "universal-cookie";
 import Link from "next/link";
 const cookies = new Cookies();
-export const socket = io("http://localhost:3000", {
+export const socket = io("http://localhost:3000/appGateway", {
   auth: { userId: cookies.get("id") },
   transports: ["websocket"],
 });
