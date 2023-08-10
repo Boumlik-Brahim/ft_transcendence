@@ -91,6 +91,8 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
           const hachedChannelPswd = createHash('sha256').update(payload.channelPasword).digest('hex');
           if (channel.channelPassword === hachedChannelPswd){
             socket.join(channel.id);
+            this.server.to(socket.id).emit('joinedSuccessfully');
+            // res.redirect(`http://localhost:5173/channels/6e699959-91ae-41ec-a9de-be58e8c5626e`)
           }else{
             this.server.to(socket.id).emit('error', `Invalid password ${payload.channelPasword}`);
           }
@@ -112,6 +114,7 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
             await this.channelService.createChannelMember({"userId": payload.userId, "channelId": payload.channelId, "role": 'MEMBER'});
             socket.join(payload.channelId);
             this.server.to(payload.channelId).emit('onMessage', `${user.name} has joined channel: ${channel.channelName}`);
+            this.server.to(socket.id).emit('joinedSuccessfully');
             this.server.to(socket.id).emit('refrechMember');
           }else{
             this.server.to(socket.id).emit('error', `Invalid password ${payload.channelPasword}`);
