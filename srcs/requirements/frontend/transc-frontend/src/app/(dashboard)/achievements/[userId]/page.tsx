@@ -20,7 +20,6 @@ function page() {
     useEffect(() => {
       const cookies = new Cookies();
       setUserSession(cookies.get('id'));
-      console.log("userSession ===> ", userSession)
     }, [])
     /* ------------------------------------ - ----------------------------------- */
   

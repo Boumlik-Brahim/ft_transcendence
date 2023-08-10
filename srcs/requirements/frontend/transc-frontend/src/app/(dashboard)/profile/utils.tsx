@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { friendShip, users_int } from "../../../../interfaces";
+import { MessageData, friendShip, notif, users_int } from "../../../../interfaces";
 import axios from "axios";
 
 export function useUserData(userId: string) {
@@ -88,12 +88,9 @@ export async function deleteFriend(userId: string, friendId: string) {
   return false;
 }
 
-export function usePendingUsers(
-  friendShip: friendShip[],
-  userSession: string
-): users_int[] | null {
-  const [pendingUsers, setPendingUsers] = useState<users_int[] | null>(null);
-
+export function usePendingUsers(friendShip: friendShip[], userSession: string): notif[] | null {
+  
+  const [pendingUsers, setPendingUsers] = useState<notif[] | null>(null);
   useEffect(() => {
     // Get an array of all the friendIds
     const friendIds = friendShip.map((friend) => {
@@ -109,7 +106,12 @@ export function usePendingUsers(
           )
         );
 
-        const pendingUsersData = userResponses.map((response) => response.data);
+        const pendingUsersData: notif[] = userResponses.map((response, index) => (
+           response.data
+          // response.data.created_at = friendShip[index].created_at && response.data
+        ));
+        console.log("FriendShip ====> ", friendShip)
+        console.log("PENDING ====> ", pendingUsersData)
         setPendingUsers(pendingUsersData);
       } catch (error) {
         console.log(error);
@@ -127,8 +129,54 @@ export function usePendingUsers(
   return pendingUsers;
 }
 
+
+export function usePendingMessage(
+  MessageData: MessageData[],
+): users_int[] | null {
+  const [pendingUsers, setPendingUsers] = useState<users_int[] | null>(null);
+
+  // const uniqueSenders: Record<string, boolean>  = {};
+  // const filteredMessages = [...MessageData].filter((message) => {
+  //   if (!uniqueSenders[message.senderId]) {
+  //     uniqueSenders[message.senderId] = true;
+  //     return true;
+  //   }
+  //   return false;
+  // });
+  
+  
+  useEffect(() => {
+    const senderIds = MessageData.map((msg) => {
+      return msg.senderId;
+    });
+
+    const fetchUsers = async () => {
+      try {
+        const userResponses = await Promise.all(
+          senderIds.map((senderId) =>
+            axios.get(`http://127.0.0.1:3000/users/${senderId}`)
+          )
+        );
+
+        const pendingUsersData = userResponses.map((response) => response.data);
+        setPendingUsers(pendingUsersData);
+      } catch (error) {
+        console.log(error);
+        setPendingUsers([]);
+      }
+    };
+
+    if (senderIds.length > 0) {
+      fetchUsers();
+    } else {
+      setPendingUsers([]);
+    }
+  }, [MessageData]);
+
+  return pendingUsers;
+}
+
 export async function block(userId: string, blockedId: string) {
-  console.log("~~~~~~~~~~~~BLOCK");
   try {
     const response = await fetch(`http://127.0.0.1:3000/users/blockedUser`, {
       method: "POST",
@@ -150,7 +198,6 @@ export async function block(userId: string, blockedId: string) {
 }
 
 export async function unblock(userId: string, blockedId: string) {
-  console.log("~~~~~~~~~~~~UNBLOCK");
   try {
     const response = await fetch(
       `http://127.0.0.1:3000/users/${userId}/unBlockedUser/${blockedId}`,

@@ -16,6 +16,12 @@ export class ChatController {
     return chat;
   }
 
+  @Get(':userId')
+  async indAllReceivedChats(@Param('userId') userId: string): Promise<DirectMessage[]> {
+    const chat = await this.chatService.findAllReceivedChats(userId)
+    return chat;
+  }
+
   @Get()
   async findAll(@Query('hashedRoomId') hashedRoomId: string): Promise<DirectMessage[]> {
     const chat = await this.chatService.findAllChats(hashedRoomId);

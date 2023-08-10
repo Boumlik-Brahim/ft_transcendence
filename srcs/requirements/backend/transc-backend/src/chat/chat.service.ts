@@ -44,6 +44,26 @@ export class ChatService {
     };
   }
   
+  async findAllReceivedChats(userId: string): Promise<DirectMessage[]> {
+    return this.prisma.directMessage.findMany({
+      where: {
+        recieverId: userId,
+        seen: false
+      },
+      orderBy: {
+        created_at: 'desc',
+      },
+    })
+    .catch (error => {
+      throw new HttpException({
+        status: HttpStatus.NOT_FOUND,
+        error: 'NotFoundException',
+      }, HttpStatus.NOT_FOUND, {
+        cause: error
+      });
+    });
+  }
+
   async findAllChats(hashedRoomId: string): Promise<DirectMessage[]> {
     try{
       return await this.prisma.directMessage.findMany({

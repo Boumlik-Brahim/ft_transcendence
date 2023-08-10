@@ -92,18 +92,17 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     await this.chatService.createChat(payload);
     for (const [key, val] of this.connectedClientsService.getAllClients()) {
       if (val === payload.recieverId) {
-        this.server.to(key).emit('refresh');
+          this.server.to(key).emit('refresh');
       }
     };
 
-    // const sender = await this.usersService.findOne(payload.senderId);
-    // for (const [key, val] of this.connectedClientsService.getAllClients()) {
-    //   if (val === payload.recieverId && !this.connectedClientsInChat.has(key)) {
-    //     console.log('user mconnecti fl app wmamconnectich fchat');
-    //     this.server.to(key).emit('notifMessage',`you receive a message from ${sender.name}`);
-    //   }
-    // };
-    // if (this.connectedClientsService.isUserConnected(socket) && !this.connectedClientsInChat.has(socket.id))
+    const sender = await this.usersService.findOne(payload.senderId)
+    for (const [key, val] of this.connectedClientsService.getAllClients()) {
+      if (val === payload.recieverId) {
+        this.server.to(key).emit('notifMessage', payload);  
+      }
+    };
+    // if (!this.connectedClientsService.isUserConnected(socket))
     // {
     // }
   }

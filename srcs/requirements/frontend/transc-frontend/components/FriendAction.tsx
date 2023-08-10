@@ -17,19 +17,20 @@ import {
 } from "../public";
 
 import Image from "next/image";
-import { io } from "socket.io-client";
+// import { io } from "socket.io-client";
 import { useEffect, useState } from "react";
 import axios from "axios";
 // import { Props } from "@/app/(dashboard)/profile/[userId]/page";
 
-export const socket = io("http://localhost:3000", {
-  transports: ["websocket"],
-});
+// export const socket = io("http://localhost:3000", {
+//   transports: ["websocket"],
+// });
 //& -----chat part --------
 import Link from "next/link";
 import { useSelector, useDispatch } from 'react-redux';
 import { setCurrentUser, setOtherUser,selectedOne , setRefreshOn} from '@/app/store/reducer';
 import { RootState } from '@/app/store/store';
+import { socket } from "./Notification";
 //& --------------------------
 
 type Props = {
@@ -44,9 +45,8 @@ function FriendAction({ userId, userSessionId }: Props) {
   // &--------------------------------------  CHAT PART ------------------------------------
         
   const [roomId, setRoomId] = useState("");
-        
-        
   const dispatch = useDispatch();
+  userId !== userSessionId && (
   useEffect(() => {
       socket.emit("joinRoom", {
           senderId: userSessionId,
@@ -59,7 +59,7 @@ function FriendAction({ userId, userSessionId }: Props) {
       });
   
   },[ userId, userSessionId])
-  
+  )
   const handleSubmit = async ({userSessionId,userId} : {userSessionId : string ,userId : string}) => {
       dispatch(setOtherUser(userId));
       dispatch(selectedOne(userId));
@@ -116,7 +116,6 @@ function FriendAction({ userId, userSessionId }: Props) {
         const response = await axios.get(
           `http://127.0.0.1:3000/users/${userSessionId}/block/${userId}`
         );
-        console.log("response == ", response.data);
         if (response.data && response.data.length > 0) {
           setBlockStat(response.data);
           if (response.data[0].userId === userSessionId)
@@ -131,7 +130,6 @@ function FriendAction({ userId, userSessionId }: Props) {
       }
     };
     fetchblocked();
-    console.log("STAT == ", blockStatus);
   }, [blockStatus, notification]);
   /* ------------------------------------ - ----------------------------------- */
 

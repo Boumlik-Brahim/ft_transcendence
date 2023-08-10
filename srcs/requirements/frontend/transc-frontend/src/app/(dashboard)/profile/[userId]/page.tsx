@@ -7,18 +7,24 @@ import "../profile.css";
 import { history_game } from "../../../../../constant";
 import { useParams } from "next/navigation";
 import Search from "../../../../../components/Search";
-import { useEffect, useState } from "react";
-import { users_int } from "../../../../../interfaces";
+import { use, useEffect, useState } from "react";
+import { history, users_int } from "../../../../../interfaces";
 import FriendAction from "../../../../../components/FriendAction";
 import Notification from "../../../../../components/Notification";
-import { io } from "socket.io-client";
-export const socket = io("http://localhost:3000", {
-  transports: ["websocket"],
-});
+// import { io } from "socket.io-client";
 import Cookies from "universal-cookie";
+// const cookies = new Cookies();
+// export const socket = io("http://localhost:3000", {
+//   auth: { userId: cookies.get('id') } ,
+//   transports: ["websocket"],
+// });
 import Achievements from "../../../../../components/Achievements";
 import Sidebar from "../../../../../components/Sidebar";
-import { bgMain } from "../../../../../public";
+import {
+  _your_first_game,
+  _your_first_game_gif,
+  bgMain,
+} from "../../../../../public";
 
 function page() {
   /* ------------------------- get url ID from url ------------------------- */
@@ -30,7 +36,6 @@ function page() {
   useEffect(() => {
     const cookies = new Cookies();
     setUserSession(cookies.get("id"));
-    console.log("userSession ===> ", userSession);
   }, []);
   /* ------------------------------------ - ----------------------------------- */
 
@@ -43,11 +48,29 @@ function page() {
           `http://127.0.0.1:3000/users/${userId}`
         );
         setProfileUser(response.data);
+       
       } catch (error) {
         console.log(error);
       }
     };
     fetchprofileInfo();
+  }, [userId]);
+  /* ------------------------------------ - ----------------------------------- */
+
+  /* ------------------------------- get history ------------------------------ */
+  const [history, setHistory] = useState<history[]>([]);
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        const response = await axios.get(
+          `http://127.0.0.1:3000/users/getGames/${userId}`
+        );
+        setHistory(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchHistory();
   }, [userId]);
   /* ------------------------------------ - ----------------------------------- */
 
@@ -99,48 +122,62 @@ function page() {
                     </div>
                   </div>
                 </div>
-        
-               {/* { (userId !== userSession) && <FriendAction userId={userId} userSessionId={userSession} />} */}
-
               </div>
-
-             {/* {   <FriendAction userId={userId} userSessionId={userSession} />} */}
-             { (userId !== userSession) && <FriendAction userId={userId} userSessionId={userSession} />}
-
+              <FriendAction userId={userId} userSessionId={userSession} />
             </div>
             <Achievements userId={userId} userSessionId={userSession} />
-            <div className="wrapper">
-              <p className="title">{true ? "Your" : "Brahim"} History</p>
-              <ul className="flex flex-col w-full gap-[20px]">
-                {history_game.map((history, index) => (
-                  <li key={index} className={`history ${history.status}`}>
-                    <div className="flex items-center justify-between gap-[10px] xs:w-[70px] w-[30px]">
-                      <Image
-                        src={profileUser.Avatar}
-                        width={50}
-                        height={50}
-                        className="rounded-full object-cover md:w-[70px]"
-                        alt="avatar"
-                      />
-                      <p className="font-semibold text-[9px] md:text-lg text-primary ">
-                        {profileUser.name}
-                      </p>
-                    </div>
-                    <div className="history_score">1:2</div>
-                    <div className="flex items-center gap-[10px] w-[70px] flex-row-reverse">
-                      <Image
-                        src={history.avarat}
-                        className="w-[40px] md:w-[70px]"
-                        alt="avatar"
-                      />
-                      <p className="font-semibold text-[9px] md:text-lg text-primary">
-                        {history.oppenet}
-                      </p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            {/* <div className="wrapper">
+              <p className="title">History</p>
+              {history && history.length > 0 ? (
+                <ul className="flex flex-col w-full gap-[20px]">
+                  {history.map((H, index) => (
+                    <li key={index} className={`history win`}>
+                      <div className="flex items-center justify-between gap-[10px] xs:w-[70px] w-[30px]">
+                        <Image
+                          src={profileUser.Avatar}
+                          width={50}
+                          height={50}
+                          className="rounded-full object-cover md:w-[70px]"
+                          alt="avatar"
+                        />
+                        <p className="font-semibold text-[9px] md:text-lg text-primary ">
+                          {profileUser.name}
+                        </p>
+                      </div>
+                      <div className="history_score">
+                        {
+                          H.playerA_id === userId
+                          ? `${H.playerA_Score} : ${H.playerB_Score}`
+                          : `${H.playerB_Score} : ${H.playerA_Score}`
+                        }
+                      </div>
+                      <div className="flex items-center gap-[10px] w-[70px] flex-row-reverse">
+                        <Image
+                          src={
+                            H.playerA_id === userId
+                              ? H.playerB.Avatar
+                              : H.playerA.Avatar
+                          }
+                          width={50}
+                          height={50}
+                          className="rounded-full object-cover md:w-[70px]"
+                          alt="avatar"
+                        />
+                        <p className="font-semibold text-[9px] md:text-lg text-primary">
+                          {H.playerA_id === userId
+                            ? H.playerB.name
+                            : H.playerA.name}
+                        </p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="bg-red-200 self-start title achievement_disabled p-[20px]">
+                  {`${profileUser.name} Never Play !!`}
+                </div>
+              )}
+            </div> */}
           </div>
           <Friendsbar userId={userId} userSessionId={userSession} />
         </div>

@@ -45,7 +45,8 @@ import {
 import { useEffect, useState } from "react";
 import { users_int } from "../interfaces";
 import axios from "axios";
-import { socket } from "@/app/(dashboard)/profile/[userId]/page";
+import { socket } from "./Notification";
+// import { socket } from "@/app/(dashboard)/profile/[userId]/page";
 
 type Props = {
   userId: string;

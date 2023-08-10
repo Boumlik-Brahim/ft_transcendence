@@ -35,9 +35,9 @@ function loading() {
           </ul>
         </div>
       </div>
-
+{/* 
       <div className='bg-green-100 h-screen w-[50%]'>
-      </div>
+      </div> */}
     </div>
     </>
   )

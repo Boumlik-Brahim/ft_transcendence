@@ -6,8 +6,9 @@ import { useEffect, useState } from "react";
 import { friendShip, users_int } from "../interfaces";
 import axios from "axios";
 import { usePendingUsers } from "@/app/(dashboard)/profile/utils";
-import { socket } from "@/app/(dashboard)/profile/[userId]/page";
+// import { socket } from "@/app/(dashboard)/profile/[userId]/page";
 import Link from "next/link";
+import { socket } from "./Notification";
 
 type Props = {
   userId: string;

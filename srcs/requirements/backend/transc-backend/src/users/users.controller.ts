@@ -96,8 +96,8 @@ export class UsersController {
     catch (error) {
       throw (error);
     }
-  } 
-  
+  }
+
 
   //* -------------------------------------------------------------achievementCRUDOp------------------------------------------------------ *//
   @Post('/achievement')
@@ -157,7 +157,7 @@ export class UsersController {
     const friendShip = await this.usersService.pendingReq(userId);
     return friendShip;
   }
-  
+
   @Get('/:userId/friend')
   async findAllFriends(@Param('userId') userId: string): Promise<Friend[]> {
     const Friends = await this.usersService.findAllFriends(userId);
