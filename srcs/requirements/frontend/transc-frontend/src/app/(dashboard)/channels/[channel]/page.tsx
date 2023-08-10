@@ -101,7 +101,15 @@ function Page({ params }: any) {
   return (
     <>
       <Sidebar />
-      <div className="w-full h-[85vh] md:h-screen flex ">
+
+      <div className="w-full h-[85vh] md:h-screen flex  flex-col ">
+        {/*---------------------- header-------------------- */}
+        <div className="w-full h-[15%] bg-white flex items-center justify-between">
+            <div>channel Name</div>
+            <div>icon</div>
+        </div>
+        {/*------------------------------------------------ */}
+
         <div className={`${!isShowChannelMembersOn.showChannelMembersToggled ? "w-full h-full" : "hidden"}`}>
           <div className="w-full h-[85%] py-[10px] overflow-auto">
 
@@ -139,6 +147,8 @@ function Page({ params }: any) {
 
         <ChannelMembersListPage />
       </div>
+      <div className="w-[25%] h-screen bg-primary"></div>
+
     </>
   )
 }
