@@ -12,7 +12,6 @@ const gameURL = "http://localhost:3000/game"
 const cookies = new Cookies;
 
 const gameIO = io(gameURL, {
-  autoConnect : false,
   auth: { userId: cookies.get('id') }
 });
 const SocketContext = createContext<Socket>(gameIO);
