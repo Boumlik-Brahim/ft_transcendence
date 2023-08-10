@@ -28,14 +28,15 @@ const Game = () => {
   console.log(typeof(getCookie('id')), 'type')
 
   const createGame = (isRamdomOponent : boolean, id : string | undefined) : void => {
+    console.log("ok -- 6")
     if (!socket.connected) return ;
+    console.log('inside')
     if (myId) {
       const data : CreateGameType = {
         invitedId : id,
         creatorId : myId,
         isRamdomOponent
       }
-      console.log("ok -- 6")
       socket.emit('createGame', data);
     }
   }

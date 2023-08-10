@@ -11,13 +11,13 @@ import { use, useEffect, useState } from "react";
 import { history, users_int } from "../../../../../interfaces";
 import FriendAction from "../../../../../components/FriendAction";
 import Notification from "../../../../../components/Notification";
-import { io } from "socket.io-client";
+// import { io } from "socket.io-client";
 import Cookies from "universal-cookie";
-const cookies = new Cookies();
-export const socket = io("http://localhost:3000", {
-  auth: { userId: cookies.get('id') } ,
-  transports: ["websocket"],
-});
+// const cookies = new Cookies();
+// export const socket = io("http://localhost:3000", {
+//   auth: { userId: cookies.get('id') } ,
+//   transports: ["websocket"],
+// });
 import Achievements from "../../../../../components/Achievements";
 import Sidebar from "../../../../../components/Sidebar";
 import {
@@ -77,9 +77,7 @@ function page() {
   return (
     profileUser &&
     userSession && (
-      
       <>
-      { console.log("USER +++> ", profileUser)}
         <Sidebar />
         <div className="layouts">
           <div className="my_container relative">
@@ -125,13 +123,10 @@ function page() {
                   </div>
                 </div>
               </div>
-
-              {/* {userId !== userSession && ( */}
-                <FriendAction userId={userId} userSessionId={userSession} />
-              {/* )} */}
+              <FriendAction userId={userId} userSessionId={userSession} />
             </div>
             <Achievements userId={userId} userSessionId={userSession} />
-            <div className="wrapper">
+            {/* <div className="wrapper">
               <p className="title">History</p>
               {history && history.length > 0 ? (
                 <ul className="flex flex-col w-full gap-[20px]">
@@ -150,9 +145,11 @@ function page() {
                         </p>
                       </div>
                       <div className="history_score">
-                        {H.playerA_id === userId
+                        {
+                          H.playerA_id === userId
                           ? `${H.playerA_Score} : ${H.playerB_Score}`
-                          : `${H.playerB_Score} : ${H.playerA_Score}`}
+                          : `${H.playerB_Score} : ${H.playerA_Score}`
+                        }
                       </div>
                       <div className="flex items-center gap-[10px] w-[70px] flex-row-reverse">
                         <Image
@@ -180,7 +177,7 @@ function page() {
                   {`${profileUser.name} Never Play !!`}
                 </div>
               )}
-            </div>
+            </div> */}
           </div>
           <Friendsbar userId={userId} userSessionId={userSession} />
         </div>

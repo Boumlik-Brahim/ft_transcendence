@@ -56,7 +56,7 @@ export class ChatService {
         seen: false
       },
       orderBy: {
-        created_at: 'asc',
+        created_at: 'desc',
       },
     })
     .catch (error => {

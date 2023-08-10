@@ -17,19 +17,20 @@ import {
 } from "../public";
 
 import Image from "next/image";
-import { io } from "socket.io-client";
+// import { io } from "socket.io-client";
 import { useEffect, useState } from "react";
 import axios from "axios";
 // import { Props } from "@/app/(dashboard)/profile/[userId]/page";
 
-export const socket = io("http://localhost:3000", {
-  transports: ["websocket"],
-});
+// export const socket = io("http://localhost:3000", {
+//   transports: ["websocket"],
+// });
 //& -----chat part --------
 import Link from "next/link";
 import { useSelector, useDispatch } from 'react-redux';
 import { setCurrentUser, setOtherUser,selectedOne , setRefreshOn} from '@/app/store/reducer';
 import { RootState } from '@/app/store/store';
+import { socket } from "./Notification";
 //& --------------------------
 
 type Props = {
