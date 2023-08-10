@@ -33,11 +33,9 @@ const Game = () => {
   console.log(typeof(getCookie('id')), 'type')
 
   const createGame = (isRamdomOponent : boolean, id : string | undefined) : void => {
-    console.log('fode')
-    if (!socket) return;
-    console.log('oulare')
+    console.log("ok -- 6")
     if (!socket.connected) return ;
-    console.log('oulare')
+    console.log('inside')
     if (myId) {
       const data : CreateGameType = {
         invitedId : id,
