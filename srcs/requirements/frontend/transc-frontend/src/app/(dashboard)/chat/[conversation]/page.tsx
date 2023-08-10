@@ -171,7 +171,6 @@ function Page({ params }: any) {
   }, [dispatch]);
 
   useEffect(() => {
-
     socket.current?.on("refresh", () => {
       dispatch(setRefreshOn());
     });

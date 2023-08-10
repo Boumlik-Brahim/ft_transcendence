@@ -13,6 +13,7 @@ import Image from "next/image";
 import { channelsData, channelProps } from './TempData/channelsData'
 import ChannelsList from "./ChannelsList";
 
+export const socket = io("http://localhost:3000");
 
 import { useMediaQuery } from 'react-responsive';
 import { useEffect, useState, useRef } from "react";
@@ -50,16 +51,16 @@ function Page() {
     }, [isMdScreen, isLgScreen]);
 
 //^ ------------------------------------- socket Io ----------------------------------------
-const socket = useRef<Socket>();
+// const socket = useRef<Socket>();
 const dispatch = useDispatch();
 
 const cookies = new Cookies();
     const userIdFromCookie = cookies.get('id');
     dispatch(setCurrentUser(userIdFromCookie));
-  //* useEffect for creating socket
-  useEffect(() => {
-    socket.current = io("ws://localhost:3000");
-  }, [])
+//   //* useEffect for creating socket
+//   useEffect(() => {
+//     socket.current = io("ws://localhost:3000");
+//   }, [])
 //^ ----------------------------------------------------------------------------------------
 
 
@@ -78,6 +79,8 @@ const cookies = new Cookies();
                 {isLgScreenState && <CreateChannelLg />}
 
             </div>
+
+
 
             {/*--------------------------------------------------------- side friend list------------------------------------------------------------------------------- */}
             {(isLgScreenState) && <OnlineFriends />}

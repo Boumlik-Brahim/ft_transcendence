@@ -22,9 +22,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 // import { Props } from "@/app/(dashboard)/profile/[userId]/page";
 
-export const socket = io("http://localhost:3000", {
-  transports: ["websocket"],
-});
+export const socket = io("http://localhost:3000");
 //& -----chat part --------
 import Link from "next/link";
 import { useSelector, useDispatch } from 'react-redux';
