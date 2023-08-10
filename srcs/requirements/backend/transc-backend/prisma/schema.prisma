@@ -37,6 +37,13 @@ enum Role {
   BANNED_MEMBER
 }
 
+enum GameInvitationState {
+  PENDING
+  ACCEPTED
+  REJECTED
+  CANCELED
+}
+
 //* ---------------------------------------------------------------------------------------------------------------------------- *//
 
 model User {
@@ -54,6 +61,8 @@ model User {
   userThatBlock BlockedUser[] @relation("Bloking")
   blockedUser   BlockedUser[] @relation("blocked")
   user    Friend[]  @relation("user")
+  sender GamesInvitation[] @relation("sender")
+  receiver GamesInvitation[] @relation("receiver")
   friend  Friend[]  @relation("friend")
   playerA GamesHistories[] @relation("playerA")
   playerB GamesHistories[] @relation("playerB")
@@ -114,6 +123,17 @@ model Friend {
   friendId  String
   created_at  DateTime  @default(now())
   @@unique([userId, friendId], name: "userAndFriend")
+}
+
+model GamesInvitation {
+  id  String @id @default(uuid())
+  status GameInvitationState
+  sender  User  @relation("sender", fields: [senderId], references: [id])
+  senderId  String
+  receiver  User  @relation("receiver", fields: [receiverId], references: [id])
+  receiverId  String
+  created_at  DateTime  @default(now())
+  gameId String @unique
 }
 
 model DirectMessage {

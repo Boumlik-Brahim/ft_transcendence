@@ -49,13 +49,13 @@ function FriendAction({ userId, userSessionId }: Props) {
   userId !== userSessionId && (
   useEffect(() => {
       socket.emit("joinRoom", {
-          senderId: userSessionId,
-          recieverId: userId
+        senderId: userSessionId,
+        recieverId: userId
       });
       
       socket.on("joined", (data) => {
-          setRoomId(data.roomName);
-          
+        setRoomId(data.roomName);
+        
       });
   
   },[ userId, userSessionId])

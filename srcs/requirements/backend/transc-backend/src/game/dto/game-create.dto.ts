@@ -8,6 +8,9 @@ export class CreateGameDto {
     @IsString()
     invitedName : string;
 
+    @IsNumber()
+    maxScore : number
+
     @IsBoolean()
     @IsNotEmpty()
     isRamdomOponent : boolean;

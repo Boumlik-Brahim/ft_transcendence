@@ -94,11 +94,11 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
     this.server.to(hasshedRoomName).emit('getMessage',{ senderId: payload.senderId, receiverId: payload.recieverId, text: payload.content, room: hasshedRoomName});
     await this.chatService.createChat(payload);
-    for (const [key, val] of this.connectedClientsService.getAllClients()) {
-      if (val === payload.recieverId) {
-          this.server.to(key).emit('refresh');
-      }
-    };
+    // for (const [key, val] of this.connectedClientsService.getAllClients()) {
+    //   if (val === payload.recieverId) {
+    //       this.server.to(key).emit('refresh');
+    //   }
+    // };
 
     const sender = await this.usersService.findOne(payload.senderId)
     for (const [key, val] of this.connectedClientsService.getAllClients()) {

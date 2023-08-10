@@ -16,5 +16,6 @@ import { ScheduleModule } from '@nestjs/schedule';
   imports: [ScheduleModule.forRoot(), PrismaModule, GameModule, ChatModule, ChannelModule, AuthModule, UsersModule],
   controllers: [AppController],
   providers: [AppService, AppGateway, ConnectedClientsService],
+  exports: [ConnectedClientsService]
 })
 export class AppModule { }

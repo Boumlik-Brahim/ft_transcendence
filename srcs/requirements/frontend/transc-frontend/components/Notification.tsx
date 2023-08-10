@@ -18,6 +18,8 @@ export const socket = io("http://localhost:3000/appGateway", {
   auth: { userId: cookies.get("id") },
   transports: ["websocket"],
 });
+import { useSocket } from "@/app/socket";
+
 
 type props = {
   userId: string;
@@ -27,6 +29,7 @@ type props = {
 function Notification({ userId, userSession }: props) {
   /* ------------------------------ toggle_notif ------------------------------ */
   const [toggle_notif, setToggle_notif] = useState<boolean>(false);
+  const gameSocket = useSocket();
   /* ------------------------------------ - ----------------------------------- */
 
   /* ------------------------------ notification ------------------------------ */
@@ -80,6 +83,11 @@ function Notification({ userId, userSession }: props) {
 
   /* -------------------------- friend requset socket ------------------------- */
   useEffect(() => {
+
+    gameSocket.on("gameInvitation", data => {
+      console.log(data);
+    })
+
     socket.on("DeleteRequest", (data) => {
       setNotification(data.userId + data.stats + data.friendId);
     });
@@ -99,6 +107,15 @@ function Notification({ userId, userSession }: props) {
     socket.on("DeleteFriendShip", (data) => {
       setNotification(data.userId + data.stats + data.friendId);
     });
+ 
+    socket.on("notifMessage", (data) => {
+      // setNotification(data.userId + data.stats + data.friendId);
+      console.log("notifMessage ===> ", data)
+    });
+
+    socket.on("gameInvitation", (data) => {
+      console.log(data);
+    })
 
     socket.on("notifMessage", (data) => {
       setNotification(data.senderId + data.content + data.recieverId);

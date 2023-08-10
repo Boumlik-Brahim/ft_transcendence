@@ -10,9 +10,9 @@ import Search from "../../../../../components/Search";
 import { use, useEffect, useState } from "react";
 import { history, users_int } from "../../../../../interfaces";
 import FriendAction from "../../../../../components/FriendAction";
+import Cookies from "universal-cookie";
 import Notification from "../../../../../components/Notification";
 // import { io } from "socket.io-client";
-import Cookies from "universal-cookie";
 // const cookies = new Cookies();
 // export const socket = io("http://localhost:3000", {
 //   auth: { userId: cookies.get('id') } ,

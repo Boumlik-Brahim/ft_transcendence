@@ -6,6 +6,7 @@ import { Logger, UsePipes } from '@nestjs/common';
 import { GameService } from './game.service';
 import { subscribe } from 'diagnostics_channel';
 import { ConnectedClientsService } from 'src/connected-clients.service';
+import { InvitationGameDto } from './dto/game-invitation.dto';
 
 
 @WebSocketGateway({
@@ -30,9 +31,12 @@ export class GameGateway {
   }
 
   handleConnection(client : Socket) {
-    // this.connectedClientsService.addClient(client);
-    this.logger.log(`Client connected to Game server: ${client.id}`);
-  }
+    const userId = client.handshake.auth.userId as string;
+    console.log('new connection', userId);
+    if (userId) {
+      this.gameService.addUser(userId, client);
+    }
+  };
   
   @SubscribeMessage('createGame')
   createGame(@MessageBody() data: CreateGameDto, @ConnectedSocket() client: Socket) {
@@ -40,9 +44,23 @@ export class GameGateway {
     this.gameService.createGame(data, client);
   }
 
+  @SubscribeMessage('rejectInvitation')
+  rejectInvitaion(@MessageBody() data: InvitationGameDto, @ConnectedSocket() client: Socket) {
+    const { invitationId , userId } = data;
+    this.gameService.rejectInvitation(client, invitationId, userId);
+  }
+
+  @SubscribeMessage('acceptInvitation')
+  acceptInvitaion(@MessageBody() data: InvitationGameDto, @ConnectedSocket() client: Socket) {
+    const { invitationId , userId } = data;
+    this.gameService.AcceptInvitation(client, invitationId, userId);
+  }
+
   @SubscribeMessage('joinGame')
   async joinGame(@MessageBody() data: JoinGameDto, @ConnectedSocket() client: Socket) {
+    console.log(data, "Join 5");
     if (!data) return;
+    console.log(data, "Join");
     const { gameId, userId } = data;
     if (gameId && userId ) {
        this.gameService.joinGame(userId, gameId, client, this.server);
@@ -104,8 +122,7 @@ export class GameGateway {
   }
 
   handleDisconnect(client : Socket) {
-    // this.connectedClientsService.removeClient(client);
-    this.logger.log(`Client disconnected from Game server: ${client.id}`);
+    this.gameService.deleteUser(client);
   }
 
 }
