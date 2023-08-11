@@ -5,7 +5,6 @@ import Image from 'next/image'
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import PopUp from '../../../components/Popup'
-import { getCookie } from 'cookies-next'
 import  Cookies  from 'universal-cookie';
 
 
@@ -24,13 +23,9 @@ export default function page()  {
           const res = await axios.get(`http://localhost:3000/users/${userId}`);
           if (res.data.isTwoFactorEnabled){
             setTwoFa(true);
-            console.log("setted res.data.isTwoFactorEnabled -----+------");
           }
-          if (!res.data.isTwoFactorEnabled && accessTokenCookie) {
+          if (!res.data.isTwoFactorEnabled && accessTokenCookie) 
             return router.push(`/profile/${userId}`);
-          }
-          // if (res.data.isTwoFactorEnabled && !accessTokenCookie)
-          // setTwoFa(true);
         }
       }
       catch(e){
@@ -41,7 +36,6 @@ export default function page()  {
   },[])
   let showLogin = "";
   twoFa ? showLogin = "hidden" : showLogin = "";
-  
   //------------------------------
   const maxInputFields = 6;
   const inputFieldIds = Array.from({ length: maxInputFields }, (_, index) => `inputField${index + 1}`);
@@ -73,6 +67,7 @@ export default function page()  {
       const response = await fetch(`http://localhost:3000/auth/2fa/authenticate?userId=${userId}&authCode=${concatenatedString}`, {
         method: 'POST',
       })
+      console.log(response);
       if (!response.ok) {
         if (response.status === 401) {
           const errorData = await response.json();
@@ -96,31 +91,35 @@ export default function page()  {
     <div className={` w-full h-screen flex flex-col justify-around items-center bg-gray-200 py-[10%]`}>
       <div className="w-full flex justify-evenly items-center pr-[15%]">
         <Link href="/" className="">
-          <Image src={"/HOME.svg"} width={25} height={25} alt="" />
+          <Image src={"/HOME.svg"} width={25} height={25} alt="" className='md:w-[40px] md:h-[40px]' />
         </Link>
-        <h2 className="font-press text-[#3E3B6A] text-[28px]">Login</h2>
+        <h2 className="font-press text-[#3E3B6A] text-[28px] md:text-[50px]">Login</h2>
       </div>
-      <div>
+      <div className=''>
         <Image
           src={"../landing/CONTROLER.svg"}
           width={400}
-          height={300}
+          height={400}
           alt=""
-          className="w-[95%] h-[95%]"
+          className="md:w-[700px] md:h-[700px]"
         />
       </div>
-      {/* <div className='hidden'>2 Factory Authentication</div> */}
       <div
         className={`
-            ${showLogin} w-[200px] h-[50px] font-press text-[12px] rounded-full text-[#3E3B6A] bg-white flex items-center justify-between p-4`}
+            ${showLogin} w-[200px] h-[50px] font-press text-[12px] rounded-full text-[#3E3B6A] bg-white flex items-center justify-between p-4
+              md:w-[300px] md:h-[70px]`}
       >
-        <Link href="http://localhost:3000/auth">Login With</Link>
+        <Link 
+          href="http://localhost:3000/auth"
+          >
+            <p className='md:text-[20px]'>Login With</p>
+        </Link>
         <Image
           src={"../42Logo.svg"}
           width={30}
           height={30}
           alt=""
-          className=""
+          className="md:w-[40px] md:h-[40px]"
         />
       </div>
       <div >
