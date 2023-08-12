@@ -31,7 +31,7 @@ const Waiting = ({cancel, myId, oponentId} : Props) => {
                     <Player  playerId={oponentId} setInputValue={setInput} waiting={true} />
                 </div>
             </div>
-           <div className='p-2 z-10 w-[80%] md:w-[793px] h-auto rounded-lg relative gradient'>
+           <div className='p-2 z-10 w-[100%] lg:w-[693px] h-auto rounded-lg relative gradient'>
                <div className='flex justify-between items-center w-full p-4'>
                     <h1 className='game_font text-primary  text-[10px] md:text-[15px]'>waiting your opponent...</h1>
                     <Image src={closeCircle}  alt='git' height='50' width='50' onClick={cancel}/>

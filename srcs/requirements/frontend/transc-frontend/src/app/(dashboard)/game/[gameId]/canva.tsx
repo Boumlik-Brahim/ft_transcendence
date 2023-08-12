@@ -28,11 +28,12 @@ interface Player {
 }
 
 interface PropsType {
-  gameData : GameEntity | undefined
+  gameData : GameEntity | undefined;
+  gameState : string | undefined
 }
 
 
-const Canvas = ({ gameData } : PropsType) => {
+const Canvas = ({ gameData, gameState } : PropsType) => {
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -68,8 +69,10 @@ const Canvas = ({ gameData } : PropsType) => {
   const drawPaddle = (context : any, x : number, y : number, h : number, w : number) => {
     context.beginPath();
     context.fillStyle = "#3E3B6A"
+    context.strokeStyle = "#3E3B6A"
     context.setLineDash([0, 0])
-    context.fillRect(x, y, w, h);
+    context.roundRect(x, y, w, h, [14, 14, 14, 14]);
+    context.fill();
     context.stroke();
   }
 
@@ -89,13 +92,14 @@ const Canvas = ({ gameData } : PropsType) => {
     const score1 = gameData.player1.score;
     const score2 = gameData.player2.score;
 
+    context.imageSmoothingEnabled = true;
     drawMiddleLine(context, w, h);
     drawBall(context, radius, ballX, bally)
     drawPaddle(context, player1_X, player1_Y, paddleH, w_paddle);
     drawPaddle(context, player2_X, player2_Y, paddleH, w_paddle);
     writeScore(context, w / 2 - 40, score1);
     writeScore(context, w / 2 + 40, score2);
-    context.globalAlpha = 1
+    // context.globalAlpha = 1
   }
 
   useEffect(() => {
@@ -112,7 +116,7 @@ const Canvas = ({ gameData } : PropsType) => {
   }, [gameData]);
 
   return (
-    <canvas ref={canvasRef} className=' w-full border h-full rounded-lg shadow  '></canvas>
+    <canvas ref={canvasRef} className='w-full h-full'></canvas>
   );
 }
 

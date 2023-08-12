@@ -517,7 +517,7 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
                 paddleY : 80,
                 score : 0
             },
-            w_paddle : 10,
+            w_paddle : 7,
             h_paddle : 20,
             playerSpeed : 8,
             scoreLimit : maxScore,
