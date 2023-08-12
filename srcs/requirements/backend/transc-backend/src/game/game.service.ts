@@ -5,6 +5,11 @@ import { v4 as uuidv4 } from 'uuid';
 import { Server, Socket } from 'socket.io';
 import { CANCELLED } from 'dns';
 
+interface GameInvitation {
+    id : string,
+    senderId : string
+}
+
 @Injectable()
 export class GameService {
     private gameMap = new Map<String, GameEntity>();
@@ -12,6 +17,29 @@ export class GameService {
     private inTheQueue : String | null;
 
     constructor(private prisma : PrismaService) {}
+
+
+    async getInvitations(id : string)  {
+        const invitations = await this.prisma.gamesInvitation.findMany ({
+            where : {
+                AND : [
+                    {
+                        receiverId : id,
+                        status : 'PENDING'
+                    }
+                ]
+            }
+        });
+        const notifications = await Promise.all(invitations.map(async (invit) => {
+            const user = await this.prisma.user.findUnique({
+                where : {
+                    id : invit.senderId
+                }
+            });
+            return {id : invit.id, message : `${user.name} invited you to play a game`, userImg : user.Avatar}
+        }))
+        return notifications;
+    }
 
     addUser(id : string, socket : Socket) {
         this.usersConnected.set(id, socket);
@@ -85,7 +113,7 @@ export class GameService {
             });
             client.emit("Success", {id : game.id});
             if (receiverSocket) {
-                receiverSocket.emit('gameInvitation', {id : invitation.id, message : `${sender.name} invite you to play a game`});
+                receiverSocket.emit('gameInvitation');
             }
         }
         catch (error) {
@@ -112,14 +140,15 @@ export class GameService {
                     gameId
                 }, 
                 data : {
-                    status : 'CANCELED'
+                    status : 'REJECTED'
                 }
             });
             const senderSocket = this.usersConnected.get(senderId);
             if (senderSocket)
             {
-                senderSocket.emit('rejectInvitation', `Your invitation is rejected by ${user.name}`);
+                senderSocket.emit('error_access');
             }
+            client.emit('gameInvitation');
         }
         catch (error) {
             client.emit("error", error);
@@ -666,6 +695,16 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
             {
                 if (game.id === this.inTheQueue)
                     this.inTheQueue = null;
+                else {
+                    await this.prisma.gamesInvitation.update({
+                        where : {
+                            gameId : gameId as string
+                        }, 
+                        data : {
+                            status : 'CANCELED'
+                        }
+                    });
+                }
                 this.gameMap.delete(gameId);
                 client.emit('error_access');
             }
@@ -690,7 +729,7 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
      * @param client 
      */
 
-    quiteGame(playerId : String, gameId : String, client : any) {
+    async quiteGame(playerId : String, gameId : String, client : any) {
         const game : GameEntity = this.getGame(playerId, gameId, client);
         if (game) {
             if (game.id === this.inTheQueue)
@@ -709,6 +748,17 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
                     game.gameStatus.status = 'stopped';
                     game.gameStatus.update_t = new Date().getTime();
                     this.gameMap.set(gameId, game);
+                }
+                else {
+                    await this.prisma.gamesInvitation.update({
+                        where : {
+                            gameId : gameId as string
+                        }, 
+                        data : {
+                            status : 'CANCELED'
+                        }
+                    });
+                    this.gameMap.delete(gameId);
                 }
             }
             this.updateUserSatusInTheGame(playerId as string, false);

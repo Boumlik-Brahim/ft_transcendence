@@ -35,7 +35,7 @@ const Players = ({userId_1, userId_2} : Props) => {
     }, []);
     return (
             <div className='
-            md:min-w-[700px]  p-2 lg:w-[700px]
+            w-full
             border-2 border-white 
             hidden lg:flex justify-between items-center  bg-primary'>
                 {

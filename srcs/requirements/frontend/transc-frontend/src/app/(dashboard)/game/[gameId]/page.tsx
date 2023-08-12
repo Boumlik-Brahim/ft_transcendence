@@ -14,6 +14,7 @@ import { Link } from 'react-router-dom';
 import Sidebar from "../../../../../components/Sidebar";
 import Notification from '../../../../../components/Notification';
 import { useSocket } from '@/app/socket';
+import OnlineFriends from '../onlineFriends';
 
 
 export interface GameEntity {
@@ -50,7 +51,7 @@ interface CreateGameType {
 
 const Page = ( {params} : any) => {
     const router = useRouter();
-    const [gameSate, setGameSate] = useState<string | undefined>();
+    const [gameSate, setGameSate] = useState<string | undefined>('started');
     const [gameData, setGameData] = useState<GameEntity | undefined>();
     const userId = getCookie('id') as string;
     const oponentId = userId === gameData?.player1.id ? gameData.player2.id : gameData?.player1.id;
@@ -82,10 +83,10 @@ const Page = ( {params} : any) => {
         
         socket.on('gameData', (data) => setGameData(data))
         
-        socket.on('gameSate', data => {
-            const { state } = data;
-            setGameSate(state);
-        })
+        // socket.on('gameSate', data => {
+        //     const { state } = data;
+        //     setGameSate(state);
+        // })
 
         return () => {
                 socket.off('joinGame');
@@ -96,6 +97,7 @@ const Page = ( {params} : any) => {
                 document.addEventListener('keydown', () => {});
             }
         }, []);
+        const createGame = (isRamdomOponent : boolean, id : string | undefined) => {}
 
         console.log(gameSate, gameData);
         return (
@@ -113,15 +115,14 @@ const Page = ( {params} : any) => {
                 <div className='w-full h-full flex flex-col items-center justify-center gap-1 relative '>
                     {
                         (gameSate === 'started' || gameSate === 'pause' || gameSate === 'stopped') && (
-                            <div className='flex flex-col flex-1 w-full justify-center items-center  '>
-                                {
+                            <div className='flex flex-col flex-1 w-full justify-center items-center '>
+                                {/* {
                                     gameData && <Players userId_1={gameData.player1.id as string}  userId_2={gameData.player2.id as string} />
-                                }
-                                <div className={`flex justify-center items-center lg:min-w-[700px]  md:max-w-[65vw] max-w-[95vw] md:min-w-[50vw] h-[85vw] md:h-[50vh] p-2 md:w-[50vh] border-2 border-white shadow-2xl lg:h-[600px] ${ userId === gameData?.player1.id ? "rotate-[-90deg]" : "rotate-90"} 
-                                md:rotate-0 `}>
+                                } */}
+                                <div className={`flex justify-center items-center h-[85vw] md:h-[50vh] p-2 border-2 border-white shadow-2xl lg:h-[600px]}`}>
                                     <Canvas gameData={gameData}></Canvas>
                                 </div>
-                                <div className='lg:min-w-[700px] md:max-w-[65vw] max-w-[95vw] h-[50px]  md:min-w-[50vw] mt-6 flex  items-center'>
+                                <div className='h-[50px]  md:min-w-[50vw] mt-6 flex  items-center'>
                                     <button className='bg-primary m-4 p-2 w-[150px] border border-primary text-white rounded-xl cursor hover:bg-white hover:text-primary' onClick={handleCancel}>
                                         cancel
                                     </button>

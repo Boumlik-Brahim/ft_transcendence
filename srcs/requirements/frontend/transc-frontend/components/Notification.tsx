@@ -10,12 +10,20 @@ import { close_r, notification_b } from "../public";
 import Image from "next/image";
 import { socket } from "@/app/(dashboard)/profile/[userId]/page";
 import { useSocket } from "@/app/socket";
+import Challenge from "./GameNofication";
+import { useRouter } from "next/navigation";
 
 
 type props = {
   userId: string;
   userSession: string;
 };
+
+interface notification  {
+  id : string,
+  message : string,
+  userImg : string
+}
 
 function Notification({ userId, userSession }: props) {
   /* ------------------------------ toggle_notif ------------------------------ */
@@ -25,10 +33,14 @@ function Notification({ userId, userSession }: props) {
 
   /* ------------------------------ notification ------------------------------ */
   const [notification, setNotification] = useState<string>("");
+
+  const router = useRouter();
+
   /* ------------------------------------ - ----------------------------------- */
 
   /* ----------------------- get pending friend request ----------------------- */
   const [friendShip, setFriendShip] = useState<friendShip[]>([]);
+  const [GameNotificat, setGameNoticat] = useState<notification[]>([]);
   useEffect(() => {
     const fetchfriendShip = async () => {
       try {
@@ -45,6 +57,18 @@ function Notification({ userId, userSession }: props) {
     };
     fetchfriendShip();
   }, [notification, userSession]);
+
+  const getGameInvitation = () => {
+    if (userId) {
+        fetch(`http://localhost:3000/game/invitations/${userId}`)
+        .then(data => data.json())
+        .then (res => {setGameNoticat(res); console.log(res)})
+    }
+  }
+
+  useEffect (() => {
+      getGameInvitation();
+  }, [])
   /* ------------------------------------ - ----------------------------------- */
 
   /* ------------------------------- getPending ------------------------------- */
@@ -54,9 +78,13 @@ function Notification({ userId, userSession }: props) {
   /* -------------------------- friend requset socket ------------------------- */
   useEffect(() => {
 
-    gameSocket.on("gameInvitation", data => {
+    gameSocket.on("gameInvitation", () => getGameInvitation(), );
+
+    gameSocket.on('AcceptedGame', data => {
       console.log(data);
-    })
+      const { gameId } = data;
+      router.push(`/game/${gameId}`)
+    });
 
     socket.on("DeleteRequest", (data) => {
       setNotification(data.userId + data.stats + data.friendId);
@@ -107,11 +135,11 @@ function Notification({ userId, userSession }: props) {
           alt="avatar"
           className="cursor-pointer"
         />
-        {pendingUsers && pendingUsers.length > 0 && (
+        {((pendingUsers && pendingUsers.length > 0) || (GameNotificat && GameNotificat.length > 0)) && (
           <div className="absolute w-[12px] h-[12px] top-1 md:right-1 right-4 bg-red-400 rounded-full"></div>
         )}
       </div>
-      {pendingUsers && pendingUsers.length > 0 && toggle_notif && (
+      {((pendingUsers && pendingUsers.length > 0) || (GameNotificat && GameNotificat.length > 0)) && toggle_notif && (
         <ul className="w-[80%] md:w-[500px] flex flex-col gap-[40px] gradients absolute px-[3rem] py-[2rem] top-[15vh] md:top-[60px] right-0 z-10 shadow-lg">
           {pendingUsers?.map((user, index) => (
             <li key={index} className="flex justify-between items-center">
@@ -158,6 +186,9 @@ function Notification({ userId, userSession }: props) {
               </div>
             </li>
           ))}
+          {
+            GameNotificat.map((not, index) => <Challenge key={index} notification={not} userId={userId}/>)
+          }
         </ul>
       )}
     </>
