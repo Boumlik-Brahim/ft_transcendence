@@ -28,9 +28,6 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
 
     handleConnection(client: Socket) {
         this.connectedClientsService.addClient(client);
-        this.connectedClientsService.getAllClients().forEach((value, key) => {
-            console.log(`Socket ID: ${key}, User: ${value} is connected on app gateway`);
-        });
         this.logger.log(`Client connected to APP server: ${client.id}`);
     }
 
@@ -67,13 +64,6 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
         this.server.emit('UnblockFriend', data);
     }
 
-    // @SubscribeMessage('gameInvitation')
-    // handleGameInvitation(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
-    //     this.server.emit('gameInvitation', data);
-    // }
-
-
-    /*user invitation notification*/
     @SubscribeMessage('inviteUser')
     async handleInviteUser(@MessageBody() payload: CreateFriendDto, @ConnectedSocket() socket: Socket): Promise<void> {
         console.log(payload);
@@ -86,54 +76,8 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
         await this.usersService.createFriend(payload);
     }
 
-    // @SubscribeMessage('accept')
-    // async handleInvitationAccepted(@MessageBody() payload: {senderId: string, receiverId: string}, @ConnectedSocket() socket: Socket): Promise<void> {
-    //     const user = await this.usersService.findOne(payload.receiverId);
-    //     for (const [key, val] of this.connectedClientsService.getAllClients()) {
-    //         if (val === payload.senderId) {  
-    //             this.server.to(key).emit('yourInvitationAccepted', `${user.name} accept your friend request`);
-    //         }
-    //     };
-    //     await this.usersService.updateFriend(payload.senderId, payload.receiverId);
-    // }
-    
-    /*game invitation notification*/
-    @SubscribeMessage('inviteUserToGame')
-    async handleInviteUserToGame(@MessageBody() payload: {creatorId: string, invitedId: string}, @ConnectedSocket() socket: Socket): Promise<void> {
-        const user = await this.usersService.findOne(payload.creatorId);
-        console.log("fode");
-        if (user) {
-            try {
-                const gameId = await this.connectedClientsService.inviteAfriendToPlay(payload.creatorId, payload.invitedId, socket);
-                const data = {
-                    gameId : gameId,
-                    message : `${user.name} invite you to play a PING PONG GAME`
-                }
-                for (const [key, val] of this.connectedClientsService.getAllClients()) {
-                    if (val === payload.invitedId) {
-                        this.server.to(key).emit('gameInvitation', data);
-                    }
-                };
-            }
-            catch (error) {}
-        }
-    }
-
-    @SubscribeMessage('rejectGameInvitation')
-    async handleRejectGameInvitation(@MessageBody() payload: {senderId: string, receiverId: string}, @ConnectedSocket() socket: Socket): Promise<void> {
-        const user = await this.usersService.findOne(payload.receiverId);
-        for (const [key, val] of this.connectedClientsService.getAllClients()) {
-            if (val === payload.senderId) {
-                this.server.to(key).emit('gameInvitationRejected', `${user.name} reject your invitation to play a PING PONG GAME`);
-            }
-        };
-    }
-
     handleDisconnect(client: Socket) {
         this.connectedClientsService.removeClient(client);
-        this.connectedClientsService.getAllClients().forEach((value, key) => {
-            console.log(`Socket ID: ${key}, User: ${value} is disconnected from app gateway`);
-        });
         this.logger.log(`Client disconnected from APP server: ${client.id}`);
     }
 }

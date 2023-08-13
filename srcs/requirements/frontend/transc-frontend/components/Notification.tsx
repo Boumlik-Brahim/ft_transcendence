@@ -1,5 +1,6 @@
+'use client'
 import React, { useEffect, useState } from "react";
-import { MessageData, friendShip } from "../interfaces";
+import { MessageData, friendShip, users_int } from "../interfaces";
 import {
   deleteFriend,
   updateFriend,
@@ -16,10 +17,20 @@ import Link from "next/link";
 const cookies = new Cookies();
 export const socket = io("http://localhost:3000/appGateway", {
   auth: { userId: cookies.get("id") },
-  transports: ["websocket"],
 });
 import { useSocket } from "@/app/socket";
 
+
+//& -----chat part --------
+
+
+import { redirect, useRouter } from 'next/navigation'
+
+
+import {  useDispatch } from 'react-redux';
+import { setOtherUser,selectedOne , setRefreshOn} from '@/app/store/reducer';
+import { socketChat } from "./FriendAction";
+//& --------------------------
 
 type props = {
   userId: string;
@@ -27,9 +38,54 @@ type props = {
 };
 
 function Notification({ userId, userSession }: props) {
+
+
+// &--------------------------------------  CHAT PART ------------------------------------
+
+const [roomId, setRoomId] = useState("");
+const [checkRoomId, setCheckRoomId] = useState(false);
+const dispatch = useDispatch();
+
+    const router = useRouter()
+
+
+    
+    const handleSubmitNotif = async ({userSession, msg} : {userSession : string ,msg : users_int}) => {
+          dispatch(setOtherUser(msg.id));
+          dispatch(selectedOne(msg.id));
+          dispatch(setRefreshOn());
+      
+       socketChat.emit("joinRoom", {
+        senderId: userSession,
+        recieverId: msg.id
+      });
+       socketChat.on("joined", (data) => {
+        setRoomId(data.roomName);
+        // dispatch(setRefreshOn()); // 
+
+        setCheckRoomId(!checkRoomId);
+        router.push(`/chat/${data.roomName}`)
+
+      });
+    try {
+       const res =  await axios.put(`http://localhost:3000/chat/${userSession}/${msg.id}`, {"seen": true});
+
+      } catch (err) {
+        console.log(err);
+      }
+}
+
+
+// &--------------------------------------------------------------------------------------
+
+
+
+
+
+
   /* ------------------------------ toggle_notif ------------------------------ */
   const [toggle_notif, setToggle_notif] = useState<boolean>(false);
-  const gameSocket = useSocket();
+  // const gameSocket = useSocket();
   /* ------------------------------------ - ----------------------------------- */
 
   /* ------------------------------ notification ------------------------------ */
@@ -84,9 +140,9 @@ function Notification({ userId, userSession }: props) {
   /* -------------------------- friend requset socket ------------------------- */
   useEffect(() => {
 
-    gameSocket.on("gameInvitation", data => {
-      console.log(data);
-    })
+    // gameSocket.on("gameInvitation", data => {
+    //   console.log(data);
+    // })
 
     socket.on("DeleteRequest", (data) => {
       setNotification(data.userId + data.stats + data.friendId);
@@ -107,16 +163,11 @@ function Notification({ userId, userSession }: props) {
     socket.on("DeleteFriendShip", (data) => {
       setNotification(data.userId + data.stats + data.friendId);
     });
- 
-    socket.on("notifMessage", (data) => {
-      // setNotification(data.userId + data.stats + data.friendId);
-      console.log("notifMessage ===> ", data)
-    });
 
     socket.on("gameInvitation", (data) => {
       console.log(data);
     })
-
+    
     socket.on("notifMessage", (data) => {
       setNotification(data.senderId + data.content + data.recieverId);
     });
@@ -126,6 +177,13 @@ function Notification({ userId, userSession }: props) {
     };
   }, [notification]);
   /* ------------------------------------ - ----------------------------------- */
+
+
+
+
+
+
+
 
   return (
     <>
@@ -218,14 +276,17 @@ function Notification({ userId, userSession }: props) {
                       </div>
                     </div>
                   </div>
-                  <Link href={`/chat/${messages[index].roomId}`}>
-                    <Image
-                      src={send_b}
-                      width={30}
-                      alt="decline"
-                      className="cursor-pointer hover:opacity-60"
-                    />
-                  </Link>
+
+                  <div onClick={() => handleSubmitNotif({ userSession, msg })}>
+                    {/* <Link href={`/chat/${roomId}`}>  */}
+                      <Image
+                        src={send_b}
+                        width={30}
+                        alt="decline"
+                        className="cursor-pointer hover:opacity-60"
+                      />
+                    {/* </Link> */}
+                  </div>
                 </li>
               ))}
             </ul>

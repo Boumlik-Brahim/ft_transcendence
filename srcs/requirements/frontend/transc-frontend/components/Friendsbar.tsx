@@ -15,7 +15,67 @@ type Props = {
   userSessionId: string;
 };
 
+
+//& -----chat part --------
+
+
+import { redirect, useRouter } from 'next/navigation'
+
+
+import {  useDispatch } from 'react-redux';
+import { setOtherUser,selectedOne , setRefreshOn} from '@/app/store/reducer';
+import { socketChat } from "./FriendAction";
+//& --------------------------
+
+
+
+
 function Friendsbar({ userId, userSessionId }: Props) {
+
+
+
+
+  const [roomId, setRoomId] = useState("");
+  const [checkRoomId, setCheckRoomId] = useState(false);
+  const dispatch = useDispatch();
+    
+      const router = useRouter()
+  
+  
+      
+      const handleSubmitNotif = async ({userSessionId, friend} : {userSessionId : string ,friend : any}) => {
+            dispatch(setOtherUser(friend.id));
+            dispatch(selectedOne(friend.id));
+            dispatch(setRefreshOn());
+        
+         socketChat.emit("joinRoom", {
+          senderId: userSessionId,
+          recieverId: friend.id
+        });
+         socketChat.on("joined", (data) => {
+          setRoomId(data.roomName);
+          // dispatch(setRefreshOn()); // 
+  
+          setCheckRoomId(!checkRoomId);
+          router.push(`/chat/${data.roomName}`)
+  
+        });
+      try {
+         const res =  await axios.put(`http://localhost:3000/chat/${userSessionId}/${friend.id}`, {"seen": true});
+  
+        } catch (err) {
+          console.log(err);
+        }
+  }
+  
+  
+  // &--------------------------------------------------------------------------------------
+
+
+
+
+
+
   /* ------------------------------ fetch Friend ------------------------------ */
   const [notification, setNotification] = useState<string>("");
   const [friendShip, setFriendShip] = useState<friendShip[]>([]);
@@ -94,7 +154,7 @@ function Friendsbar({ userId, userSessionId }: Props) {
                     </p>
                   </div>
                 </Link>
-                <div className="friend_message">
+                <div className="friend_message"  onClick={() => handleSubmitNotif({ userSessionId, friend })}>
                   <Image src={send_w} width={30} alt={friend?.name} />
                 </div>
               </li>

@@ -10,7 +10,7 @@ const URL = "http://localhost:3000/game"
 //     // auth: { userId: cookies.get('id') }
 // });
 
-export const socketNotification = io("http://localhost:3000", {
-    autoConnect : false,
-    // auth: { userId: cookies.get('id') }
-});
+// export const socketNotification = io("http://localhost:3000", {
+//     autoConnect : false,
+//     auth: { userId: cookies.get('id') }
+// });

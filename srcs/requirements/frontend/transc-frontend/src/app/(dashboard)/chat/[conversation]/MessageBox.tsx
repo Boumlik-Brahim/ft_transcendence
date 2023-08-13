@@ -4,9 +4,14 @@ import Image from "next/image";
 // import { conversation } from "./TempData/conversation"
 import { useState, useEffect } from 'react';
 import axios from "axios";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/app/store/store";
 import Link from "next/link";
+import { socketChat } from "../../../../../components/FriendAction";
+
+import {  setRefreshOn } from '@/app/store/reducer';
+
+
 
 //* User Interface
 interface User {
@@ -72,6 +77,8 @@ function MessageBox({ userId, messageContent, date }: Props) {
         }
         fetchUser();
     }, [currentUser])
+    
+
 
     //^ --------------------- checking if the user sender or receiver --------------------
 

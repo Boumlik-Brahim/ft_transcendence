@@ -9,6 +9,7 @@ import { RootState } from '@/app/store/store';
 
 import { useState, useEffect } from 'react';
 import { setCurrentUser, setOtherUser,setRoomId, setRefreshOn, selectedOne } from '@/app/store/reducer';
+import {socketChat} from '../../../../../../../components/FriendAction'
 
 import axios from "axios";
 
@@ -29,7 +30,7 @@ interface Contact {
 }
 
 
-function ContactListSm({ inputRef }: any) {
+function ContactListSm() {
 
     //* States
     const [cont, setCont] = useState<Contact[]>([]);
@@ -52,7 +53,7 @@ function ContactListSm({ inputRef }: any) {
         } catch (err) {
             console.log(err);
         }
-        inputRef.current.on("joined", (data: any) => {
+        socketChat.on("joined", (data: any) => {
             dispatch(setRoomId(data.roomName))
             dispatch(setRefreshOn()); // 
         });
@@ -81,7 +82,6 @@ function ContactListSm({ inputRef }: any) {
                 name={contact.name}
                 unreadMessages={contact._count.senders}
                 profilePicturePath={contact.Avatar}
-                inputRef={inputRef}
                 onClick={handleButtonClick}
                 activeButtonId={activeButtonId}
             />

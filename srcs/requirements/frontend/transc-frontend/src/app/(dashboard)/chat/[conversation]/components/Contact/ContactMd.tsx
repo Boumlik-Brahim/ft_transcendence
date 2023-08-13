@@ -7,6 +7,7 @@ import { setCurrentUser, setOtherUser, selectedOne, setRefreshOn, setRoomId } fr
 import { RootState } from '@/app/store/store';
 import { useEffect } from "react";
 import axios from "axios";
+import {socketChat} from '../../../../../../../components/FriendAction'
 
 //* Interface of Props 
 interface Props {
@@ -15,10 +16,9 @@ interface Props {
     unreadMessages: number;
     activeButtonId: string | null;
     onClick: (buttonId: string) => void;
-    inputRef: any
 }
 
-function ContactMd({ id, unreadMessages, profilePicturePath, activeButtonId, onClick, inputRef }: Props) {
+function ContactMd({ id, unreadMessages, profilePicturePath, activeButtonId, onClick }: Props) {
 
     //* States
     const isActive = activeButtonId === id;
@@ -45,12 +45,12 @@ function ContactMd({ id, unreadMessages, profilePicturePath, activeButtonId, onC
         dispatch(selectedOne(id));
         dispatch(setRefreshOn()); // 
         //* creating new room 
-        inputRef.current.emit("joinRoom", {
+        socketChat.emit("joinRoom", {
             senderId: currentUserId,
             recieverId: id
         });
         //* updating number of unseen messages
-        inputRef.current.on("joined", (data: any) => {
+        socketChat.on("joined", (data: any) => {
             dispatch(setRoomId(data.roomName))
             dispatch(setRefreshOn()); // 
         });

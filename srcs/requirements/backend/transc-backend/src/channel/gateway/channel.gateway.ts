@@ -12,7 +12,7 @@ import { UsersService } from 'src/users/users.service';
 import { Cron, CronExpression } from '@nestjs/schedule';
 
 @WebSocketGateway({
-  // namespace: 'channelGateway',
+  namespace: 'channelGateway',
   cors: {
     origin: 'http://localhost:5173/channels',
   },
@@ -38,7 +38,6 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   }
   
   handleConnection(client: Socket) {
-    // this.connectedClientsService.addClient(client);
     this.clientId = client.id;
     this.logger.log(`Client connected to Channel server: ${client.id}`);
   }
@@ -92,7 +91,6 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
           if (channel.channelPassword === hachedChannelPswd){
             socket.join(channel.id);
             this.server.to(socket.id).emit('joinedSuccessfully');
-            // res.redirect(`http://localhost:5173/channels/6e699959-91ae-41ec-a9de-be58e8c5626e`)
           }else{
             this.server.to(socket.id).emit('error', `Invalid password ${payload.channelPasword}`);
           }

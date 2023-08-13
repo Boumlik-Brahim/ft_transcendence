@@ -11,6 +11,8 @@ import axios from "axios";
 import { useSelector, useDispatch } from 'react-redux';
 import { setCurrentUser, setOtherUser,setRoomId, selectedOne, setRefreshOn } from '@/app/store/reducer';
 import { RootState } from '@/app/store/store';
+import {socketChat} from '../../../../../../../components/FriendAction'
+
 
 //* Interface of Contact
 interface Contact {
@@ -25,7 +27,7 @@ interface Contact {
     _count: any
 }
 
-function ContactListMd({ inputRef }: any) {
+function ContactListMd() {
 
     //*  States
     const [activeButtonId, setActiveButtonId] = useState<string | null>(null);
@@ -47,7 +49,7 @@ function ContactListMd({ inputRef }: any) {
         } catch (err) {
             console.log(err);
         }
-        inputRef.current.on("joined", (data: any) => {
+        socketChat.on("joined", (data: any) => {
             dispatch(setRoomId(data.roomName))
             dispatch(setRefreshOn()); // 
         });
@@ -76,7 +78,6 @@ function ContactListMd({ inputRef }: any) {
                 unreadMessages={contact._count.senders}
                 profilePicturePath={contact.Avatar}
                 activeButtonId={activeButtonId}
-                inputRef={inputRef}
                 onClick={handleButtonClick}
             />
         );

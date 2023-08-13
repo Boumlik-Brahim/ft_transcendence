@@ -75,12 +75,22 @@ export class UsersService {
         },
         include: {
           senders: {
+            where:{
+              content:{
+                not: "",
+              }
+            },
             orderBy: {
               created_at: 'desc',
             },
             take: 1
           },
           receivers: {
+            where:{
+              content:{
+                not: "",
+              }
+            },
             orderBy: {
               created_at: 'desc',
             },

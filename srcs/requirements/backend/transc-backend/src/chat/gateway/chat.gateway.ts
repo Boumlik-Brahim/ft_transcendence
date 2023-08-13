@@ -3,12 +3,11 @@ import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect,
 import { Server, Socket } from 'socket.io';
 import { ChatService } from '../chat.service';
 import { CreateChatDto } from '../dto/create-chat.dto';
-import { UsersService } from 'src/users/users.service';
 import { ConnectedClientsService } from 'src/connected-clients.service';
 import { PrismaService } from 'prisma/prisma.service';
-
+import { AppGateway } from 'src/app.gateway';
 @WebSocketGateway( {
-  // namespace: 'chatGateway',
+  namespace: 'chatGateway',
   cors: { 
     origin: 'http://localhost:5173/chat',
   },
@@ -16,12 +15,11 @@ import { PrismaService } from 'prisma/prisma.service';
 
 export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   
-  constructor(private readonly chatService: ChatService, 
-    private readonly usersService: UsersService, 
+  constructor(private readonly chatService: ChatService,
     private readonly connectedClientsService: ConnectedClientsService,
-    private prisma: PrismaService) {}
-  
-  private connectedClientsInChat: Map<string, string> = new Map();
+    private prisma: PrismaService,
+    private appGateway: AppGateway) {}
+
 
   @WebSocketServer()
   server: Server ;
@@ -33,20 +31,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   }
 
   handleConnection(client: Socket): void {
-    // const userId = client.handshake.auth.userId as string;
-    // if (userId && client.id){
-    //     if(!this.connectedClientsInChat.has(client.id))
-    //     {
-    //       this.connectedClientsInChat.set(client.id, userId);
-    //     }
-    // }
-    // this.connectedClientsInChat.forEach((value, key) => {
-    //   console.log(`Socket ID: ${key}, User: ${value} is connected on Chat gateway`);
-    // });
-    this.connectedClientsService.addClient(client);
-    this.connectedClientsService.getAllClients().forEach((value, key) => {
-      console.log(`Socket ID: ${key}, User: ${value} is connected on chat gateway`);
-    });
+    this.connectedClientsService.addClientInchat(client);
     this.logger.log(`Client connected to Chat server: ${client.id}`);
   }
 
@@ -94,26 +79,22 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
     this.server.to(hasshedRoomName).emit('getMessage',{ senderId: payload.senderId, receiverId: payload.recieverId, text: payload.content, room: hasshedRoomName});
     await this.chatService.createChat(payload);
-    // for (const [key, val] of this.connectedClientsService.getAllClients()) {
-    //   if (val === payload.recieverId) {
-    //       this.server.to(key).emit('refresh');
-    //   }
-    // };
 
-    const sender = await this.usersService.findOne(payload.senderId)
+    for (const [key, val] of this.connectedClientsService.getAllClientsFromChat()) {
+      if (val === payload.recieverId) {
+        this.server.to(key).emit('refresh');
+      }
+    };
+    
     for (const [key, val] of this.connectedClientsService.getAllClients()) {
       if (val === payload.recieverId) {
-        this.server.to(key).emit('notifMessage', payload);
+        this.appGateway.server.to(key).emit('notifMessage', payload);
       }
     };
   }
   
   handleDisconnect(client: Socket): void {
-    // this.connectedClientsInChat.delete(client.id);
-    // this.connectedClientsInChat.forEach((value, key) => {
-    //   console.log(`Socket ID: ${key}, User: ${value} is disconnected from Chat gateway`);
-    // });
-    this.connectedClientsService.removeClient(client);
+    this.connectedClientsService.removeClientFromChat(client);
     this.logger.log(`Client disconnected from Chat server: ${client.id}`);
   }
 }

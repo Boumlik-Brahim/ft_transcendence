@@ -32,7 +32,7 @@ export class GameGateway {
 
   handleConnection(client : Socket) {
     const userId = client.handshake.auth.userId as string;
-    console.log('new connection', userId);
+    console.log(`Socket ID: ${client.id}, User: ${userId} is connected on Game gateway`);
     if (userId) {
       this.gameService.addUser(userId, client);
     }

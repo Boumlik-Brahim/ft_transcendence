@@ -6,11 +6,12 @@ import { show, hide, setRefreshOn } from '@/app/store/reducer';
 
 import { RootState } from '@/app/store/store';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from "axios";
 
 import { setCurrentUser, setOtherUser } from '@/app/store/reducer';
 import { Socket } from "socket.io-client";
+import {socketChat} from '../../../../../components/FriendAction'
 
 //* Interface of Message Data
 interface MessageData {
@@ -19,11 +20,9 @@ interface MessageData {
     recieverId: string;
 }
 
-interface Props {
-    inputRef: any;
-}
 
-function MessageInputBox({ inputRef }: Props) {
+
+function MessageInputBox() {
     //* States
     const isContactListHidden = useSelector((state: RootState) => state.toggleShowContactList);
     const [messageContent, setMessageContent] = useState('');
@@ -35,7 +34,10 @@ function MessageInputBox({ inputRef }: Props) {
         recieverId: '',
     });
 
-    const dispatch = useDispatch();
+    const dispatch = useDispatch( );
+    
+ 
+
     //* function that shows the contact List Friends
     const handleShowContactList = () => {
         dispatch(show());
@@ -46,7 +48,7 @@ function MessageInputBox({ inputRef }: Props) {
         if (!message.content)
             return;
         // & sending the message in the socket 
-        inputRef.current.emit("message", {
+       socketChat.emit("message", {
             content: message.content,
             senderId: currentUserId,
             recieverId: otherUserId,
@@ -70,7 +72,7 @@ function MessageInputBox({ inputRef }: Props) {
             handleSubmit();
         }
     };
-
+   
     return (
         <div className="w-full h-[15%] bg-channel-600 flex items-center justify-between md:h-[10%] ">
 

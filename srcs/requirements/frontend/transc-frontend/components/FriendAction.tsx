@@ -15,6 +15,9 @@ import {
   send_b,
   unblock_b,
 } from "../public";
+import { io, Socket } from 'socket.io-client'
+import Cookies from 'universal-cookie';
+
 
 import Image from "next/image";
 // import { io } from "socket.io-client";
@@ -26,11 +29,22 @@ import axios from "axios";
 //   transports: ["websocket"],
 // });
 //& -----chat part --------
+
+
+const cookies = new Cookies();
+export const socketChat = io("http://localhost:3000/chatGateway", {
+  auth: { userId: cookies.get('id') }
+});
+
+import { redirect, useRouter } from 'next/navigation'
+
+
 import Link from "next/link";
 import { useSelector, useDispatch } from 'react-redux';
 import { setCurrentUser, setOtherUser,selectedOne , setRefreshOn} from '@/app/store/reducer';
 import { RootState } from '@/app/store/store';
 import { socket } from "./Notification";
+import exp from "constants";
 //& --------------------------
 
 type Props = {
@@ -38,42 +52,76 @@ type Props = {
   userSessionId: string;
 };
 
+// useEffect(() => {
+//   const cookies = new Cookies();
+//   socket.current = io("ws://localhost:3000", { auth: { userId: cookies.get('id') } });
+// }, [])
+
 function FriendAction({ userId, userSessionId }: Props) {
-
-
-
+  
   // &--------------------------------------  CHAT PART ------------------------------------
-        
-  const [roomId, setRoomId] = useState("");
   const dispatch = useDispatch();
-  userId !== userSessionId && (
+
+  const [roomId, setRoomId] = useState("");
+  
+  
+  const router = useRouter();
+
   useEffect(() => {
-      socket.emit("joinRoom", {
+    (userId !== userSessionId) && socketChat.emit("joinRoom", {
         senderId: userSessionId,
         recieverId: userId
-      });
-      
-      socket.on("joined", (data) => {
-        setRoomId(data.roomName);
-        
-      });
-  
-  },[ userId, userSessionId])
-  )
+    });
+    
+    socketChat.on("joined", (data) => {
+      setRoomId(data.roomName);
+    });
+    
+  },[userId, userSessionId])
+
   const handleSubmit = async ({userSessionId,userId} : {userSessionId : string ,userId : string}) => {
-      dispatch(setOtherUser(userId));
-      dispatch(selectedOne(userId));
-      dispatch(setRefreshOn());
-      
-      try {
-          const res = await axios.put(`http://localhost:3000/chat/${userSessionId}/${userId}`, {"seen": true});
-  
-        } catch (err) {
-          console.log(err);
-        }
+
+    dispatch(setOtherUser(userId));
+    dispatch(selectedOne(userId));
+    dispatch(setRefreshOn());
+    
+    try {
+      const res = await axios.put(`http://localhost:3000/chat/${userSessionId}/${userId}`, {"seen": true});
+
+    } catch (err) {
+      console.log(err);
+    }
   }
+
+
+  // const handleSubmit = async ({userSessionId,userId} : {userSessionId : string ,userId : string}) => {
+    
+  //   (userId !== userSessionId) && socketChat.emit("joinRoom", {
+  //     senderId: userSessionId,
+  //     recieverId: userId
+  //   });
+    
+  //   socketChat.on("joined", (data) => {
+  //     setRoomId(data.roomName);
+  //     dispatch(setRefreshOn()); // 
+
+  //     router.push(`/chat/${data.roomName}`)
+
+      
+  //   });
+
+  //     dispatch(setOtherUser(userId));
+  //     dispatch(selectedOne(userId));
+  //     dispatch(setRefreshOn());
+      
+  //     try {
+  //         const res = await axios.put(`http://localhost:3000/chat/${userSessionId}/${userId}`, {"seen": true});
   
-  
+  //       } catch (err) {
+  //         console.log(err);
+  //       }
+  // }
+
   
   // &--------------------------------------------------------------------------------------
 
@@ -262,8 +310,8 @@ function FriendAction({ userId, userSessionId }: Props) {
               >
                 <Image src={block_r} width={30} alt="avatar" />
               </div>
-              <div className="card_friend gradients" onClick={() => handleSubmit({ userSessionId, userId })}>
-                {<Link href={`/chat/${roomId}`}>
+              <div className="card_friend gradients"onClick={() => handleSubmit({ userSessionId, userId })}>
+                  {<Link href={`/chat/${roomId}`}>
                   <Image src={send_b} width={30} alt="avatar" />
                   </Link>}
               </div> 

@@ -84,7 +84,7 @@ function page() {
             <div className="wrapper relative">
               <Search id={userSession} />
               <div className="md:block absolute right-[0px] top-[0px] hidden">
-                <Notification userId={userId} userSession={userSession} />
+              {  <Notification userId={userId} userSession={userSession} />}
               </div>
             </div>
 

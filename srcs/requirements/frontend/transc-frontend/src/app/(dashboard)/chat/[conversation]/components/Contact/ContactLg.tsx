@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import axios from "axios";
 import { io } from "socket.io-client";
+import {socketChat} from '../../../../../../../components/FriendAction'
 
 //* Interface of Props 
 interface Props {
@@ -18,11 +19,10 @@ interface Props {
     unreadMessages: number;
     activeButtonId: string | null;
     onClick: (buttonId: string) => void;
-    inputRef: any
 
 }
 
-function ContactLg({ id, name, unreadMessages, profilePicturePath, activeButtonId, onClick, inputRef }: Props) {
+function ContactLg({ id, name, unreadMessages, profilePicturePath, activeButtonId, onClick }: Props) {
 
     //* States
     const isActive = activeButtonId === id;
@@ -36,31 +36,33 @@ function ContactLg({ id, name, unreadMessages, profilePicturePath, activeButtonI
     //^ ---------------- styling the selected contact + getting other user Id and emitting join room --------------------------------
     const handleClick = async () => {
         //* updating number of unseen messages
-        try {
-            const res = await axios.put(`http://localhost:3000/chat/${currentUserId}/${otherUserId}`, { "seen": true });
-
-        } catch (err) {
-            console.log(err);
-        }
-
+        
         //* for styling the selected
-
+        
         onClick(id);
         //* for getting the other user's ID
         dispatch(setOtherUser(id));
         dispatch(selectedOne(id));
         dispatch(setRefreshOn()); // 
+        try {
+            const res =  await axios.put(`http://localhost:3000/chat/${currentUserId}/${id}`, { "seen": true });
+
+        } catch (err) {
+            console.log(err);
+        }
         //* creating new room 
-        inputRef.current.emit("joinRoom", {
+         socketChat.emit("joinRoom", {
             senderId: currentUserId,
             recieverId: id
         });
-
-        inputRef.current.on("joined", (data: any) => {
+        socketChat.on("joined", (data: any) => {
             dispatch(setRoomId(data.roomName))
             dispatch(setRefreshOn()); // 
         });
     };
+    
+
+
 
     const roomIdFromParam = useSelector((state: RootState) => state.roomIdSlice.roomId);
 
