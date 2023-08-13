@@ -85,7 +85,8 @@ function MessageInputBox({ inputRef }: Props) {
                                 focus:outline-none  focus:border-primary focus:ring-2 focus:ring-primary
                                 placeholder:font-semibold placeholder:text-gray-500 placeholder:text-[11px] 
                                 md:h-[45px] md:text-[14px]  md:placeholder:text-[13px]
-                    `} name="content"
+                    `} 
+                    name="content"
                     value={message.content}
                     onChange={handleInputChange}
                     onKeyDown={handleKeyDown} />

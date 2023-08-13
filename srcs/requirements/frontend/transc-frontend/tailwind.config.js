@@ -6,6 +6,7 @@ module.exports = {
     './src/app/**/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    'node_modules/flowbite-react/**/*.{js,jsx,ts,tsx}'
   ],
   theme: {
     extend: {
@@ -16,6 +17,8 @@ module.exports = {
         'receive': '#FAFAFA' ,
         'leave': '#FF0059',
         'date': '#A9A9A9',
+        'btn' : '#3b4d69',
+        'hover': '#848299',
         channel:{
           100:'#EEF8F8',
           200:'#FFE9E9',
@@ -41,5 +44,5 @@ module.exports = {
       'roboto': '"Roboto Mono"'
     },
   },
-  plugins: [],
+  plugins: [require('flowbite/plugin')],
 }

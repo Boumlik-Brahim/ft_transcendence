@@ -70,7 +70,6 @@ function CreateProtectedChannelForm() {
             channelOwnerId: currentUserId,
         });
         setChannelData({ ...channelData, channelName: '' });
-
         setChannelData({ ...channelData, channelPassword: '' });
         socketTest.on("refrechCreateChannel", (data: any) => {
             console.log("results ------- > ");
