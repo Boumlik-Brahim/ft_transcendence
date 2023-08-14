@@ -29,10 +29,12 @@ function Sidebar() {
   
     /* ----------------------------- get the USER ID ---------------------------- */
     const [userSession, setUserSession] = useState<string>("")
+    const [accessToken, setAccessToken] = useState<string>("")
 
     useEffect(() => {
         const cookies = new Cookies();
         setUserSession(cookies.get('id'));
+        setAccessToken(cookies.get('accessToken'));
     }, [])
     /* ------------------------------------ - ----------------------------------- */
 
@@ -41,7 +43,25 @@ function Sidebar() {
     const isCreateChannelPopUpOn = useSelector((state: RootState) => state.createChannelPopUpToggle);
     const [toggle, setToggle] = useState(true);
 
-
+    const handleLogOut = async (e : any) => {
+        try{
+            const response = await fetch('http://localhost:3000/auth/logout', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ accessToken }),  
+            })
+            if (response.ok) {
+                console.log('Token has been blacklisted.');
+            } else {
+                console.error('Failed to blacklist token.');
+            }
+        }
+        catch(e) {
+            console.log(e);
+        }
+    }
 
     return (
         <>
@@ -125,14 +145,22 @@ function Sidebar() {
                     ))}
                 </ul>
 
-                <Link href='/'>
+                {/* <Link href='/'>
                     <div className='li_sidebar'>
                         <Image key='logout' src={logout_b} width={30} alt="logout" />
                         <p className='text-primary hidden xs:flex'>
                             logout
                         </p>
                     </div>
-                </Link>
+                </Link> */}
+                <button onClick={handleLogOut}>
+                    <div className='li_sidebar'>
+                        <Image key='logout' src={logout_b} width={30} alt="logout" />
+                        <p className='text-primary hidden xs:flex'>
+                            logout
+                        </p>
+                    </div>
+                </button>
             </nav>
         </>
     )
