@@ -73,7 +73,7 @@ export class AuthController {
             throw new UnauthorizedException('Wrong authentication code');
         }
         const token = await this.authService.signToken(userAuthentified);
-        res.cookie("accessToken", token);
-        res.send();
+        // res.cookie("accessToken", token); // i need to try this tommorow with frontend
+        res.send({token : token});
     }
 }
