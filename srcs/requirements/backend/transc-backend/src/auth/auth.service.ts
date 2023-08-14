@@ -28,7 +28,7 @@ export class AuthService {
                 data: {
                     name: req.user.username,
                     email: req.user.email,
-                    intraId: req.user.id,
+                    intraId: req.user.intraId,
                     Avatar: req.user.Avatar,
                     twoFactorAuthSecret: authenticator.generateSecret(),
                 },
@@ -41,11 +41,11 @@ export class AuthService {
     }
     
     async redirectBasedOnTwoFa(res: any, user: UserInter): Promise<void> {
-        if (!user.isTwoFactorEnabled) {
-            return res.redirect(`${PROFILE_REDIRECT_URL}/${user.id}`);
-        } else {
+        // if (!user.isTwoFactorEnabled) {
+        //     return res.redirect(`${PROFILE_REDIRECT_URL}/${user.id}`);
+        // } else {
             return res.redirect(LOGIN_REDIRECT_URL);
-        }
+        // }
       }
     
     async signToken(user: User) : Promise<string>{
