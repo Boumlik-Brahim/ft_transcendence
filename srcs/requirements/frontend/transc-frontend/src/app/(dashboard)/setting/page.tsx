@@ -115,11 +115,11 @@ function page() {
           </div>
           <div className='flex flex-col self-center'>
             <Image 
-              src={`${imageUrl}`}
+              src={`${imageUrl ? imageUrl : "https://cdn.intra.42.fr/users/c43987424ac026f4092df16bb34bb273/iomayr.jpg"}`}
               width={240}
               height={240}
               alt=""
-              className='rounded-full'
+              className='rounded-full border-8 border-green-400 '
             />
             <div className=" w-12 h-12 bg-white flex items-center justify-center self-center mt-[-20px] rounded-full relative">
               <label className="">
@@ -133,7 +133,7 @@ function page() {
                   onChange={handleFileChange}
                 />
               </label>
-              <p className="absolute mt-6 ml-10 text-sm text-center w-24 bg-opacity-50 bg-black text-white py-1 rounded opacity-0 group-hover:opacity-100">
+              <p className="absolute mt-6 ml-10 text-sm text-center w-24 bg-opacity-50 bg-black text-white py-1 rounded opacity-0 hover:opacity-100">
                 Upload Image
               </p>
             </div>
