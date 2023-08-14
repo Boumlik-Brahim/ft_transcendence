@@ -17,18 +17,18 @@ export class IntraStrategy extends PassportStrategy(Strategy, '42') {
             profileFields: {
                 'username': 'login',
                 'email': 'email',
-                'id' : 'id',
+                'intraId' : 'id',
                 'avatar': 'image.link',
             }
         }); // Config
     }
     
     async validate(accessToken: string, refreshToken: string, profile: any, done: Function): Promise<any> {
-        const {username, email, id, avatar} = profile;
+        const {username, email, intraId, avatar} = profile;
         const user: userDto = {
             username: username,
             email: email,
-            intraId: id.toString(),
+            intraId: intraId.toString(),
             Avatar: avatar,
         }
         done(null, user);
