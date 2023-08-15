@@ -20,7 +20,7 @@ export class AuthService {
                     
     async getUser(req: any) {
         try {
-            let user = await this.userService.findOneWithMail(req.user.email);
+            let user = await this.userService.findOneWithId(req.user.intraId);
             if (user){
                 return user;
             }
@@ -28,7 +28,7 @@ export class AuthService {
                 data: {
                     name: req.user.username,
                     email: req.user.email,
-                    IntraId: req.user.id,
+                    intraId: req.user.intraId,
                     Avatar: req.user.Avatar,
                     twoFactorAuthSecret: authenticator.generateSecret(),
                 },
@@ -41,28 +41,17 @@ export class AuthService {
     }
     
     async redirectBasedOnTwoFa(res: any, user: UserInter): Promise<void> {
-        if (!user.twoFa) {
+        // if (!user.isTwoFactorEnabled) {
+        //     return res.redirect(`${PROFILE_REDIRECT_URL}/${user.id}`);
+        // } else {
             return res.redirect(LOGIN_REDIRECT_URL);
-        } else {
-            return res.redirect(`${PROFILE_REDIRECT_URL}/${user.id}`);
-        }
+        // }
       }
     
-    async signToken(@Req() req: any) : Promise<string>{
-        const payload: JwtPayload = {id: req.user.id, email: req.user.email};
+    async signToken(user: User) : Promise<string>{
+        const payload: JwtPayload = {id: user.id, email: user.email};
         return await this.jwt.signAsync(payload, {secret: JWT_SECRET});
     }
-    
-    // async setTwoFactorAuthenticationSecret(secret: string, userId: string){
-    //     await this.prisma.user.update({
-    //         where: {
-    //             id: userId,
-    //         },
-    //         data: {
-    //             twoFactorAuthSecret: secret,
-    //         }
-    //     });
-    // }
 
     async turnOnTwoFactorAuthentication(userId: string){
         await this.prisma.user.update({
@@ -77,7 +66,6 @@ export class AuthService {
 
     async generateTwoFactorAuthenticationSecret(user: User) {
         const otpauthUrl = authenticator.keyuri(user.email, 'ft_transcendence', user.twoFactorAuthSecret);
-
         return {
             otpauthUrl
         }
@@ -95,18 +83,18 @@ export class AuthService {
         return isValid;
     }
 
-    async loginWith2fa(userWithoutPsw: Partial<User>){
-        const payload: JwtPayload =  {
-            id: userWithoutPsw.id,
-            email: userWithoutPsw.email,
-            isTwoFactorEnabled: !!userWithoutPsw.isTwoFactorEnabled,
-            isTwoFactorAuthenticated: true,
-        };
+    // async loginWith2fa(userWithoutPsw: Partial<User>){
+    //     const payload: JwtPayload =  {
+    //         id: userWithoutPsw.id,
+    //         email: userWithoutPsw.email,
+    //         isTwoFactorEnabled: !!userWithoutPsw.isTwoFactorEnabled,
+    //         isTwoFactorAuthenticated: true,
+    //     };
 
-        return {
-            email: payload.email,
-            access_token: this.signToken(payload),
-        };
-    }
+    //     return {
+    //         email: payload.email,
+    //         access_token: this.signToken(payload),
+    //     };
+    // }
     
 }

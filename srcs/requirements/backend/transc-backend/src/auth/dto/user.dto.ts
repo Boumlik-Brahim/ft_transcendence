@@ -11,7 +11,7 @@ export class userDto {
 
     @IsString()
     @IsNotEmpty()
-    id: string;
+    intraId: string;
     
     @IsString()
     @IsNotEmpty()

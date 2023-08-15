@@ -25,7 +25,7 @@ export default function Page() {
                   className="w-[67px] h-[67px] md:w-[110px] md:h-[110px]"
                 />
                 <div className="
-                    w-[101px] h-[39px] font-press text-[10px] rounded-full text-[#3E3B6A] bg-white flex items-center justify-center
+                    w-[101px] h-[39px] font-press text-[10px] rounded-full text-[#3E3B6A] bg-white flex items-center justify-center hover:bg-gray-300 transition duration-500
                     md:w-[150px] md:h-[70px] md:text-[18px]"
                   >
                   <Link href="/login">
@@ -92,46 +92,56 @@ export default function Page() {
           w-full flex flex-col items-center
           md:flex-row justify-center flex-wrap"
         >
-          <Member
-            img="/fake/avatar.png"
-            name="Breezy"
-            job="Full Stack"
-            paragraph="Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-            intraUrl="https://profile.intra.42.fr/users/iomayr"
-            gitUrl="https://github.com/B-omayr"
-          />
-          <Member
-            img="/fake/avatar.png"
-            name="Boumlik"
-            job="string"
-            paragraph="Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-            intraUrl="string"
-            gitUrl="string"
-          />
-          <Member
-            img="/fake/avatar.png"
-            name="Bilal"
-            job="string"
-            paragraph="Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-            intraUrl="string"
-            gitUrl="string"
-          />
-          <Member
-            img="/fake/avatar.png"
-            name="Foulare"
-            job="string"
-            paragraph="Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-            intraUrl="string"
-            gitUrl="string"
-          />
-          <Member
-            img="/fake/avatar.png"
-            name="OUssama"
-            job="string"
-            paragraph="Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-            intraUrl="string"
-            gitUrl="string"
-          />
+          <div className=" transition duration-1000 ease-in-out">
+            <Member
+              img="/fake/avatar.png"
+              name="Breezy"
+              job="Full Stack"
+              paragraph="Lorem Ipsum is simply dummy text of the printing and typesetting industry."
+              intraUrl="https://profile.intra.42.fr/users/iomayr"
+              gitUrl="https://github.com/B-omayr"
+            />
+          </div>
+          <div className=" transition duration-1000 ease-in-out">
+            <Member
+              img="/fake/avatar.png"
+              name="Boumlik"
+              job="string"
+              paragraph="Lorem Ipsum is simply dummy text of the printing and typesetting industry."
+              intraUrl="string"
+              gitUrl="string"
+            />
+          </div>
+          <div className=" transition duration-1000 ease-in-out">
+            <Member
+              img="/fake/avatar.png"
+              name="Bilal"
+              job="string"
+              paragraph="Lorem Ipsum is simply dummy text of the printing and typesetting industry."
+              intraUrl="string"
+              gitUrl="string"
+            />
+          </div>
+          <div className=" transition duration-1000 ease-in-out">
+            <Member
+              img="/fake/avatar.png"
+              name="Foulare"
+              job="string"
+              paragraph="Lorem Ipsum is simply dummy text of the printing and typesetting industry."
+              intraUrl="string"
+              gitUrl="string"
+            />
+          </div>
+          <div className=" transition duration-1000 ease-in-out">
+            <Member
+              img="/fake/avatar.png"
+              name="OUssama"
+              job="string"
+              paragraph="Lorem Ipsum is simply dummy text of the printing and typesetting industry."
+              intraUrl="string"
+              gitUrl="string"
+            />
+          </div>
         </div>
       </section>
       <footer className="w-full h-[50vh] bg-[#3E3B6A] text-white">

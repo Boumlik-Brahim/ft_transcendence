@@ -1,6 +1,6 @@
 export interface UserInter {
-    id: number;
+    id: string;
     email: string;
-    password: string;
-    twoFa: boolean;
+    // password: string;
+    isTwoFactorEnabled: boolean;
 }

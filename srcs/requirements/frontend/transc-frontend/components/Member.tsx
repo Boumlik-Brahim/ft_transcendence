@@ -30,7 +30,7 @@ export default function Member({img, name, job, paragraph, intraUrl, gitUrl} : P
             <div className='flex items-center'>
                 <a href={intraUrl} target='blank' className='mr-[10px]'>
                     <Image
-                        src={"/intra.png"}
+                        src={"/landing/intra.png"}
                         width={20}
                         height={20}
                         alt=""
@@ -39,7 +39,7 @@ export default function Member({img, name, job, paragraph, intraUrl, gitUrl} : P
                 </a>
                 <a href={gitUrl} target='blank'>
                     <Image
-                        src={"/github.png"}
+                        src={"/landing/github.png"}
                         width={20}
                         height={20}
                         alt=""
