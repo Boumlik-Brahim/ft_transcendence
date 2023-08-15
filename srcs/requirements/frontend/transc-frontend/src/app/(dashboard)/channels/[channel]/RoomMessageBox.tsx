@@ -51,7 +51,7 @@ function RoomMessageBox({ userId,  date, messageContent }: Props) {
     
     return (
         <div className="w-[90%] min-h-[50px]  mx-[5%] flex mb-[17px] lg:mx-[0px]  ">
-            <div className="w-[15%] h-full flex justify-center lg:w-[51px] lg:ml-[40px] ">
+            <div className="w-[40px] h-full flex justify-center  md:w-[40px] lg:w-[51px] lg:ml-[40px]  ">
                 <Image src={`${ CurrentUserName ? CurrentUserName?.Avatar :"https://cdn.pixabay.com/photo/2017/07/03/09/54/dog-2467149_1280.jpg" }`} height={41} width={41} alt="profile" className="rounded-full lg:w-[45px] lg:h-[45px]" />
             </div>
             <div className="w-[83%] min-h-[10px]  ml-[8px] lg:ml-[7px]  ">
@@ -59,7 +59,7 @@ function RoomMessageBox({ userId,  date, messageContent }: Props) {
                     <div className="  max-w-[90px] h-full flex items-center  text-primary text-[10px] font-poppins font-bold truncate ">
                          {CurrentUserName?.name}
                     </div>
-                    <div className="  pl-[2px] w-[90px] h-full text-date text-[8px] font-poppins font-light flex items-center ">
+                    <div className="  pl-[2px] w-[95px] h-full text-date text-[8px] font-poppins font-light flex items-center ">
                         <div className='pl-[4px] '>
                             {localDateString}
                         </div>
@@ -69,7 +69,7 @@ function RoomMessageBox({ userId,  date, messageContent }: Props) {
                     </div>
                 </div>
                 <div className="w-[95%] md:w-full min-h-[20px] ">
-                    <p className="w-full h-full text-neutral-700 text-[8px] font-poppins font-medium  tracking-[0.2px] text-justify">
+                    <p className="w-full h-full text-neutral-700 text-[8px] lg:text-[10px] font-poppins font-medium  tracking-[0.2px] text-justify">
                         {messageContent}
                     </p>
                 </div>

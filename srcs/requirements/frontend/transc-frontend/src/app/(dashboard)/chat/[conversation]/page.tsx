@@ -185,7 +185,7 @@ function Page({ params }: any) {
   return (
 <>
     <Sidebar/>
-    <div className="w-full h-[85vh] md:h-screen flex">
+    <div className="w-full h-[85vh] md:h-screen  flex">
       <div className={`${!isContactListHidden.showContactListToggled ? "w-full h-full " : "hidden"} `}>
 
         {isMdScreenState && <Header

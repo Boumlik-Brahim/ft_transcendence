@@ -90,7 +90,7 @@ function MessageInputChannelBox({channelId} : {channelId: string}) {
     };
 
     return (
-        <div className="w-full h-[15%] bg-channel-600 flex items-center justify-between">
+        <div className="w-full  h-[15%] md:h-[10%] bg-gray-50 flex items-center justify-between">
             <div className='
                     pr-[8px]  h-full w-[80%] flex items-center pl-[23px] 
                     md:pl-[30px] md:w-[90%] 
@@ -98,9 +98,9 @@ function MessageInputChannelBox({channelId} : {channelId: string}) {
                 <input
                     placeholder="Type your message"
                     className={`
-                                h-[40px] lg:h-[38px] w-full rounded-full text-primary font-poppins font-semibold text-[11px] pl-3.5  
+                                h-[40px] lg:h-[38px] w-full rounded-full text-primary font-poppins font-normal text-[11px] pl-3.5  
                                 focus:outline-none  focus:border-primary focus:ring-2 focus:ring-primary
-                                placeholder:font-semibold placeholder:text-gray-500 placeholder:text-[11px] 
+                                placeholder:font-normal placeholder:text-gray-500 placeholder:text-[11px] 
                                 md:h-[45px] md:text-[14px]  md:placeholder:text-[13px]
                     `} 
                     name="content"

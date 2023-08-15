@@ -195,7 +195,7 @@ export class ChannelService {
   }
   
   async findOneChannelMember(channelId: string, userId: string): Promise<ChannelMember> {
-    return this.prisma.channelMember.findUniqueOrThrow({
+    return this.prisma.channelMember.findUnique({
       where: {
         userAndChannel: {
           userId: userId,

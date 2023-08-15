@@ -59,8 +59,9 @@ import bgMain from './bg_main.png'
 import vs from "./VS.svg";
 import closeCircle from './closecircle.png'
  
-
-
+import editChannelName from './editChannelName.svg'
+import confirmName from './confirmName.svg'
+import confirmbtn from 'confirmbtn.svg'
 
 export {
   bgMain,

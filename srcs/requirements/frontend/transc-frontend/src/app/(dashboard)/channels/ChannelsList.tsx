@@ -253,7 +253,7 @@ function ChannelsList() {
               {
                 (MyChannelsList.length == 0)
                   ?
-                  <div className=" w-full  h-full text-primary text-xl flex items-center justify-center p-0 m-0 font-poppins ">
+                  <div className=" w-full  h-full text-primary text-[13px] md:text-xl flex items-center justify-center p-0 m-0 font-poppins ">
                     You are not currently a member of any channels
                   </div>
                   :
@@ -277,7 +277,7 @@ function ChannelsList() {
               {
                 (GeneralChannelsList.length == 0)
                   ?
-                  <div className=" w-full  h-full text-primary text-xl flex items-center justify-center p-0 m-0 font-poppins ">
+                  <div className=" w-full  h-full text-primary text-[13px] md:text-xl flex items-center justify-center p-0 m-0 font-poppins ">
                     No channels available to join at this time !
                   </div>
                   :
@@ -294,13 +294,12 @@ function ChannelsList() {
 
 
 
-
-      {/* <Button onClick={() => props.setOpenModal('form-elements')} className="bg-red-500 w-[100px]">Toggle modal</Button> */}
+      
       <Modal show={props.openModal === 'form-elements'} size="md" popup onClose={() => props.setOpenModal(undefined)}>
         <Modal.Header />
         <Modal.Body>
-          <div className="space-y-6 flex flex-col ">
-            <div className=" w-full flex  flex-col items-center">
+          <div className="space-y-6 flex flex-col  ">
+            <div className=" w-full flex  flex-col items-center ">
               <Image src={"/passwordIcon.svg"} alt="password" width={45} height={45} />
               <h1 className="pt-[3px] text-xs font-poppins text-gray-600">Protected Channel </h1>
             </div>
@@ -317,7 +316,7 @@ function ChannelsList() {
             </div>
             
             <div className=" self-center w-[20%]  rounded-[20px] h-[30px] flex justify-center bg-channel-500 hover:bg-hover ">
-              <button className= "text-xs font-normal text-primary font-poppins hover:text-white">Confirm</button>
+              <button className= "text-xs font-normal text-primary font-poppins hover:text-white" >Confirm</button>
             </div>
             
           </div>

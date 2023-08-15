@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Logger } from '@nestjs/common';
+import { Logger, Res } from '@nestjs/common';
 import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { ChannelService } from '../channel.service';
 import { Server, Socket } from 'socket.io';
@@ -14,7 +14,7 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 
 @WebSocketGateway({
   cors: {
-    origin: 'http://localhost:5173/channels'
+    origin: '*'
   },
 })
 
@@ -38,7 +38,7 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   }
   
   handleConnection(client: Socket) {
-    this.connectedClientsService.addClient(client);
+    // this.connectedClientsService.addClient(client);
     this.clientId = client.id;
     this.logger.log(`Client connected to Channel server: ${client.id}`);
   }
@@ -47,6 +47,7 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   //* --------------------------------------------------------------CreateChannel---------------------------------------------------------- *//
   @SubscribeMessage('createChannel')
   async handleCreateChannel(@MessageBody() payload: CreateChannelDto, @ConnectedSocket() socket: Socket): Promise<void> {
+    console.log('fdsa');
     try{
       if(payload.channelPassword)
       {
@@ -77,6 +78,7 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   @SubscribeMessage('joinChannel')
   async joinChannel(@MessageBody() payload: { userId: string, channelId: string, channelPasword: string }, @ConnectedSocket() socket: Socket) : Promise<void> {
     try{
+      console.log("i'm in the backend !!!")
       const channel = await this.channelService.findOneChannel(payload.channelId);
       const member = await this.prisma.channelMember.findUnique({
         where: {
@@ -87,7 +89,19 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
         },
       });
       if (member){
-        socket.join(channel.id);
+        if (channel.channelType === 'PROTECTED' && payload.channelPasword){
+          const hachedChannelPswd = createHash('sha256').update(payload.channelPasword).digest('hex');
+          if (channel.channelPassword === hachedChannelPswd){
+            socket.join(channel.id);
+            this.server.to(socket.id).emit('joinedSuccessfully');
+            // res.redirect(`http://localhost:5173/channels/6e699959-91ae-41ec-a9de-be58e8c5626e`)
+          }else{
+            this.server.to(socket.id).emit('error', `Invalid password ${payload.channelPasword}`);
+          }
+        }else{
+          socket.join(channel.id);
+          this.server.to(socket.id).emit('joinedSuccessfully');
+        }
       }else{
         const user = await this.usersService.findOne(payload.userId);
         if (channel.channelType === 'PUBLIC' || channel.channelType === 'PRIVATE'){
@@ -103,6 +117,7 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
             await this.channelService.createChannelMember({"userId": payload.userId, "channelId": payload.channelId, "role": 'MEMBER'});
             socket.join(payload.channelId);
             this.server.to(payload.channelId).emit('onMessage', `${user.name} has joined channel: ${channel.channelName}`);
+            this.server.to(socket.id).emit('joinedSuccessfully');
             this.server.to(socket.id).emit('refrechMember');
           }else{
             this.server.to(socket.id).emit('error', `Invalid password ${payload.channelPasword}`);
@@ -301,6 +316,10 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
       {
         const channel = await this.channelService.updateChannel(payload.channelId, payload.updatedChannelName);
         this.server.to(channel.id).emit('onMessage', `${user.name} update the channel name to: ${channel.channelName}`);
+        // --------------- Bilal    : i added this emit to receive the new Channel name --------------------
+          this.server.to(socket.id).emit('newChannelName', payload.updatedChannelName);
+        // --------------- ---------------------------------------------------------------------------------
+
       }else{
         this.server.to(socket.id).emit('error', 'Invalid Owner');
       }

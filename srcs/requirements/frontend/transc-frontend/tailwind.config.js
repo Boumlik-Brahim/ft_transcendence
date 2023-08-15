@@ -17,7 +17,7 @@ module.exports = {
         'receive': '#FAFAFA' ,
         'leave': '#FF0059',
         'date': '#A9A9A9',
-        'btn' : '#3b4d69',
+        'btn' : '#3E3B6A',
         'hover': '#848299',
         channel:{
           100:'#EEF8F8',

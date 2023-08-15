@@ -43,6 +43,9 @@ function ChannelBoxInfo({ id, channel_name, channel_owner, channel_members, chan
 
     // ^ ---------------------------------  fetch channel owner user ------------------------------
     const currentUserId = useSelector((state: RootState) => state.EditUserIdsSlice.currentUserId);
+    const cookies = new Cookies();
+    const userIdFromCookie = cookies.get('id');
+
 
     const [channelOwnerUser, setChannelOwnerUser] = useState("");
     //* useEffect to fetch User data 
@@ -75,10 +78,10 @@ function ChannelBoxInfo({ id, channel_name, channel_owner, channel_members, chan
     useEffect(() => {
         async function fetchMemberExistence() {
             try {
-                const response = await axios.get<MemberChannelInfo>(`http://localhost:3000/channel/${id}/member/${currentUserId}`);
+                const response =  await axios.get<MemberChannelInfo>(`http://localhost:3000/channel/${id}/member/${userIdFromCookie}`);
                 setExistingStatus(response.data);
             } catch (error) {
-                console.error(error);
+                alert(error);
             }
         }
         fetchMemberExistence();
@@ -101,15 +104,35 @@ function ChannelBoxInfo({ id, channel_name, channel_owner, channel_members, chan
 
 
    
-      const cookies = new Cookies();
+    //   const cookies = new Cookies();
     //   const socket = io("ws://localhost:3000", { auth: { userId: cookies.get('id') } });
 
-    
+    const handleJoinPbPvChannel = ( ) =>{
+        socket.emit("joinChannel", {
+            userId: userIdFromCookie,
+            channelId: id,
+            channelPasword: '',
+        })  
+        
+        socket.on("joinedSuccessfully",()=>{
+                console.log("joined Successfully")
+                router.push(`/channels/${id}`)
+        })
+
+        socket.on("error", (data) => {
+            console.log("wrong Password !!!!")
+            alert(data);
+        })
+    }
     
     const [redirectionUrl, setRedirectionUrl] = useState("")
 
     const clickHandler = () => {
-        !accessPermission && props.setOpenModal('form-elements')
+        !accessPermission
+         ?
+         props.setOpenModal('form-elements')
+        :
+        handleJoinPbPvChannel();
 
     }
     // ^ ------------------------------------------------------------------------------------------
@@ -140,9 +163,9 @@ function ChannelBoxInfo({ id, channel_name, channel_owner, channel_members, chan
 ;
 
 
-    const handleConfirm = () => {       
+    const handleConfirm = () => {
         socket.emit("joinChannel", {
-            userId: currentUserId,
+            userId: userIdFromCookie,
             channelId: id,
             channelPasword: password,
         })  
@@ -157,6 +180,7 @@ function ChannelBoxInfo({ id, channel_name, channel_owner, channel_members, chan
             alert(data);
         })      
     }
+
 
     //* -------------------------------------------------------------------------------------------
 
@@ -180,21 +204,21 @@ function ChannelBoxInfo({ id, channel_name, channel_owner, channel_members, chan
                         Member
                     </span>
                 </div>
-                {accessPermission
+                {
+                    accessPermission
                     ?
-                    <Link href={`/channels/${id}`}>
-                        <div className={`w-[65px] h-[25px]   ${channelTypeStyling} flex justify-center items-center rounded-full  md:w-[84px] md:h-[35px]`} onClick={clickHandler}>
-                            <div className={`${`text-[8px] font-bold leading-tight tracking-wider uppercase md:text-[11px]`}`}>
-                                {!existingStatus ? "join" : channel_mode}
-                            </div>
+                    <div className={`w-[65px] h-[25px]   ${channelTypeStyling} flex justify-center items-center rounded-full  md:w-[84px] md:h-[35px]`} onClick={clickHandler}>
+                        <div className={`${`text-[8px] font-bold leading-tight tracking-wider uppercase md:text-[11px]`}`}>
+                            {!existingStatus ? "join" : channel_mode}
                         </div>
-                    </Link>
+                    </div>
                     :
                     <div className={`w-[65px] h-[25px]   ${channelTypeStyling} flex justify-center items-center rounded-full  md:w-[84px] md:h-[35px]`} onClick={clickHandler}>
                         <div className={`${`text-[8px] font-bold leading-tight tracking-wider uppercase md:text-[11px]`}`}>
                             {!existingStatus ? "join" : channel_mode}
                         </div>
-                    </div>}
+                    </div>
+                    }
             </div>
 
 
@@ -222,7 +246,7 @@ function ChannelBoxInfo({ id, channel_name, channel_owner, channel_members, chan
 
                         <div className=" self-center w-[20%]  rounded-[20px] h-[30px] flex justify-center bg-channel-500 hover:bg-hover " onClick={handleConfirm}>
                                 <button className="text-xs font-normal text-primary font-poppins hover:text-white">
-                                    Confirm
+                                    Confirm 
                                 </button>
                         </div>
 
