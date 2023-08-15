@@ -46,6 +46,7 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   //* --------------------------------------------------------------CreateChannel---------------------------------------------------------- *//
   @SubscribeMessage('createChannel')
   async handleCreateChannel(@MessageBody() payload: CreateChannelDto, @ConnectedSocket() socket: Socket): Promise<void> {
+    console.log('fdsa');
     try{
       if(payload.channelPassword)
       {
@@ -76,6 +77,7 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   @SubscribeMessage('joinChannel')
   async joinChannel(@MessageBody() payload: { userId: string, channelId: string, channelPasword: string }, @ConnectedSocket() socket: Socket) : Promise<void> {
     try{
+      console.log("i'm in the backend !!!")
       const channel = await this.channelService.findOneChannel(payload.channelId);
       const member = await this.prisma.channelMember.findUnique({
         where: {
@@ -96,6 +98,7 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
           }
         }else{
           socket.join(channel.id);
+          this.server.to(socket.id).emit('joinedSuccessfully');
         }
       }else{
         const user = await this.usersService.findOne(payload.userId);
@@ -311,6 +314,10 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
       {
         const channel = await this.channelService.updateChannel(payload.channelId, {"channelName": payload.updatedChannelName });
         this.server.to(channel.id).emit('onMessage', `${user.name} update the channel name to: ${channel.channelName}`);
+        // --------------- Bilal    : i added this emit to receive the new Channel name --------------------
+          this.server.to(socket.id).emit('newChannelName', payload.updatedChannelName);
+        // --------------- ---------------------------------------------------------------------------------
+
       }else{
         this.server.to(socket.id).emit('error', 'Invalid Owner');
       }

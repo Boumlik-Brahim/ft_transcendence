@@ -60,8 +60,9 @@ import vs from "./VS.svg";
 import closeCircle from './closecircle.png'
 import sms from './sms.svg'
  
-
-
+import editChannelName from './editChannelName.svg'
+import confirmName from './confirmName.svg'
+import confirmbtn from 'confirmbtn.svg'
 
 export {
   sms,

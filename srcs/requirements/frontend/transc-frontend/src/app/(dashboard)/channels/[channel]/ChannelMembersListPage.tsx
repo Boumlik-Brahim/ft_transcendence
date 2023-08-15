@@ -13,7 +13,19 @@ import { useDispatch, useSelector } from 'react-redux';
 import { ShowChannelMembers, HideChannelMembers } from '@/app/store/reducer'
 import { RootState } from '@/app/store/store';
 
-function ChannelMembersListPage() {
+
+interface channel {
+    id: string
+    channelName: string,
+    channelType: string,
+    channelPassword: string,
+    channelOwnerId: string,
+    _count: any
+  }
+
+
+function ChannelMembersListPage({channelId} : {channelId: string}) {
+
     const dispatch = useDispatch();
     const isShowChannelMembersOn = useSelector((state: RootState) => state.toggleShowChannelMembers);
 
@@ -63,12 +75,14 @@ function ChannelMembersListPage() {
     }
 
     return (
-        <div className={`${isShowChannelMembersOn.showChannelMembersToggled ? "w-full h-full bg-primary" : "hidden"}`}>
+    <div className={`${isShowChannelMembersOn.showChannelMembersToggled ? "w-full h-full bg-primary" : "hidden"}`}>
 
-            <ChannelOwnerListSm />
+        <ChannelOwnerListSm 
+            channelId ={channelId}
+        />
             <>
                 <ChannelAdminListSm />
-                <div className="w-[146px] h-[120px] bg-white absolute top-[38%] right-[27%] rounded-xl">
+                <div className="w-[146px] h-[120px] bg-white absolute top-[38%] right-[27%] rounded-xl hidden">
                     <div className="w-full h-full flex   ">
 
                         <div className="w-[41px] h-full  flex flex-col items-center justify-center mt-[5px] ">
@@ -137,9 +151,9 @@ function ChannelMembersListPage() {
                 </div>
             </>
             <ChannelMembersListSm />
-            <LeaveChannel />
+        <LeaveChannel />
 
-        </div>
+    </div>
     )
 }
 export default ChannelMembersListPage;
