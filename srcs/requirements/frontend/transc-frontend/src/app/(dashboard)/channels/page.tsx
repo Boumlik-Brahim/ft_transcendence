@@ -14,7 +14,9 @@ import { channelsData, channelProps } from './TempData/channelsData'
 import ChannelsList from "./ChannelsList";
 
 const cookies = new Cookies();
-export const socket = io("http://localhost:3000",  { auth: { userId: cookies.get('id') } });
+export const socket = io("http://localhost:3000/channelGateway",
+    { auth: { userId: cookies.get('id') }
+});
 
 import { useMediaQuery } from 'react-responsive';
 import { useEffect, useState, useRef } from "react";

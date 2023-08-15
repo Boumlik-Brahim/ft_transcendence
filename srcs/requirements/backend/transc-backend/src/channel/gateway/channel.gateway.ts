@@ -38,6 +38,8 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   }
   
   handleConnection(client: Socket) {
+    const userId = client.handshake.auth.userId as string;
+    console.log(`Socket ID: ${client.id}, User: ${userId} is connected on Channel gateway`);
     this.clientId = client.id;
     this.logger.log(`Client connected to Channel server: ${client.id}`);
   }
