@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Controller, Get, Post, Body, Patch, Param, Delete, UploadedFile, UseInterceptors  } from '@nestjs/common';
+import { Controller, Get, Post,Req, Body, Patch, Param, Delete, UploadedFile, UseInterceptors  } from '@nestjs/common';
 import { Achievement, BlockedUser, Friend, GamesHistories, User, UserStat } from '@prisma/client';
 import { diskStorage } from 'multer';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -17,7 +17,6 @@ import { CreateBlockedUserDto } from './dto/create-blockedUser.dto';
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
-
   //* ----------------------------------------------------------------userCRUDOp---------------------------------------------------------- *//
   @Post()
   async create(@Body() createUserDto: CreateUserDto): Promise<User> {
@@ -51,6 +50,7 @@ export class UsersController {
 
   @Patch(':id/userStatus')
   async updateUserStatus(@Param('id') id: string, @Body('status') status: 'ONLINE' | 'OFFLINE' | 'INAGAME'): Promise<User> {
+    console.log("status :::::::::::::::::::::::: ", status);
     const updateUser = await this.usersService.updateUserStatus(id, status);
     return updateUser;
   }
@@ -205,27 +205,51 @@ export class UsersController {
     await this.usersService.updateTwoFactorStatus(userId, isTwoFactorEnabled);
   }
 
-  @Post('upload')
-    @UseInterceptors(
-    FileInterceptor('file', {
-        storage: diskStorage({
-            destination: 'public/img',
-            filename: (req, file, cb) => {
-            cb(null, file.originalname);
-            },
+  @Post(':id/upload')
+  @UseInterceptors(
+  FileInterceptor('file', {
+      storage: diskStorage({
+          destination: 'public/img',
+          filename: (req, file, cb) => {
+            const timestamp = new Date().getTime();
+            const fileExtension = file.originalname.split('.').pop();
+            const userId = req.params.id; // console.log(req.params.id);
+            const newFileName = `${timestamp}-${userId}.${fileExtension}`;
+            (req as any).newFileName = `/../../../../../../backend/transc-backend/public/img/${newFileName}`; // Set newFileName in the request object
+            cb(null, newFileName);
+          },
         }),
-        }),
-    )
-    async local(@UploadedFile() file: Express.Multer.File) {
-        return {
-        statusCode: 200,
-        data: file,
-        };
-    }
+      }),
+      )
+  async local(@Param('id') userId: string,@UploadedFile() file: Express.Multer.File, @Req() req: any) {
+    console.log((req as any).newFileName)
+    await this.usersService.updateAvatarUrl(userId, (req as any).newFileName);
+    return {
+      statusCode: 200,
+      data: file,
+      };
+  }
+
+  // @Post('upload')
+  //   @UseInterceptors(
+  //   FileInterceptor('file', {
+  //       storage: diskStorage({
+  //           destination: 'public/img',
+  //           filename: (req, file, cb) => {
+  //             cb(null, file.originalname);
+  //           },
+  //       }),
+  //       }),
+  //   )
+  //   async local(@UploadedFile() file: Express.Multer.File) {
+  //       return {
+  //       statusCode: 200,
+  //       data: file,
+  //       };
+  //   }
 
     @Post(':userId/update/username')
     async updateUserName(@Param("userId") userId: string, @Body("userName") userName: string){
-      console.log("From endpoint");
       await this.usersService.updateUserName(userId, userName);
     }
     
