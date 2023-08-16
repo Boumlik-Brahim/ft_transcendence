@@ -94,7 +94,7 @@ function page() {
     try{
       const formData = new FormData();
       formData.append('file', file);
-      await fetch('http://localhost:3000/users/upload', {
+      await fetch(`http://localhost:3000/users/${userId}/upload`, {
         method: 'POST',
         body: formData,
       });
