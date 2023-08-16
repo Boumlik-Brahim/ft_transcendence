@@ -22,6 +22,7 @@ export class AuthService {
         try {
             let user = await this.userService.findOneWithId(req.user.intraId);
             if (user){
+                this.userService.updateUserStatus(user.id, "ONLINE")
                 return user;
             }
             const newUser = await this.prisma.user.create({
@@ -40,13 +41,13 @@ export class AuthService {
         }
     }
     
-    async redirectBasedOnTwoFa(res: any, user: UserInter): Promise<void> {
-        // if (!user.isTwoFactorEnabled) {
-        //     return res.redirect(`${PROFILE_REDIRECT_URL}/${user.id}`);
-        // } else {
-            return res.redirect(LOGIN_REDIRECT_URL);
-        // }
-      }
+    // async redirectBasedOnTwoFa(res: any, user: UserInter): Promise<void> {
+    //     // if (!user.isTwoFactorEnabled) {
+    //     //     return res.redirect(`${PROFILE_REDIRECT_URL}/${user.id}`);
+    //     // } else {
+    //         return res.redirect(LOGIN_REDIRECT_URL);
+    //     // }
+    //   }
     
     async signToken(user: User) : Promise<string>{
         const payload: JwtPayload = {id: user.id, email: user.email};
