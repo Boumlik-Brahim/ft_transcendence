@@ -217,6 +217,18 @@ export class UsersService {
     // })
   }
 
+  async updateAvatarUrl(userId: string, newFileName: string){
+    console.log("From update : ", newFileName);
+    await this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        Avatar: newFileName,
+      }
+    })
+  }
+
 //* --------------------------------------------------------------userServices---------------------------------------------------------- *//
 
 //* -------------------------------------------------------------userStatServices------------------------------------------------------- *//
