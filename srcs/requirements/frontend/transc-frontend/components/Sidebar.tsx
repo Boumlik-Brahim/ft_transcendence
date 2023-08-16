@@ -25,6 +25,7 @@ function Sidebar() {
 
     /* ------------------------- get url ID from url ------------------------- */
     const { userId } = useParams();
+    const cookies = new Cookies();
     /* ------------------------------------ - ----------------------------------- */
   
     /* ----------------------------- get the USER ID ---------------------------- */
@@ -32,7 +33,6 @@ function Sidebar() {
     const [accessToken, setAccessToken] = useState<string>("")
 
     useEffect(() => {
-        const cookies = new Cookies();
         setUserSession(cookies.get('id'));
         setAccessToken(cookies.get('accessToken'));
     }, [])
@@ -42,26 +42,22 @@ function Sidebar() {
 
     const isCreateChannelPopUpOn = useSelector((state: RootState) => state.createChannelPopUpToggle);
     const [toggle, setToggle] = useState(true);
-
-    const handleLogOut = async (e : any) => {
-        try{
-            const response = await fetch('http://localhost:3000/auth/logout', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ accessToken }),  
-            })
-            if (response.ok) {
-                console.log('Token has been blacklisted.');
-            } else {
-                console.error('Failed to blacklist token.');
-            }
-        }
-        catch(e) {
-            console.log(e);
-        }
+    //-------------LogOut ----------------//
+    const updateData = {
+        status: "OFFLINE",
     }
+    const handleLogOut = async () => {
+        const res = await fetch(`http://localhost:3000/users/${userId}/userStatus`,{
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updateData),
+        })
+        cookies.remove('accessToken', { path: '/' });
+    }
+    
+    //--------------------------------------//
 
     return (
         <>
@@ -99,12 +95,12 @@ function Sidebar() {
                             ))}
                         </ul>
 
-                        <div className='li_sidebar'>
+                        <button onClick={handleLogOut} className='li_sidebar'>
                             <Image key='logout' src={logout_b} width={30} alt="logout" />
                             <p className='text-primary hidden xs:flex'>
                                 logout
                             </p>
-                        </div>
+                        </button>
                     </nav>
                 )
             }
@@ -123,9 +119,9 @@ function Sidebar() {
                     ))}
                 </ul>
 
-                <div className='li_sidebar'>
+                <button onClick={handleLogOut} className='li_sidebar'>
                     <Image key='logout' src={logout_w} width={60} alt="logout" />
-                </div>
+                </button>
             </nav>
 
             <nav className={`${"sidebarxl"} ${isCreateChannelPopUpOn.createChannelPopUpToggled ? "blur-sm bg-gray-400" : ""} `}>
