@@ -45,6 +45,7 @@ import { setCurrentUser, setOtherUser,selectedOne , setRefreshOn} from '@/app/st
 import { RootState } from '@/app/store/store';
 import { socket } from "./Notification";
 import exp from "constants";
+import { createHash } from "crypto";
 //& --------------------------
 
 type Props = {
@@ -68,29 +69,38 @@ function FriendAction({ userId, userSessionId }: Props) {
   const router = useRouter();
 
   useEffect(() => {
-    (userId !== userSessionId) && socketChat.emit("joinRoom", {
-        senderId: userSessionId,
-        recieverId: userId
-    });
+    // socketChat.emit("joinRoom", {
+    //     senderId: userSessionId,
+    //     recieverId: userId
+    // });
     
-    socketChat.on("joined", (data) => {
-      setRoomId(data.roomName);
-    });
-    
+    // socketChat.on("joined", (data) => {
+    //   setRoomId(data.roomName);
+    // });
+
+    const roomID = [userSessionId, userId].sort().join('-');
+    const hasshedRoomName = createHash('sha256').update(roomID).digest('hex');
+    setRoomId(hasshedRoomName);
+
   },[userId, userSessionId])
 
   const handleSubmit = async ({userSessionId,userId} : {userSessionId : string ,userId : string}) => {
-
+  
     dispatch(setOtherUser(userId));
     dispatch(selectedOne(userId));
-    dispatch(setRefreshOn());
-    
+    // dispatch(setRefreshOn());
+
     try {
       const res = await axios.put(`http://localhost:3000/chat/${userSessionId}/${userId}`, {"seen": true});
-
+      
     } catch (err) {
       console.log(err);
     }
+    
+    socketChat.emit("joinRoom", {
+        senderId: userSessionId,
+        recieverId: userId
+    });
   }
 
 
