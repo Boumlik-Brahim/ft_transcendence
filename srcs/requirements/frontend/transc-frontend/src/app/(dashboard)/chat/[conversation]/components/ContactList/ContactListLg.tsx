@@ -56,7 +56,7 @@ function ContactListLg() {
         }
         
         socketChat.on("joined", (data: any) => {
-            dispatch(setRefreshOn()); // 
+            // dispatch(setRefreshOn()); // 
             dispatch(setRoomId(data.roomName))
         });
     };
@@ -67,15 +67,17 @@ const [refetch, setRefetch] = useState(false);
 useEffect(() => {
     async function fetchContact() {
         try {
-            const response =    await axios.get<Contact[]>(`http://localhost:3000/users/${currentUserId}/receivers`);
-            console.log(response.data);
+            const response = await axios.get<Contact[]>(`http://localhost:3000/users/${currentUserId}/receivers`);
             response && setCont(response.data);
         } catch (error) {
             console.error(error);
         }
     }
     fetchContact();
-}, [refreshStatus, refetch]);
+    socketChat.on("refresh", () => {
+        fetchContact();
+    });
+}, [refreshStatus]);
 
 
 
