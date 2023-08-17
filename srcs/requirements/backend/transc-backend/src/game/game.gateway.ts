@@ -100,26 +100,26 @@ export class GameGateway {
     }
   }
 
-  @SubscribeMessage('cancelGame')
-  cancelGame(@MessageBody() data: JoinGameDto, @ConnectedSocket() client: Socket) {
-    if (!data) return; 
-    const { gameId, userId } = data;
-    if (gameId && userId) 
-    {
-      this.gameService.cancelGame(userId, gameId, client);
-    }
-  }
+  // @SubscribeMessage('cancelGame')
+  // cancelGame(@MessageBody() data: JoinGameDto, @ConnectedSocket() client: Socket) {
+  //   if (!data) return; 
+  //   const { gameId, userId } = data;
+  //   if (gameId && userId) 
+  //   {
+  //     this.gameService.cancelGame(userId, gameId, client);
+  //   }
+  // }
 
-  @SubscribeMessage('pauseOrStart')
-  pauseOrSart(@MessageBody() data: JoinGameDto, @ConnectedSocket() client: Socket) {
-    console.log(data)
-    if (!data) return; 
-    const { gameId, userId } = data;
-    if (gameId && userId) 
-    {
-      this.gameService.pauseOrSart(userId, gameId, client);
-    }
-  }
+  // @SubscribeMessage('pauseOrStart')
+  // pauseOrSart(@MessageBody() data: JoinGameDto, @ConnectedSocket() client: Socket) {
+  //   console.log(data)
+  //   if (!data) return; 
+  //   const { gameId, userId } = data;
+  //   if (gameId && userId) 
+  //   {
+  //     this.gameService.pauseOrSart(userId, gameId, client);
+  //   }
+  // }
 
   handleDisconnect(client : Socket) {
     this.gameService.deleteUser(client);

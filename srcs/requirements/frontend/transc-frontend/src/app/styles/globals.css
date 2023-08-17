@@ -17,6 +17,10 @@
   list-style: none;
 }
 
+/* canvas {
+  image-rendering: pixelated;
+} */
+
 body {
   position: relative;
   font-family: 'Roboto', sans-serif;

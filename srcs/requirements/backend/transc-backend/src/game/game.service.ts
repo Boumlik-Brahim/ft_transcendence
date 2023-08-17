@@ -4,6 +4,7 @@ import { GameEntity, Player } from './entity/game.entity';
 import { v4 as uuidv4 } from 'uuid';
 import { Server, Socket } from 'socket.io';
 import { CANCELLED } from 'dns';
+import { time } from 'console';
 
 interface GameInvitation {
     id : string,
@@ -15,6 +16,7 @@ export class GameService {
     private gameMap = new Map<String, GameEntity>();
     private usersConnected = new Map<string, Socket>();
     private inTheQueue : String | null;
+    private Vitesse = 0.1;
 
     constructor(private prisma : PrismaService) {}
 
@@ -63,7 +65,7 @@ export class GameService {
      */
     async inviteAfriend(senderId : string, receiverId : string, client : Socket, maxScore? : number) {
         const receiverSocket : Socket = this.usersConnected.get(receiverId);
-        const socre = maxScore ? maxScore : 10;
+        const score = maxScore ? maxScore : 10;
         try {
             const sender = await this.prisma.user.findUnique({
                 where : {
@@ -101,9 +103,9 @@ export class GameService {
                 client.emit('error', 'You are not allowed to play against this one');
                 return ;
             }
-            const game : GameEntity = this.getGameInitValue(senderId, receiverId, maxScore);
+            const game : GameEntity = this.getGameInitValue(senderId, receiverId, score);
             this.gameMap.set(game.id, game);
-            const invitation = await this.prisma.gamesInvitation.create({
+            await this.prisma.gamesInvitation.create({
                 data : {
                     senderId,
                     receiverId,
@@ -293,10 +295,10 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
      * Here is The logique about the Game
      * @param gameValue 
      */
-    gameLogique(gameValue : GameEntity) {
+    gameLogique(gameValue : GameEntity, deltaTime : number) {
         this.collision(gameValue)
-        gameValue.ball_x += (gameValue.vx * gameValue.ball_speed);
-        gameValue.ball_y += (gameValue.vy * gameValue.ball_speed );
+        gameValue.ball_x += gameValue.vx * gameValue.ball_speed;
+        gameValue.ball_y += gameValue.vy  * gameValue.ball_speed;
     }
 
     /**
@@ -333,10 +335,6 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
 
         const ball_left = ball_x - radius;
         const ball_right = ball_x + radius;
-        const ball_top = ball_y - radius;
-        const ball_bottom = ball_y + radius;
-
-        const paddle_middle = h_paddle / 2;
         const paddle1_surface = player1.paddleX + w_paddle;
         const paddle2_surface = player2.paddleX;
         const paddle1_bottom = player1.paddleY + h_paddle;
@@ -344,43 +342,21 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
         const paddle1_top = player1.paddleY;
         const paddle2_top = player2.paddleY;
 
-        if (ball_left <= paddle1_surface && ball_y > paddle1_top && ball_y < paddle1_bottom)
+        if (
+            (ball_left <= paddle1_surface && ball_y > paddle1_top && ball_y < paddle1_bottom) 
+                ||
+            (ball_right >= paddle2_surface && ball_y > paddle2_top && ball_y < paddle2_bottom)
+            )
         {
-            gameValue.ball_speed += 0.2;
-            const angle = this.paddleCollisionAngle(ball_y, paddle1_top, paddle_middle);
-            gameValue.vx = gameValue.ball_speed * Math.cos(angle);
-            gameValue.vy = gameValue.ball_speed * Math.sin(angle);
-            if (gameValue.vx < 0)
-            {
-                gameValue.vx *= -1;
-            }
-        }
-        else if (ball_right >= paddle2_surface && ball_y > paddle2_top && ball_y < paddle2_bottom)
-        {
-            gameValue.ball_speed += 0.2;
-            const angle = this.paddleCollisionAngle(ball_y, paddle2_top, paddle_middle);
-            gameValue.vx = gameValue.ball_speed * Math.cos(angle);
-            gameValue.vy = gameValue.ball_speed * Math.sin(angle);
-            if (gameValue.vx > 0)
-            {
-                gameValue.vx *= -1;
-            }
-        }  
-        else if (ball_right > W_screen || ball_left < 0)
-        {
-            gameValue.ball_speed = 1;
+            const maxScore = 2;
+            if (gameValue.ball_speed < maxScore) gameValue.ball_speed += this.Vitesse;
             gameValue.vx *= -1;
+        } 
+        else if (ball_x < paddle1_surface || ball_x > paddle2_surface)
+        {
             gameValue.ball_x = W_screen / 2;
             gameValue.ball_y = H_screen / 2;
-            if (ball_right > W_screen) {
-                gameValue.player1.score += 1;
-                if (gameValue.player1.score === gameValue.scoreLimit)
-                {
-                    gameValue.gameStatus.status = 'finished';
-                    gameValue.winner = gameValue.player1.id;
-                }
-            }
-            else if (ball_left < 0) {
+            if (ball_x < paddle1_surface ) {
                 gameValue.player2.score += 1;
                 if (gameValue.player2.score === gameValue.scoreLimit)
                 {
@@ -388,8 +364,16 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
                     gameValue.winner = gameValue.player2.id;
                 }
             }
+            else if (ball_x > paddle2_surface) {
+                gameValue.player1.score += 1;
+                if (gameValue.player1.score === gameValue.scoreLimit)
+                {
+                    gameValue.gameStatus.status = 'finished';
+                    gameValue.winner = gameValue.player1.id;
+                }
+            }
         }
-        else if (ball_bottom > H_screen || ball_top < 0)
+        else if (ball_y - radius <= 0 || ball_y + radius >= H_screen)
         {
             gameValue.vy *= -1;
         }
@@ -401,15 +385,19 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
      * @param server 
      */
     gameLoop(game : GameEntity, server : any) {
+        let lastTimestamp = performance.now();
         const id = setInterval(() => {
-            this.updatePaddle(game);
+            const currentTimestamp = performance.now();
+            const deltaTime = (currentTimestamp - lastTimestamp) / 1000
             if (game.gameStatus.status === 'started')
             {
-                this.gameLogique(game);
+                this.updatePaddle(game);
+                this.gameLogique(game, deltaTime);
             }
             server.to(game.id).emit("gameData", game);
             this.istheGameEnd(game, id, server);
-        }, 1000 / 60);
+            lastTimestamp = currentTimestamp;
+        }, 16);
     }
 
     /**
@@ -502,7 +490,7 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
             ball_y : 50,
             radius : 4,
             vx : 1,
-            vy : 1,
+            vy : 0.5,
             player1 : {
                 id : player1Id,
                 inThegame : false,
@@ -517,7 +505,7 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
                 paddleY : 80,
                 score : 0
             },
-            w_paddle : 7,
+            w_paddle : 10,
             h_paddle : 20,
             playerSpeed : 8,
             scoreLimit : maxScore,
@@ -672,55 +660,54 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
      * @param client 
      */
 
-    pauseOrSart(playerId : String, gameId : String, client : any) {
-        const game : GameEntity = this.getGame(playerId, gameId, client);
-        if (game) {
-            game.gameStatus.status = game.gameStatus.status === 'pause' ? 'started' : 'pause';
-            game.gameStatus.update_t = new Date().getTime();
-            this.gameMap.set(gameId, game);
-        }
-    }
+    // pauseOrSart(playerId : String, gameId : String, client : any) {
+    //     const game : GameEntity = this.getGame(playerId, gameId, client);
+    //     if (game) {
+    //         game.gameStatus.status = game.gameStatus.status === 'pause' ? 'started' : 'pause';
+    //         game.gameStatus.update_t = new Date().getTime();
+    //         this.gameMap.set(gameId, game);
+    //     }
+    // }
 
     /**
      * Cancel a game
-     * @param playerId 
-     * @param gameId 
-     * @param client 
-     */
+    //  * @param playerId 
+    //  * @param gameId 
+    //  * @param client 
+    //  */
 
-    async cancelGame(playerId : String, gameId : String, client : any) {
-        const game : GameEntity = this.getGame(playerId, gameId, client);
-        if (game) {
-            if (game.gameStatus.status === 'waiting')
-            {
-                if (game.id === this.inTheQueue)
-                    this.inTheQueue = null;
-                else {
-                    await this.prisma.gamesInvitation.update({
-                        where : {
-                            gameId : gameId as string
-                        }, 
-                        data : {
-                            status : 'CANCELED'
-                        }
-                    });
-                }
-                this.gameMap.delete(gameId);
-                client.emit('error_access');
-            }
-            else
-            {
-                if (playerId === game.player1.id)
-                    game.winner = game.player2.id
-                else
-                    game.winner = game.player1.id
-                game.gameStatus.status = 'canceled';
-                this.gameMap.set(gameId, game)
-            }
-            this.updateUserSatusInTheGame(playerId as string, false);
-            client.leave(gameId);
-        }
-    }
+    // async cancelGame(playerId : String, gameId : String, client : any) {
+    //     const game : GameEntity = this.getGame(playerId, gameId, client);
+    //     if (game) {
+    //         if (game.gameStatus.status === 'waiting')
+    //         {
+    //             if (game.id === this.inTheQueue)
+    //                 this.inTheQueue = null;
+    //             else {
+    //                 await this.prisma.gamesInvitation.update({
+    //                     where : {
+    //                         gameId : gameId as string
+    //                     }, 
+    //                     data : {
+    //                         status : 'CANCELED'
+    //                     }
+    //                 });
+    //             }
+    //             this.gameMap.delete(gameId);
+    //             client.emit('error_access');
+    //         }
+    //         else
+    //         {
+    //             if (playerId === game.player1.id)
+    //                 game.winner = game.player2.id
+    //             else
+    //                 game.winner = game.player1.id
+    //             game.gameStatus.status = 'canceled';
+    //             this.gameMap.set(gameId, game)
+    //         }
+    //         this.updateUserSatusInTheGame(playerId as string, false);
+    //     }
+    // }
 
     /**
      * Quit a game maybe by accident or by yourself, we are gonna wait for a moment after that the game will finish

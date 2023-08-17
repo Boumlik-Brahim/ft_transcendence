@@ -17,32 +17,30 @@ import Notification from '../../../../components/Notification';
 interface CreateGameType {
   invitedId? : String, 
   creatorId : String, 
-  isRamdomOponent : boolean
+  isRamdomOponent : boolean,
+  maxScore : number
 }
 
 const Game = () => {
   const [oponentName, setOponentName] = useState<string>('');
   const [oponentId, setIOponnentId] = useState<string>();
   const [isRamdom, setIsramdom] = useState<boolean>(true);
+  const [maxScore, setMaxScore] = useState<number>(10);
   const myId : string = getCookie('id') as string;
   console.log(getCookie('accessToken'), 'token');
   const router = useRouter();
   const socket = useSocket();
 
-
-  console.log(typeof(getCookie('id')), 'type')
-
   const createGame = (isRamdomOponent : boolean, id : string | undefined) : void => {
-    console.log('fode')
+    console.log(oponentId);
     if (!socket) return;
-    console.log('oulare')
     if (!socket.connected) return ;
-    console.log('oulare')
     if (myId) {
       const data : CreateGameType = {
         invitedId : id,
         creatorId : myId,
-        isRamdomOponent
+        isRamdomOponent,
+        maxScore
       }
       socket.emit('createGame', data);
       console.log("inside")
@@ -110,8 +108,18 @@ const Game = () => {
               </button>
             )
           }
+          <form className='w-full flex justify-center items-center mt-10 gap-2'>
+            <label className='text-[#3E3B6A] font-[400] text-[15px]' > Max Score </label>
+            <input 
+              type="range" id="numberInput" name="numberInput" min="10" max="90" step="10" defaultValue={10} className='range-input appearance-none bg-[#F3F3F3] w-[280px] rounded-full'
+              onChange={e => setMaxScore(parseInt(e.target.value))}
+            />
+            <div className='text-[#3E3B6A] font-[400] text-[15px]'>
+              {maxScore}
+            </div>
+          </form>
         </div>
-        <OnlineFriends  createGame={createGame} />
+        <OnlineFriends  setOponent={setIOponnentId} setIsRandom={setIsramdom} />
       </div>
     </>
 

@@ -5,7 +5,8 @@ import Image from 'next/image';
 import { Socket } from 'engine.io-client';
 
 interface Props {
-   createGame : (bool : boolean, id : string) => void,
+    setOponent : (params : string) => void,
+    setIsRandom : (params : boolean) => void
 }
 
 interface User {
@@ -14,13 +15,14 @@ interface User {
     id : string
 }
 
-const OnlineFriends = ({ createGame } : Props) => {
+const OnlineFriends = ({ setOponent, setIsRandom } : Props) => {
 
     const [users, setUsers] = useState<User[]>();
     const OnlineFriends= users;
 
-    const handleChallenge = (id : string) => {;
-        createGame(false, id);
+    const handleSelect = (id : string) => {
+        setOponent(id);
+        setIsRandom(false);
     }
 
     useEffect(()=> {
@@ -45,7 +47,7 @@ const OnlineFriends = ({ createGame } : Props) => {
                         </div>
                         <h1 className='text-primary text-[12px] font-[700]'>{user.name}</h1>
                         </div>
-                        <button className='p-1 border text-[10px] text-primary border-primary rounded-[40px] w-[80px] hover:bg-primary hover:text-white' onClick={() => handleChallenge(user.id)}>
+                        <button className='p-1 border text-[10px] text-primary border-primary rounded-[40px] w-[80px] hover:bg-primary hover:text-white' onClick={() => handleSelect(user.id)}>
                             Challenge
                         </button>
                     </div>

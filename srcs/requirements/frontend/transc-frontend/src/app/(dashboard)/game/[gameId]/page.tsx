@@ -10,12 +10,12 @@ import { useRouter } from 'next/navigation';
 import Waiting from '../waiting';
 import { getCookie } from 'cookies-next';
 import Players from './players';
-import { Link } from 'react-router-dom';
 import Sidebar from "../../../../../components/Sidebar";
 import Notification from '../../../../../components/Notification';
 import { useSocket } from '@/app/socket';
 import OnlineFriends from '../onlineFriends';
 import Friendsbar from '../../../../../components/Friendsbar';
+import Link from 'next/link';
 
 
 export interface GameEntity {
@@ -104,7 +104,7 @@ const Page = ( {params} : any) => {
         return (
             <>
             
-                <Sidebar/>
+            <Sidebar/>
             <div className='layouts bg-gray-200'>
                 <div className="my_container"> 
         
@@ -121,19 +121,21 @@ const Page = ( {params} : any) => {
                                     {
                                         gameData && <Players userId_1={gameData.player1.id as string}  userId_2={gameData.player2.id as string} />
                                     }
-                                    <div className={`flex justify-center items-center h-[100%] md:h-[50%] border-4 overflow-hidden border-white md:border-t-0 lg:h-[75%] w-full lg:w-[75%] rounded-[20px] md:rounded-tl-[0px] md:rounded-tr-[0px] shadow-2xl`}>
+                                    <div className={`flex justify-center items-center h-[300px] border-4 overflow-hidden border-white md:border-t-0 lg:h-[500px] w-full lg:w-[75%] rounded-[20px] md:rounded-tl-[0px] md:rounded-tr-[0px] shadow-2xl`}>
                                         <Canvas gameData={gameData} gameState={gameSate}></Canvas>
                                     </div>
                                 </div>
                                 <div className='h-[50px] flex flex-wrap justify-center items-center '>
-                                    <button className='bg-primary m-4 p-2 w-[150px] border border-primary text-white rounded-xl cursor hover:bg-white hover:text-primary' onClick={handleCancel}>
-                                        cancel
-                                    </button>
-                                    <button className='bg-white m-4 p-2 border border-primary w-[150px] text-primary rounded-xl hover:bg-primary hover:text-white' onClick={handlePause}>
+                                    <Link href='/game'>
+                                        <button className='bg-primary m-4 p-2 w-[150px] border border-primary text-white rounded-xl cursor hover:bg-white hover:text-primary'>
+                                            Leave
+                                        </button>
+                                    </Link>
+                                    {/* <button className='bg-white m-4 p-2 border border-primary w-[150px] text-primary rounded-xl hover:bg-primary hover:text-white' onClick={handlePause}>
                                         {
                                             gameSate === 'pause' ? 'Start' : 'Pause'
                                         }
-                                    </button>
+                                    </button> */}
                                 </div>
                             </div>
                         )
