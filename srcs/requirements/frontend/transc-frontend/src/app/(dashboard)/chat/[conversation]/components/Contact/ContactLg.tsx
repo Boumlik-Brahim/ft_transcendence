@@ -56,8 +56,8 @@ function ContactLg({ id, name, unreadMessages, profilePicturePath, activeButtonI
             recieverId: id
         });
         socketChat.on("joined", (data: any) => {
+            // dispatch(setRefreshOn()); // 
             dispatch(setRoomId(data.roomName))
-            dispatch(setRefreshOn()); // 
         });
     };
     
