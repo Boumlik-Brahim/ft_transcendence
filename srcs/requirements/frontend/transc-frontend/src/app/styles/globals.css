@@ -192,6 +192,10 @@ body {
   background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(26,37,137,0) 0%, rgba(170,246,163,1) 50%, rgba(0,212,255,0) 100%);
  }
 
+ .draw_match{
+  border: 3px solid #d4d4d4;
+ }
+
  input:checked ~ .dot {
   transform: translateX(100%);
   background-color: #48bb78;

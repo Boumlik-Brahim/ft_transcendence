@@ -16,17 +16,14 @@ export class ChatService {
     return hasshedRoomName;
   }
   
-  async countUnreadMessages(senderId: string, receiverId: string){
-    const hasshedRoomName = await this.generateHashedRommId(senderId, receiverId);
+  async findAllMsg(senderId: string): Promise<number>{
 
     const unreadMessages = await this.prisma.directMessage.count({
       where: {
-        recieverId: senderId,
-        roomId: hasshedRoomName,
-        seen: false
+        senderId: senderId,
       },
     });
-    
+
     return unreadMessages;
   }
 
@@ -56,7 +53,7 @@ export class ChatService {
         seen: false
       },
       orderBy: {
-        created_at: 'desc',
+        created_at: 'asc',
       },
     })
     .catch (error => {

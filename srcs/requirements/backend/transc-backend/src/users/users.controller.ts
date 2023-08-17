@@ -68,9 +68,7 @@ export class UsersController {
 
   @Get('/:userId/userStat')
   async findOneUserStat(@Param('userId') userId: string): Promise<UserStat> {
-    console.log("ENDPOINT ===> BB", userId)
     const userStat = await this.usersService.findOneUserStat(userId);
-    console.log("ENDPOINT ===>", userStat)
     return userStat;
   }
   

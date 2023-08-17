@@ -59,11 +59,15 @@ import bgMain from './bg_main.png'
 import vs from "./VS.svg";
 import closeCircle from './closecircle.png'
 import sms from './sms.svg'
+import happy from './happy.svg'
+import Sad from './Sad.svg'
  
 
 
 
 export {
+  happy,
+  Sad,
   sms,
   bgMain,
   closeCircle,

@@ -183,7 +183,7 @@ function Notification({ userId, userSession }: props) {
                   <div className="flex items-center">
                     <div className="flex gap-[10px] items-center w-[300px]">
                       <Image
-                        src={msg.Avatar}
+                        src={msg.user.Avatar}
                         width={80}
                         height={80}
                         alt="avatar"
@@ -192,11 +192,11 @@ function Notification({ userId, userSession }: props) {
                       <div className="flex flex-col">
                         <p className="text-primary font-semibold">
                           {" "}
-                          {msg.name}
+                          {msg.user.name}
                         </p>
                         <p className="text-[#464646] w-[250px] font-sm truncate">
                           {" "}
-                          {messages[index].content}
+                          {msg.content}
                         </p>
                       </div>
                     </div>
@@ -209,6 +209,9 @@ function Notification({ userId, userSession }: props) {
                       className="cursor-pointer hover:opacity-60"
                     />
                   </Link>
+                  <div className=" bg-red-500 h-[30px] w-[30px] rounded-full flex justify-center items-center font-semibold text-[white]">
+                    {msg.numberOfMsg}
+                  </div>
                 </li>
               ))}
             </ul>

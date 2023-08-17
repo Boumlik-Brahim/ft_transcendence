@@ -71,7 +71,7 @@ model UserStat {
   id  String @id @default(uuid())
   winsNumbr  Int
   lossesNumbr  Int
-  rate  Int
+  rate  Float
   user  User  @relation(fields: [userId], references: [id])
   userId  String @unique
   created_at  DateTime  @default(now())

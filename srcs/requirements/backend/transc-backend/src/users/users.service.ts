@@ -499,12 +499,13 @@ export class UsersService {
   //* ------------------------------------------------------------friendServices---------------------------------------------------------- *//
   //* ------------------------------------------------------------GetUserGamesService---------------------------------------------------------- *//
   async getUsergames(userId : string) : Promise<GamesHistories[]> {
+    console.log(userId)
     try {
       const games = await this.prisma.gamesHistories.findMany(
         {
           where : {
             OR : [
-              { playerA_id : userId, playerB_id : userId }
+              { playerA_id : userId}, {playerB_id : userId }
             ]
           }
         }

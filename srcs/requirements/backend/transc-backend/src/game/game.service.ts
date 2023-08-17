@@ -329,7 +329,7 @@ export class GameService {
             data : {
                 playerA_id : playerA.id as string,
                 playerA_Score : playerA.score,
-                playerB_id : playerA.id as string,
+                playerB_id : playerB.id as string,
                 playerB_Score : playerB.score
         }});
     }
@@ -392,30 +392,33 @@ export class GameService {
                 }
             });
             if (!userSate) {
-                await this.prisma.userStat.create({
+                console.log("IF Fodi");
+                const p = await this.prisma.userStat.create({
                     data: {
                         winsNumbr : 1,
                         lossesNumbr : 0,
-                        rate : 0.5,
-                        userId
+                        rate : 0.2,
+                        userId : userId
                     },
                 });
             }
             else {
+                // const _rate = (userSate.winsNumbr + 1) / 5
                 await this.prisma.userStat.update({
                     where: {
-                      userId
+                      userId : userId
                     },
                     data: {
                       winsNumbr : {increment: 1},
-                      rate : {increment : 0.5}
+                      rate : {increment: 0.2}
                     },
-                })
+                });
             }
         }
         catch (error) {
-
+            console.log(error);
         }
+        console.log(" fode oulare ");
     }
 
     /**
@@ -434,15 +437,15 @@ export class GameService {
                     data: {
                         winsNumbr : 0,
                         lossesNumbr : 1,
-                        rate : 0.5,
-                        userId
+                        rate : 0,
+                        userId : userId
                     },
                 });
             }
             else {
                 await this.prisma.userStat.update({
                     where: {
-                      userId
+                      userId : userId
                     },
                     data: {
                         lossesNumbr : {increment: 1}
@@ -550,9 +553,17 @@ export class GameService {
             else
             {
                 if (playerId === game.player1.id)
+                {
                     game.winner = game.player2.id
+                    game.player2.score = 1;
+                    game.player1.score = 0;
+                }
                 else
+                {
                     game.winner = game.player1.id
+                    game.player2.score = 0;
+                    game.player1.score = 1;
+                }
                 game.gameStatus.status = 'canceled';
                 this.gameMap.set(gameId, game)
             }

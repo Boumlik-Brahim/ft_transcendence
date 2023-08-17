@@ -199,7 +199,7 @@ function FriendAction({ userId, userSessionId }: Props) {
 
   return (
     <>
-      {userId !== userSessionId && (
+      {(userId !== userSessionId) && (
         <div className="flex flex-wrap gap-[10px] justify-center w-[200px] xs:w-[300px] md:w-[400px]">
           {blockStatus === "UNBLOCKING" ? (
             <>
