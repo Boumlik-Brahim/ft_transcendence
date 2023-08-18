@@ -15,7 +15,8 @@ export class ChatService {
     return hasshedRoomName;
   }
   
-  async countMessages(senderId: string){
+  async findAllMsg(senderId: string): Promise<number>{
+
     const unreadMessages = await this.prisma.directMessage.count({
       where: {
         senderId: senderId,
@@ -51,7 +52,7 @@ export class ChatService {
         seen: false
       },
       orderBy: {
-        created_at: 'desc',
+        created_at: 'asc',
       },
     })
     .catch (error => {

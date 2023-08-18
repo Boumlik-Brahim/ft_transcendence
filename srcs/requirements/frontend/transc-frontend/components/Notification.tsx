@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState } from "react";
-import { MessageData, friendShip, users_int } from "../interfaces";
+import { MessageData, friendShip, notifMessage, users_int } from "../interfaces";
 import {
   deleteFriend,
   updateFriend,
@@ -50,14 +50,14 @@ const dispatch = useDispatch();
 
 
     
-    const handleSubmitNotif = async ({userSession, msg} : {userSession : string ,msg : users_int}) => {
-          dispatch(setOtherUser(msg.id));
-          dispatch(selectedOne(msg.id));
+    const handleSubmitNotif = async ({userSession, msg} : {userSession : string ,msg : notifMessage}) => {
+          dispatch(setOtherUser(msg.user.id));
+          dispatch(selectedOne(msg.user.id));
           dispatch(setRefreshOn());
       
        socketChat.emit("joinRoom", {
         senderId: userSession,
-        recieverId: msg.id
+        recieverId: msg.user.id
       });
        socketChat.on("joined", (data) => {
         setRoomId(data.roomName);
@@ -258,7 +258,7 @@ const dispatch = useDispatch();
                   <div className="flex items-center">
                     <div className="flex gap-[10px] items-center w-[300px]">
                       <Image
-                        src={msg.Avatar}
+                        src={msg.user.Avatar}
                         width={80}
                         height={80}
                         alt="avatar"
@@ -267,11 +267,11 @@ const dispatch = useDispatch();
                       <div className="flex flex-col">
                         <p className="text-primary font-semibold">
                           {" "}
-                          {msg.name}
+                          {msg.user.name}
                         </p>
                         <p className="text-[#464646] w-[250px] font-sm truncate">
                           {" "}
-                          {messages[index].content}
+                          {msg.content}
                         </p>
                       </div>
                     </div>
@@ -286,6 +286,9 @@ const dispatch = useDispatch();
                         className="cursor-pointer hover:opacity-60"
                       />
                     {/* </Link> */}
+                    </div>
+                  <div className=" bg-red-500 h-[30px] w-[30px] rounded-full flex justify-center items-center font-semibold text-[white]">
+                    {msg.numberOfMsg}
                   </div>
                 </li>
               ))}

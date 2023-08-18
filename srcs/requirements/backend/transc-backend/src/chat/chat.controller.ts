@@ -28,6 +28,13 @@ export class ChatController {
     return chat;
   }
 
+  @Get('/msgNumber/:userId')
+  async findMsg(@Param('userId') userId: string): Promise<number> {
+    const chatnmbr = await this.chatService.findAllMsg(userId);
+    console.log("....>", chatnmbr);
+    return chatnmbr;
+  }
+
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<DirectMessage> {
     const chat = await this.chatService.findOneChat(id);
