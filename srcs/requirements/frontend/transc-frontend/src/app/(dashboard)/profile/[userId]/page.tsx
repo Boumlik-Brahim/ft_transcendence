@@ -45,7 +45,7 @@ function page() {
     const fetchprofileInfo = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:3000/users/${userId}`
+          `${process.env.NEXT_PUBLIC_APP_URI}/users/${userId}`
         );
         setProfileUser(response.data);
        
@@ -63,7 +63,7 @@ function page() {
     const fetchHistory = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:3000/users/getGames/${userId}`
+          `${process.env.NEXT_PUBLIC_APP_URI}/users/getGames/${userId}`
         );
         setHistory(response.data);
       } catch (error) {

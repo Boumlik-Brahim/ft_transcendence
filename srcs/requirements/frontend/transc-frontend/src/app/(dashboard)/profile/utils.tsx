@@ -9,7 +9,7 @@ export function useUserData(userId: string) {
     const fetchUser = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:3000/users/${userId}`
+          `${process.env.NEXT_PUBLIC_APP_URI}/users/${userId}`
         );
         setUser(response.data);
       } catch (error) {
@@ -23,7 +23,7 @@ export function useUserData(userId: string) {
 
 export async function createFriend(userId: string, friendId: string) {
   try {
-    const response = await fetch(`http://127.0.0.1:3000/users/friend`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URI}/users/friend`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -47,7 +47,7 @@ export async function createFriend(userId: string, friendId: string) {
 export async function updateFriend(userId: string, friendId: string) {
   try {
     const response = await fetch(
-      `http://127.0.0.1:3000/users/${userId}/friend/${friendId}`,
+      `${process.env.NEXT_PUBLIC_APP_URI}/users/${userId}/friend/${friendId}`,
       {
         method: "PATCH",
         headers: {
@@ -73,7 +73,7 @@ export async function updateFriend(userId: string, friendId: string) {
 export async function deleteFriend(userId: string, friendId: string) {
   try {
     const response = await fetch(
-      `http://127.0.0.1:3000/users/${userId}/friend/${friendId}`,
+      `${process.env.NEXT_PUBLIC_APP_URI}/users/${userId}/friend/${friendId}`,
       {
         method: "DELETE",
       }
@@ -102,7 +102,7 @@ export function usePendingUsers(friendShip: friendShip[], userSession: string): 
       try {
         const userResponses = await Promise.all(
           friendIds.map((friendId) =>
-            axios.get(`http://127.0.0.1:3000/users/${friendId}`)
+            axios.get(`${process.env.NEXT_PUBLIC_APP_URI}/users/${friendId}`)
           )
         );
 
@@ -154,7 +154,7 @@ export function usePendingMessage(
       try {
         const userResponses = await Promise.all(
           senderIds.map((senderId) =>
-            axios.get(`http://127.0.0.1:3000/users/${senderId}`)
+            axios.get(`${process.env.NEXT_PUBLIC_APP_URI}/users/${senderId}`)
           )
         );
 
@@ -178,7 +178,7 @@ export function usePendingMessage(
 
 export async function block(userId: string, blockedId: string) {
   try {
-    const response = await fetch(`http://127.0.0.1:3000/users/blockedUser`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URI}/users/blockedUser`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -200,7 +200,7 @@ export async function block(userId: string, blockedId: string) {
 export async function unblock(userId: string, blockedId: string) {
   try {
     const response = await fetch(
-      `http://127.0.0.1:3000/users/${userId}/unBlockedUser/${blockedId}`,
+      `${process.env.NEXT_PUBLIC_APP_URI}/users/${userId}/unBlockedUser/${blockedId}`,
       {
         method: "DELETE",
         headers: {

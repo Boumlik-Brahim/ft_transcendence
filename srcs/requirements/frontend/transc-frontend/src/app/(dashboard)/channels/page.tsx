@@ -14,7 +14,7 @@ import { channelsData, channelProps } from './TempData/channelsData'
 import ChannelsList from "./ChannelsList";
 
 const cookies = new Cookies();
-export const socket = io("http://localhost:3000/channelGateway",
+export const socket = io(`${process.env.NEXT_PUBLIC_APP_URI}/channelGateway`,
     { auth: { userId: cookies.get('id') }
 });
 

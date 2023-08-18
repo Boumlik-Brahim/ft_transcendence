@@ -32,7 +32,7 @@ function ContactMd({ id, unreadMessages, profilePicturePath, activeButtonId, onC
     //^ ---------------- styling the selected contact + getting other user Id and emitting join room --------------------------------
     const handleClick = async () => {
         try {
-            const res = await axios.put(`http://localhost:3000/chat/${currentUserId}/${otherUserId}`, { "seen": true });
+            const res = await axios.put(`${process.env.NEXT_PUBLIC_APP_URI}/chat/${currentUserId}/${otherUserId}`, { "seen": true });
 
         } catch (err) {
             console.log(err);

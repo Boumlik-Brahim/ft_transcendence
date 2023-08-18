@@ -94,17 +94,6 @@ model Achievement {
   created_at  DateTime  @default(now())
 }
 
-model GamesHistories {
-  id  String @id @default(uuid())
-  playerA_Score Int
-  playerB_Score Int
-  created_at  DateTime  @default(now())
-  playerA User @relation("playerA", fields: [playerA_id], references : [id])
-  playerA_id String
-  playerB User @relation("playerB", fields: [playerB_id], references : [id])
-  playerB_id String
-}
-
 model BlockedUser {
   id  String @id @default(uuid())
   userThatBlock User @relation("Bloking", fields: [userId], references: [id])
@@ -125,16 +114,6 @@ model Friend {
   @@unique([userId, friendId], name: "userAndFriend")
 }
 
-model GamesInvitation {
-  id  String @id @default(uuid())
-  status GameInvitationState
-  sender  User  @relation("sender", fields: [senderId], references: [id])
-  senderId  String
-  receiver  User  @relation("receiver", fields: [receiverId], references: [id])
-  receiverId  String
-  created_at  DateTime  @default(now())
-  gameId String @unique
-}
 
 model DirectMessage {
   id  String @id @default(uuid())
@@ -197,6 +176,30 @@ model ChannelMessage {
   recievers  Channel @relation("receiverRelation", fields: [channelId], references: [id])
   channelId String
   created_at  DateTime  @default(now())
+}
+
+//* ---------------------------------------------------------------------------------------------------------------------------- *//
+
+model GamesInvitation {
+  id  String @id @default(uuid())
+  status GameInvitationState
+  sender  User  @relation("sender", fields: [senderId], references: [id])
+  senderId  String
+  receiver  User  @relation("receiver", fields: [receiverId], references: [id])
+  receiverId  String
+  created_at  DateTime  @default(now())
+  gameId String @unique
+}
+
+model GamesHistories {
+  id  String @id @default(uuid())
+  playerA_Score Int
+  playerB_Score Int
+  created_at  DateTime  @default(now())
+  playerA User @relation("playerA", fields: [playerA_id], references : [id])
+  playerA_id String
+  playerB User @relation("playerB", fields: [playerB_id], references : [id])
+  playerB_id String
 }
 
 //* ---------------------------------------------------------------------------------------------------------------------------- *//

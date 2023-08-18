@@ -7,7 +7,7 @@ import Cookies from 'universal-cookie';
 
 
 
-const gameURL = "http://localhost:3000/game"
+const gameURL = `${process.env.NEXT_PUBLIC_APP_URI}/game`
 
 const cookies = new Cookies;
 

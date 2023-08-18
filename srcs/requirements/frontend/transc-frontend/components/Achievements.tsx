@@ -62,7 +62,7 @@ export default function Achievements({ userId, userSessionId }: Props) {
     const fetchFriends = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:3000/users/${userId}/friend`
+          `${process.env.NEXT_PUBLIC_APP_URI}/users/${userId}/friend`
         );
         setFriends(response.data);
       } catch (error) {

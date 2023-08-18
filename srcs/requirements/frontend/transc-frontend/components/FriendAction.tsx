@@ -29,10 +29,8 @@ import axios from "axios";
 //   transports: ["websocket"],
 // });
 //& -----chat part --------
-
-
 const cookies = new Cookies();
-export const socketChat = io("http://localhost:3000/chatGateway", {
+export const socketChat = io(`${process.env.NEXT_PUBLIC_APP_URI}/chatGateway`, {
   auth: { userId: cookies.get('id') }
 });
 
@@ -91,7 +89,7 @@ function FriendAction({ userId, userSessionId }: Props) {
     // dispatch(setRefreshOn());
 
     try {
-      const res = await axios.put(`http://localhost:3000/chat/${userSessionId}/${userId}`, {"seen": true});
+      const res = await axios.put(`${process.env.NEXT_PUBLIC_APP_URI}/chat/${userSessionId}/${userId}`, {"seen": true});
       
     } catch (err) {
       console.log(err);
@@ -125,7 +123,7 @@ function FriendAction({ userId, userSessionId }: Props) {
   //     dispatch(setRefreshOn());
       
   //     try {
-  //         const res = await axios.put(`http://localhost:3000/chat/${userSessionId}/${userId}`, {"seen": true});
+  //         const res = await axios.put(`${process.env.NEXT_PUBLIC_APP_URI}/chat/${userSessionId}/${userId}`, {"seen": true});
   
   //       } catch (err) {
   //         console.log(err);
@@ -143,7 +141,7 @@ function FriendAction({ userId, userSessionId }: Props) {
     const fetchfriendShip = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:3000/users/${userSessionId}/friendShip/${userId}`
+          `${process.env.NEXT_PUBLIC_APP_URI}/users/${userSessionId}/friendShip/${userId}`
         );
         if (response.data && response.data.length > 0) {
           if (response.data[0]?.friendShipStatus === "PENDING")
@@ -172,7 +170,7 @@ function FriendAction({ userId, userSessionId }: Props) {
     const fetchblocked = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:3000/users/${userSessionId}/block/${userId}`
+          `${process.env.NEXT_PUBLIC_APP_URI}/users/${userSessionId}/block/${userId}`
         );
         if (response.data && response.data.length > 0) {
           setBlockStat(response.data);
@@ -197,7 +195,7 @@ function FriendAction({ userId, userSessionId }: Props) {
     const fetchUserStat = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:3000/users/${userId}/userStat`
+          `${process.env.NEXT_PUBLIC_APP_URI}/users/${userId}/userStat`
         );
         setUserStat(response.data);
       } catch (error) {
@@ -214,7 +212,7 @@ function FriendAction({ userId, userSessionId }: Props) {
     const fetchFriends = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:3000/users/${userId}/friend`
+          `${process.env.NEXT_PUBLIC_APP_URI}/users/${userId}/friend`
         );
         setFriends(response.data);
       } catch (error) {

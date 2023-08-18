@@ -14,7 +14,7 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 @WebSocketGateway({
   namespace: 'channelGateway',
   cors: {
-    origin: 'http://localhost:5173/channels',
+    origin: `${process.env.APP_URI}/channels`,
   },
 })
 
@@ -48,7 +48,6 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   //* --------------------------------------------------------------CreateChannel---------------------------------------------------------- *//
   @SubscribeMessage('createChannel')
   async handleCreateChannel(@MessageBody() payload: CreateChannelDto, @ConnectedSocket() socket: Socket): Promise<void> {
-    console.log('fdsa');
     try{
       if(payload.channelPassword)
       {
@@ -79,7 +78,6 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   @SubscribeMessage('joinChannel')
   async joinChannel(@MessageBody() payload: { userId: string, channelId: string, channelPasword: string }, @ConnectedSocket() socket: Socket) : Promise<void> {
     try{
-      console.log("i'm in the backend !!!")
       const channel = await this.channelService.findOneChannel(payload.channelId);
       const member = await this.prisma.channelMember.findUnique({
         where: {
@@ -134,6 +132,9 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   @SubscribeMessage('messageChannel')
   async handleMessage(@MessageBody() payload: CreateChannelMessageDto, @ConnectedSocket() socket: Socket): Promise<void> {
     try{
+      if (!socket.rooms.has(payload.channelId)){
+        socket.join(payload.channelId);
+      }
       await this.channelService.createChannelMessage(payload);
       this.server.to(payload.channelId).emit('onMessage', payload);
     }catch(error){
@@ -297,6 +298,7 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
         }
         await this.channelService.removeAllChannelMembers(payload.channelId);
         await this.channelService.removeChannel(payload.channelId);
+        this.server.to(payload.channelId).emit('removedSuccefully');
       }else{
         this.server.to(socket.id).emit('error', 'Invalid Owner');
       }

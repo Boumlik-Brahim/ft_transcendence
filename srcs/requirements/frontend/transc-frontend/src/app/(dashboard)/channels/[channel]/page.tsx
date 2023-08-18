@@ -64,7 +64,7 @@ function Page({ params }: any) {
 
     async function fetchMessages() {
       try {
-        const response = await axios.get<Message[]>(`http://localhost:3000/channel/${params.channel}/channelMessage`);
+        const response = await axios.get<Message[]>(`${process.env.NEXT_PUBLIC_APP_URI}/channel/${params.channel}/channelMessage`);
         setMessages(response.data);
 
       } catch (error) {
@@ -128,7 +128,7 @@ function Page({ params }: any) {
   useEffect(() => {
     async function fetchPrivateChannel() {
       try {
-        const response = await axios.get<channel>(`http://localhost:3000/channel/${params.channel}`);
+        const response = await axios.get<channel>(`${process.env.NEXT_PUBLIC_APP_URI}/channel/${params.channel}`);
         response && setChannelInfo(response.data);
         response && setChannelName(response.data.channelName);
 

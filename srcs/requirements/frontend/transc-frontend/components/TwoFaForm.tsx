@@ -39,13 +39,13 @@ export default function TwoFaForm({userId}: Props) {
         const formDataValues = Object.values(formData);
         const concatenatedString = formDataValues.join("");
         try {
-            const userData = await fetch(`http://localhost:3000/users/${userId}`);
+            const userData = await fetch(`${process.env.NEXT_PUBLIC_APP_URI}/users/${userId}`);
             const user = await userData.json();
             const response = user.isTwoFactorEnabled ? 
-              await fetch(`http://localhost:3000/auth/2fa/authenticate?userId=${userId}&authCode=${concatenatedString}`, {
+              await fetch(`${process.env.NEXT_PUBLIC_APP_URI}/auth/2fa/authenticate?userId=${userId}&authCode=${concatenatedString}`, {
                 method: 'POST',
               }) :
-              await fetch(`http://localhost:3000/auth/2fa/turn-on?userId=${userId}&authCode=${concatenatedString}`,{
+              await fetch(`${process.env.NEXT_PUBLIC_APP_URI}/auth/2fa/turn-on?userId=${userId}&authCode=${concatenatedString}`,{
                 method: "POST",
               });
             if (!response.ok) {
@@ -58,7 +58,7 @@ export default function TwoFaForm({userId}: Props) {
             }
             const res = await response.json();
             cookie.set('accessToken', res.token);
-            router.push(`http://localhost:5173/profile/${userId}`);
+            router.push(`${process.env.APP_URI}/profile/${userId}`);
         } catch (error) {
             console.log(error);
         }

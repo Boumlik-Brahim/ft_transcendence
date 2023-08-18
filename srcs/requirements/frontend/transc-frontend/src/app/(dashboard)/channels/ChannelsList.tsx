@@ -72,7 +72,7 @@ function ChannelsList() {
   useEffect(() => {
     async function fetchChannels() {
       try {
-        const response = currentUserId && await axios.get<channel[]>(`http://localhost:3000/channel/${currentUserId}/myAllChannels`);
+        const response = currentUserId && await axios.get<channel[]>(`${process.env.NEXT_PUBLIC_APP_URI}/channel/${currentUserId}/myAllChannels`);
         response && setChannels(response.data);
       } catch (error) {
         console.error(error);
@@ -103,7 +103,7 @@ function ChannelsList() {
   useEffect(() => {
     async function fetchChannels() {
       try {
-        const response = currentUserId && await axios.get<channel[]>(`http://localhost:3000/channel/${currentUserId}/allChannels`);
+        const response = currentUserId && await axios.get<channel[]>(`${process.env.NEXT_PUBLIC_APP_URI}/channel/${currentUserId}/allChannels`);
         response && setGeneralChannels(response.data);
       } catch (error) {
         console.error(error);
@@ -144,7 +144,7 @@ function ChannelsList() {
   useEffect(() => {
     async function fetchPrivateChannel() {
       try {
-        const response = privateInputId && await axios.get<channel>(`http://localhost:3000/channel/${privateInputId}`);
+        const response = privateInputId && await axios.get<channel>(`${process.env.NEXT_PUBLIC_APP_URI}/channel/${privateInputId}`);
         response && setPrivateChannel(response.data);
         response && setResults(true);
         response && setCheck(true)

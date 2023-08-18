@@ -15,7 +15,7 @@ const Friends = ({ _name, setName, setIsRandom, setOponent } : Props) => {
     const friends  = users;
 
     useEffect(() => {
-        fetch(`http://localhost:3000/users`)
+        fetch(`${process.env.NEXT_PUBLIC_APP_URI}/users`)
         .then((res) => res.json())
         .then((users) => {
             setUsers(users);

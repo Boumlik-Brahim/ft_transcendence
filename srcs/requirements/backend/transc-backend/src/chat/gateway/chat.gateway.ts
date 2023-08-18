@@ -9,7 +9,7 @@ import { AppGateway } from 'src/app.gateway';
 @WebSocketGateway( {
   namespace: 'chatGateway',
   cors: { 
-    origin: 'http://localhost:5173/chat',
+    origin: `${process.env.APP_URI}/chat`,
   },
 })
 
@@ -65,6 +65,12 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   @SubscribeMessage('message')
   async handleEvent(@MessageBody() payload: CreateChatDto, @ConnectedSocket() socket: Socket): Promise<void> {
     const hasshedRoomName = await this.chatService.generateHashedRommId(payload.senderId, payload.recieverId);
+
+    if (!socket.rooms.has(hasshedRoomName)){
+      socket.join(hasshedRoomName);
+      this.logger.log(`joinRoom: ${socket.id} joined ${hasshedRoomName}`);
+    }
+    
     this.server.to(hasshedRoomName).emit('getMessage',{ senderId: payload.senderId, receiverId: payload.recieverId, text: payload.content, room: hasshedRoomName});
     await this.chatService.createChat(payload);
 

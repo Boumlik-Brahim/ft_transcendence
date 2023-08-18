@@ -21,7 +21,7 @@ const Player = ({playerId, inputValue, setInputValue, waiting} : Props) => {
     useEffect(() => {
         if (playerId)
         {
-            fetch(`http://localhost:3000/users/${playerId}`)
+            fetch(`${process.env.NEXT_PUBLIC_APP_URI}/users/${playerId}`)
             .then((res) => res.json())
             .then((user) => {
                 setUser(user)

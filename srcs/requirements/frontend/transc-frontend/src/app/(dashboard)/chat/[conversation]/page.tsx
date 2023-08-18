@@ -99,7 +99,7 @@ function Page({ params }: any) {
 
     async function fetchMessages() {
       try {
-        const response = await axios.get<Message[]>(`http://localhost:3000/chat?hashedRoomId=${roomIdFromParam}`);
+        const response = await axios.get<Message[]>(`${process.env.NEXT_PUBLIC_APP_URI}/chat?hashedRoomId=${roomIdFromParam}`);
         setMessages(response.data);
 
 
@@ -131,7 +131,7 @@ function Page({ params }: any) {
         try {
           const cookies = new Cookies();
           const userIdFromCookie = cookies.get('id');
-          const res = await axios.put(`http://localhost:3000/chat/${userIdFromCookie}/${item.senderId}`, { "seen": true });
+          const res = await axios.put(`${process.env.NEXT_PUBLIC_APP_URI}/chat/${userIdFromCookie}/${item.senderId}`, { "seen": true });
 
         } catch (err) {
             console.log(err);

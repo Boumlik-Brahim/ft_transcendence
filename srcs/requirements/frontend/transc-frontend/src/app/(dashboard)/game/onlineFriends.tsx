@@ -24,7 +24,7 @@ const OnlineFriends = ({ createGame } : Props) => {
     }
 
     useEffect(()=> {
-        fetch(`http://localhost:3000/users`)
+        fetch(`${process.env.NEXT_PUBLIC_APP_URI}/users`)
         .then((res) => res.json())
         .then((users) => {
             setUsers(users);

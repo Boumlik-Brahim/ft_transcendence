@@ -33,7 +33,7 @@ function RoomMessageBox({ userId,  date, messageContent }: Props) {
     //^  -----------------------------------------------------------------------
 
      //^ ----------------------- fetch current User data ----------------------
-     const currentUser = `http://localhost:3000/users/${userId}`
+     const currentUser = `${process.env.NEXT_PUBLIC_APP_URI}/users/${userId}`
      const [CurrentUserName, setUserCurrentUserName] = useState<User>();
      //* useEffect to fetch current User Data 
      useEffect(() => {

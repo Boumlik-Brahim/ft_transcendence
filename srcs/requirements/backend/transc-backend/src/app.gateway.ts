@@ -8,7 +8,7 @@ import { CreateFriendDto } from './users/dto/create-friend.dto';
 @WebSocketGateway({
   namespace : 'appGateway',
   cors: { 
-    origin: 'http://localhost:5173',
+    origin: `${process.env.APP_URI}`,
   },
 })
 

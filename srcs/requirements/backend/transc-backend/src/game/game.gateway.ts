@@ -12,7 +12,7 @@ import { InvitationGameDto } from './dto/game-invitation.dto';
 @WebSocketGateway({
   namespace : "game",
   cors : {
-    origin : 'http://localhost:5173/game'
+    origin : `${process.env.APP_URI}/game`
   }
 })
 

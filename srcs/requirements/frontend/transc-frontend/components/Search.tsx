@@ -14,7 +14,7 @@ function Search({ id }: { id: string }) {
   useEffect(() => {
     const fetchAll = async () => {
       try {
-        const response = await axios.get(`http://127.0.0.1:3000/users`);
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_APP_URI}/users`);
         setUsers(response.data);
       } catch (error) {
         console.log(error);

@@ -48,7 +48,7 @@ function ContactListLg() {
         dispatch(selectedOne(buttonId));
         dispatch(setRefreshOn()); 
         try {
-            const res = await axios.put(`http://localhost:3000/chat/${currentUserId}/${buttonId}`, {"seen": true});
+            const res = await axios.put(`${process.env.NEXT_PUBLIC_APP_URI}/chat/${currentUserId}/${buttonId}`, {"seen": true});
             dispatch(setRefreshOn()); 
 
         } catch (err) {
@@ -67,7 +67,7 @@ const [refetch, setRefetch] = useState(false);
 useEffect(() => {
     async function fetchContact() {
         try {
-            const response = await axios.get<Contact[]>(`http://localhost:3000/users/${currentUserId}/receivers`);
+            const response = await axios.get<Contact[]>(`${process.env.NEXT_PUBLIC_APP_URI}/users/${currentUserId}/receivers`);
             response && setCont(response.data);
         } catch (error) {
             console.error(error);

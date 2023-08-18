@@ -45,7 +45,7 @@ function ContactLg({ id, name, unreadMessages, profilePicturePath, activeButtonI
         dispatch(selectedOne(id));
         dispatch(setRefreshOn()); // 
         try {
-            const res =  await axios.put(`http://localhost:3000/chat/${currentUserId}/${id}`, { "seen": true });
+            const res =  await axios.put(`${process.env.NEXT_PUBLIC_APP_URI}/chat/${currentUserId}/${id}`, { "seen": true });
 
         } catch (err) {
             console.log(err);

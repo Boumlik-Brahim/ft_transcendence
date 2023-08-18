@@ -17,7 +17,7 @@ function page() {
   useEffect(() => {
     async function fetchData () {
       try{
-        const data = await fetch(`http://localhost:3000/users/${userId}`);
+        const data = await fetch(`${process.env.NEXT_PUBLIC_APP_URI}/users/${userId}`);
         if (data.ok){
           const userData = await data.json();
           setImageUrl(userData.Avatar);
@@ -32,7 +32,7 @@ function page() {
   
   useEffect(() => {
     async function check () {
-      const userData = await fetch(`http://localhost:3000/users/${userId}`);
+      const userData = await fetch(`${process.env.NEXT_PUBLIC_APP_URI}/users/${userId}`);
       const user = await userData.json();
       if (user.isTwoFactorEnabled){
         setDisableTwoFa(true);
@@ -43,12 +43,12 @@ function page() {
 
   const handleActiveClick = async () => {
       try {
-        const userData = await fetch(`http://localhost:3000/users/${userId}`);
+        const userData = await fetch(`${process.env.NEXT_PUBLIC_APP_URI}/users/${userId}`);
         if (userData.ok){
           const user = await userData.json();
           if(user.isTwoFactorEnabled){
             setDisableTwoFa(false);
-            await fetch(`http://localhost:3000/users/${userId}/two-factor`, {
+            await fetch(`${process.env.NEXT_PUBLIC_APP_URI}/users/${userId}/two-factor`, {
               method: 'PATCH',
               headers: {
                 'Content-Type': 'application/json',
@@ -75,7 +75,7 @@ function page() {
       const username = userData;
       setUserData('');
       console.log("Username:", username); 
-      await fetch(`http://localhost:3000/users/${userId}/update/username`,{
+      await fetch(`${process.env.NEXT_PUBLIC_APP_URI}/users/${userId}/update/username`,{
         method: "POST",
         headers: {
           'Content-Type': 'application/json',
