@@ -32,7 +32,7 @@ const Players = ({userId_1, userId_2} : Props) => {
         });
 
 
-    }, []);
+    }, [userId_1, userId_2]);
     return (
             <div className='
             w-full lg:w-[75%] h-[70px] md:h-[133px] 

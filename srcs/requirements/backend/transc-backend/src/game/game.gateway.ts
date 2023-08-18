@@ -7,6 +7,8 @@ import { GameService } from './game.service';
 import { subscribe } from 'diagnostics_channel';
 import { ConnectedClientsService } from 'src/connected-clients.service';
 import { InvitationGameDto } from './dto/game-invitation.dto';
+import { JWT_SECRET } from 'src/utils/constants';
+import * as jwt from 'jsonwebtoken'
 
 
 @WebSocketGateway({
@@ -31,36 +33,58 @@ export class GameGateway {
   }
 
   handleConnection(client : Socket) {
-    const userId = client.handshake.auth.userId as string;
-    console.log('new connection', userId);
-    if (userId) {
-      this.gameService.addUser(userId, client);
+    const token = client.handshake.auth.token;
+    if (token) {
+      try {
+        const user = jwt.verify(token, JWT_SECRET) as {id : string}
+        const { id } = user;
+        this.gameService.addUser(id, client);
+      }
+      catch {
+        return false
+      }
+    }
+    else {
+      return false
     }
   };
   
   @SubscribeMessage('createGame')
   createGame(@MessageBody() data: CreateGameDto, @ConnectedSocket() client: Socket) {
-    console.log(data);
+    if (!this.gameService.isConneted(data.creatorID, client)) {
+      client.emit("error", "Permission denied")
+      return;
+    }
     this.gameService.createGame(data, client);
   }
 
   @SubscribeMessage('rejectInvitation')
   rejectInvitaion(@MessageBody() data: InvitationGameDto, @ConnectedSocket() client: Socket) {
+    if (!this.gameService.isConneted(data.userId, client)) {
+      client.emit("error", "Permission denied")
+      return;
+    }
     const { invitationId , userId } = data;
     this.gameService.rejectInvitation(client, invitationId, userId);
   }
 
   @SubscribeMessage('acceptInvitation')
   acceptInvitaion(@MessageBody() data: InvitationGameDto, @ConnectedSocket() client: Socket) {
+    if (!this.gameService.isConneted(data.userId, client)) {
+      client.emit("error", "Permission denied")
+      return;
+    }
     const { invitationId , userId } = data;
     this.gameService.AcceptInvitation(client, invitationId, userId);
   }
 
   @SubscribeMessage('joinGame')
   async joinGame(@MessageBody() data: JoinGameDto, @ConnectedSocket() client: Socket) {
-    console.log(data, "Join 5");
+    if (!this.gameService.isConneted(data.userId, client)) {
+      client.emit("error", "Permission denied")
+      return;
+    }
     if (!data) return;
-    console.log(data, "Join");
     const { gameId, userId } = data;
     if (gameId && userId ) {
        this.gameService.joinGame(userId, gameId, client, this.server);
@@ -72,6 +96,10 @@ export class GameGateway {
 
   @SubscribeMessage('ArrowRight')
   keyDown(@MessageBody() data: JoinGameDto, @ConnectedSocket() client: Socket) {
+    if (!this.gameService.isConneted(data.userId, client)) {
+      client.emit("error", "Permission denied")
+      return;
+    }
     if (!data) return; 
     const { gameId, userId } = data;
     if (gameId && userId) 
@@ -82,6 +110,10 @@ export class GameGateway {
 
   @SubscribeMessage('ArrowLeft')
   keyUp(@MessageBody() data: JoinGameDto, @ConnectedSocket() client: Socket) {
+    if (!this.gameService.isConneted(data.userId, client)) {
+      client.emit("error", "Permission denied")
+      return;
+    }
     if (!data) return; 
     const { gameId, userId } = data;
     if (gameId && userId) 
@@ -92,6 +124,10 @@ export class GameGateway {
 
   @SubscribeMessage('quiteGame')
   quitGame(@MessageBody() data: JoinGameDto, @ConnectedSocket() client: Socket) {
+    if (!this.gameService.isConneted(data.userId, client)) {
+      client.emit("error", "Permission denied")
+      return;
+    }
     if (!data) return; 
     const { gameId, userId } = data;
     if (gameId && userId) 
@@ -99,28 +135,7 @@ export class GameGateway {
       this.gameService.quiteGame(userId, gameId, client);
     }
   }
-
-  // @SubscribeMessage('cancelGame')
-  // cancelGame(@MessageBody() data: JoinGameDto, @ConnectedSocket() client: Socket) {
-  //   if (!data) return; 
-  //   const { gameId, userId } = data;
-  //   if (gameId && userId) 
-  //   {
-  //     this.gameService.cancelGame(userId, gameId, client);
-  //   }
-  // }
-
-  // @SubscribeMessage('pauseOrStart')
-  // pauseOrSart(@MessageBody() data: JoinGameDto, @ConnectedSocket() client: Socket) {
-  //   console.log(data)
-  //   if (!data) return; 
-  //   const { gameId, userId } = data;
-  //   if (gameId && userId) 
-  //   {
-  //     this.gameService.pauseOrSart(userId, gameId, client);
-  //   }
-  // }
-
+  
   handleDisconnect(client : Socket) {
     this.gameService.deleteUser(client);
   }

@@ -52,7 +52,7 @@ interface CreateGameType {
 
 const Page = ( {params} : any) => {
     const router = useRouter();
-    const [gameSate, setGameSate] = useState<string | undefined>('started');
+    const [gameSate, setGameSate] = useState<string | undefined>();
     const [gameData, setGameData] = useState<GameEntity | undefined>();
     const userId = getCookie('id') as string;
     const oponentId = userId === gameData?.player1.id ? gameData.player2.id : gameData?.player1.id;
@@ -115,7 +115,7 @@ const Page = ( {params} : any) => {
             </div>
                 <div className='w-full h-full flex flex-col items-center justify-center relative '>
                     {
-                        ( gameSate && gameSate != 'waiting') && (
+                        ( gameSate === 'started' || gameSate === 'stopped' || gameSate === 'finished') && (
                             <div className='w-full h-full flex flex-col justify-center items-center'>
                                 <div className='flex flex-col  flex-1 w-auto justify-center items-center p-2'>
                                     {
@@ -131,11 +131,6 @@ const Page = ( {params} : any) => {
                                             Leave
                                         </button>
                                     </Link>
-                                    {/* <button className='bg-white m-4 p-2 border border-primary w-[150px] text-primary rounded-xl hover:bg-primary hover:text-white' onClick={handlePause}>
-                                        {
-                                            gameSate === 'pause' ? 'Start' : 'Pause'
-                                        }
-                                    </button> */}
                                 </div>
                             </div>
                         )

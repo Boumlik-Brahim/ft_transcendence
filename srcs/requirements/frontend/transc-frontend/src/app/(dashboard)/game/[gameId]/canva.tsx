@@ -51,7 +51,7 @@ const Canvas = ({ gameData, gameState } : PropsType) => {
     context.fillStyle = "#3E3B6A"
     context.arc(x, y, r, 0, 2 * Math.PI)
     context.fill();
-    context.closePath();
+    // context.closePath();
   };
 
   const writeScore = (context : any, x : number, score1 : number) => {
@@ -86,7 +86,7 @@ const Canvas = ({ gameData, gameState } : PropsType) => {
     context.moveTo(w / 2, 0);
     context.lineTo(w/2, h);
     context.stroke();
-    context.closePath();
+    // context.closePath();
   }
   
   const drawPaddle = (context : any, x : number, y : number, h : number, w : number) => {
@@ -94,11 +94,10 @@ const Canvas = ({ gameData, gameState } : PropsType) => {
     context.beginPath();
     context.roundRect(x, y, w, h);
     context.fill();
-    context.closePath();
+    // context.closePath();
   }
 
   const drawGame = (context : any, canvas : any) => {
-    context.clearRect(0, 0, canvas.width, canvas.height);
     const w = canvas.width;
     const h = canvas.height;
     if (!gameData) return ;
@@ -113,9 +112,6 @@ const Canvas = ({ gameData, gameState } : PropsType) => {
     const paddleH = convertValueX(gameData.h_paddle, h, gameData.H_screen);
     const score1 = gameData.player1.score;
     const score2 = gameData.player2.score;
-    // const rx = convertValueX(radius, w, gameData.W_screen)
-    // const ry = convertValueX(radius, h, gameData.H_screen)
-
 
     drawMiddleLine(context, w, h);
     drawBall(context, radius, ballX, bally)
@@ -123,25 +119,24 @@ const Canvas = ({ gameData, gameState } : PropsType) => {
     drawPaddle(context, player2_X, player2_Y, paddleH, w_paddle);
     writeScore(context, w / 2 - 40, score1);
     writeScore(context, w / 2 + 40, score2);
-    writeText(context, w, h)
+    writeText(context, w, h);
+    context.globalAlpha = 1
   }
-
-
-
   useEffect(() => {
     if (canvasRef) {
       if (canvasRef.current) {
         const canvas = canvasRef.current;
         const context = canvasRef.current.getContext('2d');
         if (context) {
-         drawGame(context, canvas); 
+          context.clearRect(0, 0, canvas.width, canvas.height);
+          drawGame(context, canvas);
         }
       }
     }
   }, [gameData, gameState]);
 
   return (
-    <canvas ref={canvasRef} className='h-full only:w-full '></canvas>
+    <canvas ref={canvasRef} className=' w-full border h-full rounded-lg shadow  '></canvas>
   );
 }
 

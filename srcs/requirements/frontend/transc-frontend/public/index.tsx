@@ -55,6 +55,7 @@ import bulr_c3 from "./blur_color_3.svg";
 import question from "./question.png"
 import GIF from './wait.gif'
 import bgMain from './bg_main.png'
+import waitingGIF from './waitingf.gif'
 
 import vs from "./VS.svg";
 import closeCircle from './closecircle.png'
@@ -64,6 +65,7 @@ import closeCircle from './closecircle.png'
 
 export {
   bgMain,
+  waitingGIF,
   closeCircle,
   vs,
   logo_b,

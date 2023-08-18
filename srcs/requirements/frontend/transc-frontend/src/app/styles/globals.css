@@ -240,3 +240,52 @@ body {
   animation-duration: 0.8s;
 }
 
+
+
+
+
+/* Change the track color */
+.range-input {
+  /* Add your existing styles here */
+  background-color: red;
+  outline: none;
+}
+
+/* Style the thumb circle */
+.range-input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  /* top : 100px; */
+  /* appearance: none; */
+  width: 30px; /* Adjust the width to make the circle larger */
+  height: 30px; /* Adjust the height to make the circle larger */
+  background-color: #3E3B6A; /* Change the thumb color */
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  margin-top: -14px;
+}
+
+.range-input::-moz-range-thumb {
+  width: 30px;
+  height: 30px;
+  background-color: #3E3B6A;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.range-input::-ms-thumb {
+  width: 30px;
+  height: 30px;
+  background-color: #3E3B6A;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+/* Optionally style the track (progress bar) */
+.range-input::-webkit-slider-runnable-track {
+  background-color: #dcdcdc;
+  height: 2px; /* Adjust the height of the track */
+  border-radius: 2px;
+}

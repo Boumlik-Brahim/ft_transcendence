@@ -13,7 +13,7 @@ const cookies = new Cookies;
 
 const gameIO = io(gameURL, {
   autoConnect : false,
-  auth: { userId: cookies.get('id') }
+  auth: { token: cookies.get('accessToken') }
 });
 const SocketContext = createContext<Socket>(gameIO);
 
