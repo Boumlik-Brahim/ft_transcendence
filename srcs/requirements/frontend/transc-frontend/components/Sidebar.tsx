@@ -45,7 +45,7 @@ function Sidebar() {
 
     const handleLogOut = async (e : any) => {
         try{
-            const response = await fetch('http://localhost:3000/auth/logout', {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URI}/auth/logout`, {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',

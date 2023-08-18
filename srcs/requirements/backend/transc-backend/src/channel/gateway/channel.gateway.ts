@@ -109,7 +109,6 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
           this.server.to(socket.id).emit('refrechMember');
         }
         else if (channel.channelType === 'PROTECTED' && payload.channelPasword){
-          console.log("channelpswd: ===> ", payload.channelPasword);
           const hachedChannelPswd = createHash('sha256').update(payload.channelPasword).digest('hex');
           if (channel.channelPassword === hachedChannelPswd){
             await this.channelService.createChannelMember({"userId": payload.userId, "channelId": payload.channelId, "role": 'MEMBER'});

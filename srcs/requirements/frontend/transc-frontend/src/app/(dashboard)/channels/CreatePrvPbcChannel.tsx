@@ -86,7 +86,6 @@ const handleSubmit = async () => {
     } );
     setChannelData({ ...channelData, channelName: '' });
     socket.on("refrechCreateChannel", (data: any) => {
-        console.log("results ------- > ");
         dispatch(createChannelPopUpOff());
         dispatch(setRefreshChannelsOn());
     });

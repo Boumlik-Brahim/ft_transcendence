@@ -18,10 +18,9 @@ export default function History({ userId, userSessionId }: Props) {
         const fetchHistory = async () => {
         try {
             const response = await axios.get(
-            `http://127.0.0.1:3000/users/getGames/${userId}`
+            `${process.env.NEXT_PUBLIC_APP_URI}/users/getGames/${userId}`
             );
             setHistory(response.data);
-            console.log("history ===> ", history)
           } catch (error) {
             console.log(error);
           }
@@ -31,7 +30,6 @@ export default function History({ userId, userSessionId }: Props) {
       /* ------------------------------------ - ----------------------------------- */
       
       /* ------------------------------- opponents ------------------------------- */
-      console.log("history ===> ", history)
       const opponents = getOpponents(history, userId)
     /* ------------------------------------ - ----------------------------------- */
 

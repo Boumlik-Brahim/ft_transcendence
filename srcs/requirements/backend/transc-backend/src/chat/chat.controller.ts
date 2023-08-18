@@ -31,7 +31,6 @@ export class ChatController {
   @Get('/msgNumber/:userId')
   async findMsg(@Param('userId') userId: string): Promise<number> {
     const chatnmbr = await this.chatService.findAllMsg(userId);
-    console.log("....>", chatnmbr);
     return chatnmbr;
   }
 

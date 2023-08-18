@@ -57,31 +57,29 @@ type Props = {
 // }, [])
 
 function FriendAction({ userId, userSessionId }: Props) {
-  
-  // &--------------------------------------  CHAT PART ------------------------------------
   const dispatch = useDispatch();
-
   const [roomId, setRoomId] = useState("");
-  
-  
   const router = useRouter();
+  (userId !== userSessionId) && (
 
-  useEffect(() => {
-    // socketChat.emit("joinRoom", {
-    //     senderId: userSessionId,
-    //     recieverId: userId
-    // });
-    
-    // socketChat.on("joined", (data) => {
-    //   setRoomId(data.roomName);
-    // });
-
-    const roomID = [userSessionId, userId].sort().join('-');
-    const hasshedRoomName = createHash('sha256').update(roomID).digest('hex');
-    setRoomId(hasshedRoomName);
-
-  },[userId, userSessionId])
-
+    // &--------------------------------------  CHAT PART ------------------------------------  
+    useEffect(() => {
+      // socketChat.emit("joinRoom", {
+        //     senderId: userSessionId,
+        //     recieverId: userId
+        // });
+        
+        // socketChat.on("joined", (data) => {
+          //   setRoomId(data.roomName);
+          // });
+          
+          const roomID = [userSessionId, userId].sort().join('-');
+          const hasshedRoomName = createHash('sha256').update(roomID).digest('hex');
+          setRoomId(hasshedRoomName);
+          
+        },[userId, userSessionId])
+        
+        )
   const handleSubmit = async ({userSessionId,userId} : {userSessionId : string ,userId : string}) => {
   
     dispatch(setOtherUser(userId));

@@ -110,7 +110,7 @@ export function getOpponents(
     const fetchUser = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:3000/users/${userId}`
+          `${process.env.NEXT_PUBLIC_APP_URI}/users/${userId}`
         );
         setProfileUser(response.data);
       } catch (error) {
@@ -128,7 +128,7 @@ export function getOpponents(
     const fetchUsers = async () => {
       try {
         const userResponses = await Promise.all(
-          opponentId.map((id) => axios.get(`http://127.0.0.1:3000/users/${id}`))
+          opponentId.map((id) => axios.get(`${process.env.NEXT_PUBLIC_APP_URI}/users/${id}`))
         );
 
         const op = userResponses.map((response) => response.data);
@@ -222,7 +222,7 @@ export function leadersList(users: users_int[]): leaders_list[] | null {
       try {
         const userStateResponses = await Promise.all(
           ids.map((id) =>
-            axios.get(`http://127.0.0.1:3000/users/${id}/userStat`)
+            axios.get(`${process.env.NEXT_PUBLIC_APP_URI}/users/${id}/userStat`)
           )
         );
 

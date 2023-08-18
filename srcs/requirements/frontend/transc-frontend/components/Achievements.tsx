@@ -80,7 +80,7 @@ export default function Achievements({ userId, userSessionId }: Props) {
     const fetchMsgNum = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:3000/chat/msgNumber/${userId}`
+          `${process.env.NEXT_PUBLIC_APP_URI}/chat/msgNumber/${userId}`
         );
         setMsgNum(response.data);
       } catch (error) {

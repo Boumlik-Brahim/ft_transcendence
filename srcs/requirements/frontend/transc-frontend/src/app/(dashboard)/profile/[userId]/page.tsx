@@ -64,7 +64,7 @@ function page() {
     const fetchUserStat = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:3000/users/${userId}/userStat`
+          `${process.env.NEXT_PUBLIC_APP_URI}/users/${userId}/userStat`
         );
         setUserStat(response.data);
       } catch (error) {
@@ -126,7 +126,8 @@ function page() {
                   </div>
                 </div>
               </div>
-              { (userId !== userSession) && <FriendAction userId={userId} userSessionId={userSession} />}
+              { <FriendAction userId={userId} userSessionId={userSession} />}
+              
             </div>
             <Achievements userId={userId} userSessionId={userSession} />
             <History userId={userId} userSessionId={userSession} />

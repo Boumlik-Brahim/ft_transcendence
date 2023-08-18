@@ -224,7 +224,6 @@ export class UsersController {
 
     @Post(':userId/update/username')
     async updateUserName(@Param("userId") userId: string, @Body("userName") userName: string){
-      console.log("From endpoint");
       await this.usersService.updateUserName(userId, userName);
     }
     

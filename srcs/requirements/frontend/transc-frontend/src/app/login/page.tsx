@@ -6,7 +6,6 @@ import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import  Cookies  from 'universal-cookie';
 import { useMediaQuery } from 'react-responsive';
-import TwoFa from '../(dashboard)/twofa/page';
 import TwoFaForm from '../../../components/TwoFaForm';
 
 
@@ -21,12 +20,9 @@ export default function page()  {
   useEffect(() => {
     async function checkTwoFa() {
       try{
-        console.log("userId : ", userId);
         if (userId !== undefined) {
-          console.log("we will fetch now ********", userId);
           const res = await axios.get(`${process.env.NEXT_PUBLIC_APP_URI}/users/${userId}`);
           if (res.data.isTwoFactorEnabled){
-            console.log("from set fetch -------------------: ", res.data.isTwoFactorEnabled);
             setTwoFa(true);
           }
           if (!res.data.isTwoFactorEnabled && accessTokenCookie) 
