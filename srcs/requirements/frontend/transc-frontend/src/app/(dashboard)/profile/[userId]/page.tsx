@@ -45,8 +45,13 @@ function page() {
   useEffect(() => {
     const fetchprofileInfo = async () => {
       try {
+        // const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${userId}`,{
+        //   credentials: "include",
+        // });
+        // const res = await response.json();
+        // setProfileUser(res)
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_APP_URI}/users/${userId}`
+          `${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${userId}`,{ withCredentials: true }
         );
         setProfileUser(response.data);
        
@@ -64,7 +69,7 @@ function page() {
     const fetchUserStat = async () => {
       try {
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_APP_URI}/users/${userId}/userStat`
+          `${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${userId}/userStat`,{ withCredentials: true }
         );
         setUserStat(response.data);
       } catch (error) {
@@ -84,7 +89,7 @@ function page() {
         <Sidebar />
         <div className="layouts">
           <div className="my_container relative">
-            <div className="wrapper relative">
+            <div className="wrapper relative ">
               <Search id={userSession} />
               <div className="md:block absolute right-[0px] top-[0px] hidden">
               {  <Notification userId={userId} userSession={userSession} />}
@@ -93,13 +98,14 @@ function page() {
 
             <div className="wrapper">
               <div className="flex flex-col gap-[40px] lg:gap-[70px] items-center justify-around lg:h-[500px] w-[200px] xs:w-[300px] md:w-[400px] gradients px-[1rem] py-[1rem] xs:py-[2rem]">
-                <Image
+                <img src={profileUser.Avatar} alt="" className="rounded-full object-cover w-[300px] h-[300px]"></img>
+                {/* <Image
                   src={profileUser.Avatar}
                   width={300}
                   height={300}
                   alt="avatar"
                   className="rounded-full object-cover"
-                />
+                /> */}
                 <div className="flex flex-col items-center gap-[10px] w-[80%]">
                   <p
                     id="name_user"

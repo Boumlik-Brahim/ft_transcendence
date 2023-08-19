@@ -44,7 +44,7 @@ function ContactListMd() {
         setActiveButtonId(buttonId);
         dispatch(setOtherUser(buttonId));
         dispatch(selectedOne(buttonId)); try {
-            const res = await axios.put(`${process.env.NEXT_PUBLIC_APP_URI}/chat/${currentUserId}/${buttonId}`, { "seen": true });
+            const res = await axios.put(`${process.env.NEXT_PUBLIC_APP_URI}:3000/chat/${currentUserId}/${buttonId}`, { "seen": true });
 
         } catch (err) {
             console.log(err);
@@ -60,7 +60,7 @@ function ContactListMd() {
 
         async function fetchContact() {
             try {
-                const response = currentUserId && await axios.get<Contact[]>(`${process.env.NEXT_PUBLIC_APP_URI}/users/${currentUserId}/receivers`);
+                const response = currentUserId && await axios.get<Contact[]>(`${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${currentUserId}/receivers`);
                 response && setCont(response.data);
             } catch (error) {
                 console.error(error);

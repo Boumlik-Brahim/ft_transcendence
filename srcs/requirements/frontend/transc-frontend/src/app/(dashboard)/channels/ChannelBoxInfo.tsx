@@ -52,7 +52,7 @@ function ChannelBoxInfo({ id, channel_name, channel_owner, channel_members, chan
     useEffect(() => {
         async function fetchOwner() {
             try {
-                const response = await axios.get<Owner>(`${process.env.NEXT_PUBLIC_APP_URI}/users/${channel_owner}`);
+                const response = await axios.get<Owner>(`${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${channel_owner}`);
                 setChannelOwnerUser(response.data.name);
             } catch (error) {
                 console.error(error);
@@ -78,7 +78,7 @@ function ChannelBoxInfo({ id, channel_name, channel_owner, channel_members, chan
     useEffect(() => {
         async function fetchMemberExistence() {
             try {
-                const response =  await axios.get<MemberChannelInfo>(`${process.env.NEXT_PUBLIC_APP_URI}/channel/${id}/member/${userIdFromCookie}`);
+                const response =  await axios.get<MemberChannelInfo>(`${process.env.NEXT_PUBLIC_APP_URI}:3000/channel/${id}/member/${userIdFromCookie}`);
                 setExistingStatus(response.data);
             } catch (error) {
                 alert(error);

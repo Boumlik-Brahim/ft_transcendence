@@ -45,7 +45,7 @@ function MessageBox({ userId, messageContent, date }: Props) {
     //^ ----------------------- fetch User (receiver) data ----------------------
 
 
-    const link = `${process.env.NEXT_PUBLIC_APP_URI}/users/${userId}`
+    const link = `${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${userId}`
     //* useEffect to fetch User data 
     useEffect(() => {
         async function fetchUser() {
@@ -63,7 +63,7 @@ function MessageBox({ userId, messageContent, date }: Props) {
 
 
     //^ ----------------------- fetch current User data ----------------------
-    const currentUser = `${process.env.NEXT_PUBLIC_APP_URI}/users/${currentUserId}`
+    const currentUser = `${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${currentUserId}`
     const [CurrentUserName, setUserCurrentUserName] = useState<User>();
     //* useEffect to fetch current User Data 
     useEffect(() => {

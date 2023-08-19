@@ -15,7 +15,7 @@ import { io } from "socket.io-client";
 import Cookies from "universal-cookie";
 import Link from "next/link";
 const cookies = new Cookies();
-export const socket = io(`${process.env.NEXT_PUBLIC_APP_URI}/appGateway`, {
+export const socket = io(`${process.env.NEXT_PUBLIC_APP_URI}:3000/appGateway`, {
   auth: { userId: cookies.get("id") },
 });
 import { useSocket } from "@/app/socket";
@@ -68,7 +68,7 @@ const dispatch = useDispatch();
 
       });
     try {
-       const res =  await axios.put(`${process.env.NEXT_PUBLIC_APP_URI}/chat/${userSession}/${msg.id}`, {"seen": true});
+       const res =  await axios.put(`${process.env.NEXT_PUBLIC_APP_URI}:3000/chat/${userSession}/${msg.user.id}`, {"seen": true});
 
       } catch (err) {
         console.log(err);
@@ -100,7 +100,7 @@ const dispatch = useDispatch();
         const response =
           userSession &&
           (await axios.get(
-            `${process.env.NEXT_PUBLIC_APP_URI}/users/${userSession}/pending`
+            `${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${userSession}/pending`,{ withCredentials: true }
           ));
         response && setFriendShip(response.data);
         if (friendShip.length === 0) setToggle_notif(false);
@@ -118,7 +118,7 @@ const dispatch = useDispatch();
       try {
         const response =
           userSession &&
-          (await axios.get(`${process.env.NEXT_PUBLIC_APP_URI}/chat/${userSession}`));
+          (await axios.get(`${process.env.NEXT_PUBLIC_APP_URI}:3000/chat/${userSession}`,{ withCredentials: true }));
         response && setMessages(response.data);
         if (messages.length === 0) setToggle_notif(false);
       } catch (error) {

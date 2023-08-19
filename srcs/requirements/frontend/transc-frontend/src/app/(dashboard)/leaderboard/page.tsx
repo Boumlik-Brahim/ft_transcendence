@@ -30,7 +30,7 @@ function page() {
   useEffect(() => {
     const fetchAll = async () => {
       try {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_APP_URI}/users`);
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_APP_URI}:3000/users`);
         setUsers(response.data);
       } catch (error) {
         console.log(error);

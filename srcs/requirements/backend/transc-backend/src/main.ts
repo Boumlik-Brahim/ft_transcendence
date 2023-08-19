@@ -12,9 +12,8 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
  
   const corsOptions: CorsOptions = {
-    // origin: true,
+    origin: `${process.env.APP_URI}:5173`,
     credentials: true,
-    origin: 'http://localhost:5173', // Replace '*' with the origin URL of your Next.js frontend
   };
   // app.useStaticAssets(join('/','app', 'public'));
   app.use(express.static('public'));

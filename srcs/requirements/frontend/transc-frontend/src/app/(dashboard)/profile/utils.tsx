@@ -19,7 +19,7 @@ export function useUserData(userId: string) {
     const fetchUser = async () => {
       try {
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_APP_URI}/users/${userId}`
+          `${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${userId}`
         );
         setUser(response.data);
       } catch (error) {
@@ -33,7 +33,7 @@ export function useUserData(userId: string) {
 
 export async function createFriend(userId: string, friendId: string) {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URI}/users/friend`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URI}:3000/users/friend`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -57,9 +57,10 @@ export async function createFriend(userId: string, friendId: string) {
 export async function updateFriend(userId: string, friendId: string) {
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_APP_URI}/users/${userId}/friend/${friendId}`,
+      `${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${userId}/friend/${friendId}`,
       {
         method: "PATCH",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
@@ -83,7 +84,7 @@ export async function updateFriend(userId: string, friendId: string) {
 export async function deleteFriend(userId: string, friendId: string) {
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_APP_URI}/users/${userId}/friend/${friendId}`,
+      `${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${userId}/friend/${friendId}`,
       {
         method: "DELETE",
       }
@@ -110,7 +111,7 @@ export function getOpponents(
     const fetchUser = async () => {
       try {
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_APP_URI}/users/${userId}`
+          `${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${userId}`
         );
         setProfileUser(response.data);
       } catch (error) {
@@ -128,7 +129,7 @@ export function getOpponents(
     const fetchUsers = async () => {
       try {
         const userResponses = await Promise.all(
-          opponentId.map((id) => axios.get(`${process.env.NEXT_PUBLIC_APP_URI}/users/${id}`))
+          opponentId.map((id) => axios.get(`${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${id}`))
         );
 
         const op = userResponses.map((response) => response.data);
@@ -184,7 +185,7 @@ export function usePendingUsers(
       try {
         const userResponses = await Promise.all(
           friendIds.map((friendId) =>
-            axios.get(`${process.env.NEXT_PUBLIC_APP_URI}/users/${friendId}`)
+            axios.get(`${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${friendId}`)
           )
         );
 
@@ -222,7 +223,7 @@ export function leadersList(users: users_int[]): leaders_list[] | null {
       try {
         const userStateResponses = await Promise.all(
           ids.map((id) =>
-            axios.get(`${process.env.NEXT_PUBLIC_APP_URI}/users/${id}/userStat`)
+            axios.get(`${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${id}/userStat`)
           )
         );
 
@@ -279,7 +280,7 @@ export function usePendingMessage(
       try {
         const userResponses = await Promise.all(
           senderIds.map((senderId) =>
-            axios.get(`${process.env.NEXT_PUBLIC_APP_URI}/users/${senderId}`)
+            axios.get(`${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${senderId}`)
           )
         );
 
@@ -322,7 +323,7 @@ export function usePendingMessage(
 
 export async function block(userId: string, blockedId: string) {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URI}/users/blockedUser`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URI}:3000/users/blockedUser`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -344,7 +345,7 @@ export async function block(userId: string, blockedId: string) {
 export async function unblock(userId: string, blockedId: string) {
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_APP_URI}/users/${userId}/unBlockedUser/${blockedId}`,
+      `${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${userId}/unBlockedUser/${blockedId}`,
       {
         method: "DELETE",
         headers: {

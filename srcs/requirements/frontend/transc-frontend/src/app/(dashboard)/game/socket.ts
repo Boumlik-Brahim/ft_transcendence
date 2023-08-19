@@ -3,7 +3,7 @@ import Cookies from 'universal-cookie';
 
 const cookies = new Cookies();
 
-const URL = `${process.env.NEXT_PUBLIC_APP_URI}/game`
+const URL = `${process.env.NEXT_PUBLIC_APP_URI}:3000/game`
 
 // export const socket = io(URL, {
 //     autoConnect : false,

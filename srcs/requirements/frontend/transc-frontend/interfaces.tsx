@@ -97,7 +97,7 @@ export interface leaders_list
 //       const fetchUser = async () => {
 //         try {
 //           const response = await axios.get(
-//             `${process.env.NEXT_PUBLIC_APP_URI}/users/${userId}`
+//             `${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${userId}`
 //           );
 //           setProfileUser(response.data);
 //         } catch (error) {
@@ -115,7 +115,7 @@ export interface leaders_list
 //       const fetchUsers = async () => {
 //         try {
 //           const userResponses = await Promise.all(
-//             opponentId.map((id) => axios.get(`${process.env.NEXT_PUBLIC_APP_URI}/users/${id}`))
+//             opponentId.map((id) => axios.get(`${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${id}`))
 //           );
   
 //           const op = userResponses.map((response) => response.data);

@@ -61,9 +61,13 @@ export default function Achievements({ userId, userSessionId }: Props) {
   useEffect(() => {
     const fetchFriends = async () => {
       try {
+        // const response =  await fetch(`${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${userId}/friend`, {
+        //   credentials: "include"
+        // })
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_APP_URI}/users/${userId}/friend`
+          `${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${userId}/friend`,{ withCredentials: true }
         );
+        // const data = await response.json(); 
         setFriends(response.data);
       } catch (error) {
         console.log(error);
@@ -79,8 +83,13 @@ export default function Achievements({ userId, userSessionId }: Props) {
   useEffect(() => {
     const fetchMsgNum = async () => {
       try {
+        // const response =  await fetch(`${process.env.NEXT_PUBLIC_APP_URI}:3000/chat/msgNumber/${userId}`, {
+        //   credentials: "include"
+        // })
+        // const data = await response.json(); 
+        // setFriends(data);
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_APP_URI}/chat/msgNumber/${userId}`
+          `${process.env.NEXT_PUBLIC_APP_URI}:3000/chat/msgNumber/${userId}`,{ withCredentials: true }
         );
         setMsgNum(response.data);
       } catch (error) {

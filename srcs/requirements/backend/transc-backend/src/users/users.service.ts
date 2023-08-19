@@ -182,13 +182,15 @@ export class UsersService {
     };
   }
 
-  async updateUserStatus(id: string, updateUserStatusDto: updateUserStatusDto): Promise<User> {
+  async updateUserStatus(id: string, Status: 'ONLINE' | 'OFFLINE' | 'INAGAME'): Promise<User> {
     try{
       return await this.prisma.user.update({
         where: {
           id
         },
-        data: updateUserStatusDto,
+        data: {
+          status: Status
+        },
       });
     }catch (error) {
       throw new HttpException({

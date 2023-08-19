@@ -9,7 +9,7 @@ import { AppGateway } from 'src/app.gateway';
 @WebSocketGateway( {
   namespace: 'chatGateway',
   cors: { 
-    origin: `${process.env.APP_URI}/chat`,
+    origin: `${process.env.APP_URI}:5173/chat`,
   },
 })
 

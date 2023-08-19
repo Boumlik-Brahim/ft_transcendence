@@ -14,7 +14,7 @@ const QRCodePage = ({userId}: Props) => {
 
   const fetchQRCodeData = async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URI}/auth/2fa/generate?userId=${userId}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URI}:3000/auth/2fa/generate?userId=${userId}`, {
         method: 'Post',
       });
       const qrCodeData = await response.json();

@@ -19,13 +19,13 @@ const Players = ({userId_1, userId_2} : Props) => {
     const [player2, setPlayer2] = useState<User>()
 
     useEffect(() => {
-        fetch(`${process.env.NEXT_PUBLIC_APP_URI}/users/${userId_1}`)
+        fetch(`${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${userId_1}`)
         .then((res) => res.json())
         .then((user) => {
             setPlayer1(user);
         });
 
-        fetch(`${process.env.NEXT_PUBLIC_APP_URI}/users/${userId_2}`)
+        fetch(`${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${userId_2}`)
         .then((res) => res.json())
         .then((user) => {
             setPlayer2(user);

@@ -21,7 +21,7 @@ export default function page()  {
       try{
         if (userId !== undefined) {
           console.log("we will fetch now ********", userId);
-          const res = await axios.get(`${process.env.NEXT_PUBLIC_APP_URI}/users/${userId}`);
+          const res = await axios.get(`${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${userId}`, {withCredentials: true});
           if (res.data.isTwoFactorEnabled)
             setTwoFa(true);
         }
@@ -70,7 +70,7 @@ export default function page()  {
                         md:w-[300px] md:h-[70px]`}
                     >
                     <Link 
-                      href={`${process.env.NEXT_PUBLIC_APP_URI}/auth`}
+                      href={`${process.env.NEXT_PUBLIC_APP_URI}:3000/auth`}
                       >
                         <p className='md:text-[20px]'>Login With</p>
                     </Link>
@@ -106,7 +106,7 @@ export default function page()  {
                 lg:hidden`}
         >
           <Link 
-            href={`${process.env.NEXT_PUBLIC_APP_URI}/auth`}
+            href={`${process.env.NEXT_PUBLIC_APP_URI}:3000/auth`}
             >
               <p className='md:text-[20px]'>Login With</p>
           </Link>

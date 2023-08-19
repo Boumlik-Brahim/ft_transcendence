@@ -14,7 +14,7 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 @WebSocketGateway({
   namespace: 'channelGateway',
   cors: {
-    origin: `${process.env.APP_URI}/channels`,
+    origin: `${process.env.APP_URI}:5173/channels`,
   },
 })
 

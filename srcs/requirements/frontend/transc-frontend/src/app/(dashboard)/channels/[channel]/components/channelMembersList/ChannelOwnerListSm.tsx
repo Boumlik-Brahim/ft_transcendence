@@ -42,7 +42,7 @@ function ChannelOwnerListSm({ channelId }: { channelId: string }) {
     useEffect(() => {
         async function fetchPrivateChannel() {
             try {
-                const response = await axios.get<channel>(`${process.env.NEXT_PUBLIC_APP_URI}/channel/${channelId}`);
+                const response = await axios.get<channel>(`${process.env.NEXT_PUBLIC_APP_URI}:3000/channel/${channelId}`);
                 console.log(response);
                 response && setChannelData(response.data);
             } catch (error) {
@@ -59,7 +59,7 @@ function ChannelOwnerListSm({ channelId }: { channelId: string }) {
     useEffect(() => {
         async function fetchChannelOwnerData() {
             try {
-                const response = channelData && await axios.get<Owner>(`${process.env.NEXT_PUBLIC_APP_URI}/users/${channelData?.channelOwnerId}`);
+                const response = channelData && await axios.get<Owner>(`${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${channelData?.channelOwnerId}`);
                 response && setChannelOwnerData(response.data);
             } catch (error) {
                 alert(error);

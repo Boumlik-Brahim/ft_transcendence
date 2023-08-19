@@ -37,7 +37,7 @@ function ContactSm({ id, name, unreadMessages, profilePicturePath, onClick, acti
     const handleClick = async () => {
 
         try {
-            const res = await axios.put(`${process.env.NEXT_PUBLIC_APP_URI}/chat/${currentUserId}/${otherUserId}`, { "seen": true });
+            const res = await axios.put(`${process.env.NEXT_PUBLIC_APP_URI}:3000/chat/${currentUserId}/${otherUserId}`, { "seen": true });
 
         } catch (err) {
             console.log(err);
@@ -133,7 +133,7 @@ export default ContactSm;
     //     dispatch(setRefreshOn());
         
     //     try {
-    //         const res = await axios.put(`${process.env.NEXT_PUBLIC_APP_URI}/chat/${userSessionId}/${userId}`, {"seen": true});
+    //         const res = await axios.put(`${process.env.NEXT_PUBLIC_APP_URI}:3000/chat/${userSessionId}/${userId}`, {"seen": true});
     
     //       } catch (err) {
     //         console.log(err);

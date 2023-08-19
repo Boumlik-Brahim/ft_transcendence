@@ -61,7 +61,7 @@ function Friendsbar({ userId, userSessionId }: Props) {
   
         });
       try {
-         const res =  await axios.put(`${process.env.NEXT_PUBLIC_APP_URI}/chat/${userSessionId}/${friend.id}`, {"seen": true});
+         const res =  await axios.put(`${process.env.NEXT_PUBLIC_APP_URI}:3000/chat/${userSessionId}/${friend.id}`, {"seen": true});
   
         } catch (err) {
           console.log(err);
@@ -84,7 +84,7 @@ function Friendsbar({ userId, userSessionId }: Props) {
     const fetchFriends = async () => {
       try {
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_APP_URI}/users/${userSessionId}/friend`
+          `${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${userSessionId}/friend`
         );
         setFriendShip(response.data);
       } catch (error) {

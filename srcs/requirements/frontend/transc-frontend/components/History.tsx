@@ -18,7 +18,7 @@ export default function History({ userId, userSessionId }: Props) {
         const fetchHistory = async () => {
         try {
             const response = await axios.get(
-            `${process.env.NEXT_PUBLIC_APP_URI}/users/getGames/${userId}`
+            `${process.env.NEXT_PUBLIC_APP_URI}:3000/users/getGames/${userId}`,{ withCredentials: true }
             );
             setHistory(response.data);
           } catch (error) {

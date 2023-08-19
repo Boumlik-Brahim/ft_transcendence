@@ -14,7 +14,7 @@ import ChannelsList from "./ChannelsList";
 
 import Cookies from "universal-cookie";
 const cookies = new Cookies();
-export const socket = io(`${process.env.NEXT_PUBLIC_APP_URI}/channelGateway`,
+export const socket = io(`${process.env.NEXT_PUBLIC_APP_URI}:3000/channelGateway`,
     { auth: { userId: cookies.get('id') }
 });
 
@@ -73,6 +73,10 @@ const cookies = new Cookies();
     return (
         <>
             <Sidebar />
+            <div className="layouts">
+                <div className="my_container">
+
+
             <div className="w-full h-[85vh]  md:h-screen flex flex-col ">
                 {/*------------------------------------------------- create channel page for small devices ------------------------------------------------------------------ */}
 
@@ -88,9 +92,11 @@ const cookies = new Cookies();
 
 
 
-            {/*--------------------------------------------------------- side friend list------------------------------------------------------------------------------- */}
-            {(isLgScreenState) && <OnlineFriends />}
-            {/*---------------------------------------------------------------------------------------------------------------------------------------------------------- */}
+                </div>
+                    {/*--------------------------------------------------------- side friend list------------------------------------------------------------------------------- */}
+                    {(isLgScreenState) && <OnlineFriends />}
+                    {/*---------------------------------------------------------------------------------------------------------------------------------------------------------- */}
+            </div>
         </>
     )
 }
