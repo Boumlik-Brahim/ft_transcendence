@@ -15,18 +15,15 @@ export default function page()  {
 
   const cookies = new Cookies();
   const userId = cookies.get('id');
-  const accessTokenCookie = cookies.get('accessToken');
 
   useEffect(() => {
     async function checkTwoFa() {
       try{
         if (userId !== undefined) {
+          console.log("we will fetch now ********", userId);
           const res = await axios.get(`${process.env.NEXT_PUBLIC_APP_URI}/users/${userId}`);
-          if (res.data.isTwoFactorEnabled){
+          if (res.data.isTwoFactorEnabled)
             setTwoFa(true);
-          }
-          if (!res.data.isTwoFactorEnabled && accessTokenCookie) 
-            return router.push(`/profile/${userId}`);
         }
       }
       catch(e){

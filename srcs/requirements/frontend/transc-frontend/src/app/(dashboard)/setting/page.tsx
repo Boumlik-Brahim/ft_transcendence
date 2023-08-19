@@ -17,7 +17,9 @@ function page() {
   useEffect(() => {
     async function fetchData () {
       try{
-        const data = await fetch(`${process.env.NEXT_PUBLIC_APP_URI}/users/${userId}`);
+        const data = await fetch(`${process.env.NEXT_PUBLIC_APP_URI}/users/${userId}/image`,{
+          credentials: "include",
+        });
         if (data.ok){
           const userData = await data.json();
           setImageUrl(userData.Avatar);
@@ -32,7 +34,9 @@ function page() {
   
   useEffect(() => {
     async function check () {
-      const userData = await fetch(`${process.env.NEXT_PUBLIC_APP_URI}/users/${userId}`);
+      const userData = await fetch(`${process.env.NEXT_PUBLIC_APP_URI}/users/${userId}`,{
+        credentials: "include",
+      });
       const user = await userData.json();
       if (user.isTwoFactorEnabled){
         setDisableTwoFa(true);
@@ -50,6 +54,7 @@ function page() {
             setDisableTwoFa(false);
             await fetch(`${process.env.NEXT_PUBLIC_APP_URI}/users/${userId}/two-factor`, {
               method: 'PATCH',
+              credentials: "include",
               headers: {
                 'Content-Type': 'application/json',
               },
@@ -77,6 +82,7 @@ function page() {
       console.log("Username:", username); 
       await fetch(`${process.env.NEXT_PUBLIC_APP_URI}/users/${userId}/update/username`,{
         method: "POST",
+        credentials: "include",
         headers: {
           'Content-Type': 'application/json',
         },
@@ -94,19 +100,19 @@ function page() {
     try{
       const formData = new FormData();
       formData.append('file', file);
-      await fetch(`${process.env.NEXT_PUBLIC_APP_URI}/users/upload`, {
+      await fetch(`${process.env.NEXT_PUBLIC_APP_URI}/users/${userId}/upload`, {
         method: 'POST',
         body: formData,
+        credentials: "include",
       });
     }
     catch(error) {
       console.error(error);
     }
   };
-
   return (
     <>
-      <Sidebar/>
+      {/* <Sidebar/> */}
       <div className="layouts">
         <div className='px-[20%] w-full h-[80vh] flex flex-col justify-evenly gap-4 item-center text-[#3E3B6A]'>
           <div className=' self-cneter flex justify-center item-center font-press
@@ -114,13 +120,7 @@ function page() {
             <h1 className='text-center'>Edit Profile</h1>
           </div>
           <div className='flex flex-col self-center'>
-            <Image 
-              src={`${imageUrl ? imageUrl : "https://cdn.intra.42.fr/users/c43987424ac026f4092df16bb34bb273/iomayr.jpg"}`}
-              width={240}
-              height={240}
-              alt=""
-              className='rounded-full border-8 border-green-400 '
-            />
+            <img src={imageUrl} alt="" className='rounded-full border-8 border-green-400 w-[240px] h-[240px]'/>
             <div className=" w-12 h-12 bg-white flex items-center justify-center self-center mt-[-20px] rounded-full relative">
               <label className="">
                 <svg className="w-8 h-8 cursor-pointer tracking-wide" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -170,10 +170,10 @@ function page() {
             <button onClick={handleSaveClick} className='w-[240px] h-[40px] self-center text-white text-lg bg-[#3E3B6A] rounded-lg'>SAVE</button>
           </div>
         </div>
-        <Friendsbar
+        {/* <Friendsbar
           userId= {userId}
           userSessionId = {userId}
-        />
+        /> */}
       </div>
     </>
   );

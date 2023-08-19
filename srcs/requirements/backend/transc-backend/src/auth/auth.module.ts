@@ -8,8 +8,6 @@ import { JWT_SECRET } from '../utils/constants';
 import { UsersModule } from "src/users/users.module";
 import { IntraStrategy } from "./strategies/42.strategy";
 import { ConfigService } from "@nestjs/config";
-import { TokenBlacklistService } from './token-blacklist.service';
-import { TokenGuard } from './guards/Token.guard';
 
 @Module({
     imports: [
@@ -17,6 +15,6 @@ import { TokenGuard } from './guards/Token.guard';
       PassportModule,
       ],
     controllers: [AuthController],
-    providers: [AuthService, IntraStrategy, ConfigService, JwtService, TokenBlacklistService, TokenGuard],
+    providers: [AuthService, IntraStrategy, ConfigService, JwtService,],
 })
 export class AuthModule {}

@@ -2,26 +2,21 @@ import { Controller, Req, Res, Get, UseGuards, Post, Body, UnauthorizedException
 import { AuthService } from "./auth.service";
 import { UserInter } from "../users/user.interface";
 import { AuthGuard } from "@nestjs/passport";
-import { JwtPayload } from "./type/jwt-payload.type"
 import { ApiTags } from "@nestjs/swagger";
 import { UsersService } from "src/users/users.service";
-import { User } from "@prisma/client";
-import { LOGIN_REDIRECT_URL, PROFILE_REDIRECT_URL } from "src/utils/constants";
-import express, {Request, Response} from 'express';
-import { TokenBlacklistService } from "./token-blacklist.service";
+import { LOGIN_REDIRECT_URL} from "src/utils/constants";
 
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
     constructor (private authService: AuthService,
-        private userService: UsersService,
-        private tokenBlacklistService: TokenBlacklistService) {}
+        private userService: UsersService) {}
 
     @Get()
     @UseGuards(AuthGuard('42'))
     login(@Res() res: any, user: UserInter) : Promise<any> {
-        return this.authService.redirectBasedOnTwoFa(res, user);
+        return res.redirect(LOGIN_REDIRECT_URL);
     }
     
     @Get('callback')
@@ -41,12 +36,14 @@ export class AuthController {
         }
     }
     
-    @Post('logout')
-    logout(@Body() data: { accessToken: string }) {
-        const { accessToken } = data;
-        console.log(this.tokenBlacklistService.isBlacklisted(accessToken),  "isBlackListed?");
-        this.tokenBlacklistService.addToBlacklist(accessToken);
-    }
+    // @Post('logout')
+    // logout(@Body() data: { accessToken: string }, @Res() res: any, @Req() req: any) {
+    //     // const cookies = req.cookies;
+    //     console.log(req);
+    //     res.clearCookie('id').send({ status: 'ok' });;
+    //     // console.log(this.tokenBlacklistService.isBlacklisted(accessToken),  "isBlackListed?");
+    //     // this.tokenBlacklistService.addToBlacklist(accessToken);
+    // }
 
     @Post('2fa/generate')
     async register(@Query('userId') userId: string, @Res() res: any) {
@@ -73,7 +70,6 @@ export class AuthController {
             throw new UnauthorizedException('Wrong authentication code');
         }
         const token = await this.authService.signToken(userAuthentified);
-        // res.cookie("accessToken", token); // i need to try this tommorow with frontend
         res.send({token : token});
     }
 }
