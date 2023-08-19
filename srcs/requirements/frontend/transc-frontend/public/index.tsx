@@ -59,6 +59,7 @@ import waitingGIF from './waitingf.gif'
 
 import vs from "./VS.svg";
 import closeCircle from './closecircle.png'
+import star from './Star 4.svg'
  
 
 
@@ -66,6 +67,7 @@ import closeCircle from './closecircle.png'
 export {
   bgMain,
   waitingGIF,
+  star,
   closeCircle,
   vs,
   logo_b,

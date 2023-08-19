@@ -79,7 +79,7 @@ const Game = () => {
       <div className='flex  items-start justify-center lg:gap-2 w-full h-[100vh] '>
         <div className='mt-5 h-auto w-full flex flex-col items-center justify-center lg:w-[70%] '>
           <div className='flex items-center justify-around w-full'>
-            <h1 className='text-[30px] text-center text-primary m-10 font-bold game_font'>Play</h1>
+            <h1 className='text-[30px] text-center text-primary m-10 font-bold game_font text-press'>Play</h1>
             <div className="md:block hidden">
               <Notification userId={myId} userSession={myId}/>
             </div>

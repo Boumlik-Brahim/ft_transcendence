@@ -47,21 +47,31 @@ interface Player {
 interface CreateGameType {
     invitedId? : String, 
     creatorId : String, 
-    isRamdomOponent : boolean
+    isRamdomOponent : boolean,
+    maxScore : number | undefined
 }
 
 const Page = ( {params} : any) => {
     const router = useRouter();
-    const [gameSate, setGameSate] = useState<string | undefined>();
+    const [gameSate, setGameSate] = useState<string | undefined>('started');
     const [gameData, setGameData] = useState<GameEntity | undefined>();
     const userId = getCookie('id') as string;
-    const oponentId = userId === gameData?.player1.id ? gameData.player2.id : gameData?.player1.id;
+    const oponentId = userId === gameData?.player1.id ? gameData?.player2.id : gameData?.player1.id;
     const id = params.gameId;
     const socket = useSocket();
 
-    const handlePause = () => {
-        if (!socket.connected) return;
-        socket.emit('pauseOrStart', {gameId : id, userId})
+    const replayAgain = () : void => {
+        if (!socket) return;
+        if (!socket.connected) return ;
+        if (userId) {
+          const data : CreateGameType = {
+            invitedId : oponentId,
+            creatorId : userId,
+            isRamdomOponent : false,
+            maxScore : gameData?.scoreLimit
+        }
+          socket.emit('createGame', data);
+        }
     }
 
     const handleCancel = () => {
@@ -78,19 +88,26 @@ const Page = ( {params} : any) => {
             socket.emit(code, {gameId : id, userId})
         }, false);
         
-        socket.on('error_access', () => {
-            router.push('/game')
-        })
+        // socket.on('error_access', () => {
+        //     router.push('/game')
+        // })
         
         socket.on('gameData', (data) => setGameData(data))
         
-        socket.on('gameSate', data => {
-            const { state } = data;
-            setGameSate(state);
-        })
+        // socket.on('gameSate', data => {
+        //     const { state } = data;
+        //     setGameSate(state);
+        // });
+
+        socket.on('Success', data => {
+            console.log(data);
+            const { id } = data;
+            router.push(`/game/${id}`)
+        });
 
         return () => {
                 socket.off('joinGame');
+                socket.off('Success');
                 socket.off('error_access');
                 socket.off('gameData');
                 socket.off('gameSate');
@@ -98,7 +115,8 @@ const Page = ( {params} : any) => {
                 document.addEventListener('keydown', () => {});
             }
         }, []);
-        const createGame = (isRamdomOponent : boolean, id : string | undefined) => {}
+
+
 
         console.log(gameSate, gameData);
         return (
@@ -121,8 +139,20 @@ const Page = ( {params} : any) => {
                                     {
                                         gameData && <Players userId_1={gameData.player1.id as string}  userId_2={gameData.player2.id as string} />
                                     }
-                                    <div className={`flex justify-center items-center h-[300px] border-4 overflow-hidden border-white md:border-t-0 lg:h-[500px] w-full lg:w-[75%] rounded-[20px] md:rounded-tl-[0px] md:rounded-tr-[0px] shadow-2xl`}>
+                                    <div className={` relative  flex justify-center items-center h-[300px] border-4 overflow-hidden border-white md:border-t-0 lg:h-[500px] w-full lg:w-[75%] rounded-[20px] md:rounded-tl-[0px] md:rounded-tr-[0px] shadow-2xl`}>
                                         <Canvas gameData={gameData} gameState={gameSate}></Canvas>
+                                        {
+                                           gameSate === "finished" && (<div className={`absolute flex flex-col items-center w-[30%] ${gameData?.player1.id === userId ? 'left-[10%]' : 'right-[10%]'}`}>
+                                                <p className='text-center text-primary text-[40px] md:text-[50px] title'>
+                                                    {
+                                                        !gameData?.winner ? "DRAW" : gameData?.winner === userId ? "WON" : "LOST"
+                                                    }
+                                                </p>
+                                                <button className={`m-4 p-2 w-[80%] hover:bg-primary hover:text-white text-primary border-2 border-primary rounded-xl right-[75%]`} onClick={replayAgain}>
+                                                    Play again
+                                                </button>
+                                            </div>)
+                                        }      
                                     </div>
                                 </div>
                                 <div className='h-[50px] flex flex-wrap justify-center items-center '>

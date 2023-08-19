@@ -1,6 +1,7 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import Cookies from 'universal-cookie'
+import Image from 'next/image'
 
 interface Props {
     _name : string,
@@ -13,6 +14,8 @@ interface Friendship {
     id : string
     userId : string,
     friendId : string,
+    Avatar : string,
+    status : string
 }
 
 
@@ -54,16 +57,16 @@ const Friends = ({ _name, setName, setIsRandom, setOponent } : Props) => {
         setIsRandom(false);
     }
 
-    const namesfilter =  friends?.filter(friend => friend.name.includes(_name) && _name !== '');
+    const namesfilter =  friends?.filter(friend => friend.status === 'ONLINE');
     return (
         <div className='mt-4 bg-primary rounded-xl w-[252px] m-auto'>
             {
-                namesfilter?.map(({name, id}, index) => (
+                namesfilter?.map(({name, Avatar , id}, index) => (
                     <div className='flex m-auto p-1 w-[252px] h-[62px] cursor-pointer' key={index} onClick={() => handleClick(id)}>
                         <div className={`w-full flex items-center m-2 justify-between ${ namesfilter.length === index + 1 ? '' : 'border-b-[1px]'}`}>
                             <div className=' flex items-center gap-2 text-white'>
                                 <div className='h-[30px] w-[30px] bg-slate-200 rounded-full'>
-
+                                    <Image src={Avatar} height='80' width='80' alt='no player' className='border-4 rounded-full' />
                                 </div>
                                 <p>{name}</p>
                             </div>

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Image from 'next/image'
+import { star } from '../../../../../public'
 
 interface User {
     name : string,
@@ -17,6 +18,8 @@ const Players = ({userId_1, userId_2} : Props) => {
 
     const [player1, setPlayer1] = useState<User>()
     const [player2, setPlayer2] = useState<User>()
+    // const [level1, setLevel1] = useState<number>(0) 
+    // const [level2, setLevel2] = useState<number>(0) 
 
     useEffect(() => {
         fetch(`http://localhost:3000/users/${userId_1}`)
@@ -24,6 +27,26 @@ const Players = ({userId_1, userId_2} : Props) => {
         .then((user) => {
             setPlayer1(user);
         });
+
+        // fetch(`http://localhost:3000/users/${userId_1}/userStat`)
+        // .then((res) => {
+        //     // if (res) {
+        //     //     console.log(res, "fode")
+        //     // }
+        // })
+        // .then((userStat) => {
+        //     console.log(userStat);
+        // });
+
+        // fetch(`http://localhost:3000/users/${userId_2}/userStat`)
+        // .then((res) => {
+        //     // if (res) {
+        //     //     console.log(res, "fode")
+        //     // }
+        // })
+        // .then((userStat) => {
+        //     console.log(userStat);
+        // });
 
         fetch(`http://localhost:3000/users/${userId_2}`)
         .then((res) => res.json())
@@ -41,8 +64,11 @@ const Players = ({userId_1, userId_2} : Props) => {
                 {
                     player1 &&
                     <div className='flex gap-3 items-center'>
-                        <div className='h-auto m-auto'>
+                        <div className='h-[80px] w-[80px] m-auto relative'>
                             <Image src={player1.Avatar} height='80' width='80' alt='no player' className='border-4 rounded-full' />
+                            {/* <div className='absolute bottom-0 right-0 w-[20px]'>
+                                <Image src={star}  height='20' width='20' alt='no player'></Image>
+                            </div> */}
                         </div>
                         <h1 className='text-white text-[20px] font-[700]'> {player1.name} </h1>
                     </div>
@@ -51,8 +77,11 @@ const Players = ({userId_1, userId_2} : Props) => {
                     player2 &&
                     <div className='flex gap-3 items-center'>
                         <h1 className='text-white text-[20px] font-[700]'> {player2.name} </h1>
-                        <div className='h-auto m-auto'>
+                        <div className='h-auto m-auto relative'>
                             <Image src={player2.Avatar} height='80' width='80' alt='player'  className='border-4 rounded-full' />
+                            {/* <div className='absolute bottom-0 left-0 w-[20px] h-[20px] bg-green-500'>
+                                <Image src={star}  height='20' width='20' alt='no player'></Image>
+                            </div> */}
                         </div>
                     </div>
                 }

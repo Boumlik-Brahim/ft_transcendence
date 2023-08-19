@@ -12,7 +12,8 @@ interface Props {
 interface User {
     name : string,
     Avatar : string,
-    id : string
+    id : string,
+    status : string
 }
 
 interface Friendship {
@@ -25,7 +26,6 @@ interface Friendship {
 const OnlineFriends = ({ setOponent, setIsRandom } : Props) => {
 
     const [users, setUsers] = useState<User[]>();
-    const OnlineFriends= users;
     const cookie = new Cookies();
     const userId = cookie.get('id');
 
@@ -58,6 +58,8 @@ const OnlineFriends = ({ setOponent, setIsRandom } : Props) => {
         })
     }, [userId]);
 
+    const OnlineFriends=  users?.filter(friend => friend.status === 'ONLINE');
+
     return (
         <div className='w-[30%] h-full hidden lg:flex justify-center items-center '>
             <div className='h-[100vh] w-full bg-primary p-4'>
@@ -67,8 +69,8 @@ const OnlineFriends = ({ setOponent, setIsRandom } : Props) => {
                     OnlineFriends?.map((user, index) => (
                     <div className='w-full flex justify-around items-center mt-5' key={index}>
                         <div className='flex gap-3 items-center w-[50%]'>
-                        <div className='h-auto m-auto'>
-                            <Image src={user.Avatar} height='61' width='61' className='rounded-full' alt='no player' />
+                        <div className='h-auto m-auto relative'>
+                            <Image src={user.Avatar} height='61' width='61' className='rounded-full border-2 border-green-500' alt='no player' />
                         </div>
                         <h1 className='text-primary text-[12px] font-[700]'>{user.name}</h1>
                         </div>

@@ -652,6 +652,7 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
                 game.winner = game.player1.id;
             else if (game.player1.score <  game.player2.score)
                 game.winner = game.player2.id;
+            this.gameMap.set(game.id, game);
        }
     }
 
@@ -669,6 +670,8 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
         } 
         if (gameStatus.status === 'finished')
         {
+            if (game.player1.inThegame) this.updateUserSatusInTheGame(game.player1.id as string, false);
+            if (game.player2.inThegame) this.updateUserSatusInTheGame(game.player2.id as string, false);
             server.to(game.id).emit('gameSate', {state : game.gameStatus.status});
             if (game.winner)
             {
