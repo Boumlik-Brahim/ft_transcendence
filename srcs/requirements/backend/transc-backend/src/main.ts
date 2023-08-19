@@ -3,17 +3,25 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
+import { join } from 'path';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
+import * as express from 'express';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
  
   const corsOptions: CorsOptions = {
     // origin: true,
     credentials: true,
-    origin: '*', // Replace '*' with the origin URL of your Next.js frontend
+    origin: 'http://localhost:5173', // Replace '*' with the origin URL of your Next.js frontend
   };
-
+  // app.useStaticAssets(join('/','app', 'public'));
+  app.use(express.static('public'));
+  app.useStaticAssets(join(__dirname, '..', 'public'), {
+    prefix: '/public/',
+  });
+  // app.setViewEngine('ejs');
   app.enableCors(corsOptions);
 
   app.useGlobalPipes(new ValidationPipe());
