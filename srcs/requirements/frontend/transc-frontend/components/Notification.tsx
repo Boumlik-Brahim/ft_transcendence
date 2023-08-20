@@ -19,12 +19,11 @@ export const socket = io(`${process.env.NEXT_PUBLIC_APP_URI}:3000/appGateway`, {
   auth: { userId: cookies.get("id") },
 });
 import { useSocket } from "@/app/socket";
+import Challenge from "./GameNofication";
+import { useRouter } from "next/navigation";
 
 
 //& -----chat part --------
-
-
-import { redirect, useRouter } from 'next/navigation'
 
 
 import {  useDispatch } from 'react-redux';
@@ -37,8 +36,15 @@ type props = {
   userSession: string;
 };
 
+interface notification  {
+  id : string,
+  message : string,
+  userImg : string
+}
+
 function Notification({ userId, userSession }: props) {
 
+  const gameSocket = useSocket()
 
 // &--------------------------------------  CHAT PART ------------------------------------
 
@@ -47,7 +53,6 @@ const [checkRoomId, setCheckRoomId] = useState(false);
 const dispatch = useDispatch();
 
     const router = useRouter()
-
 
     
     const handleSubmitNotif = async ({userSession, msg} : {userSession : string ,msg : notifMessage}) => {
@@ -90,10 +95,13 @@ const dispatch = useDispatch();
 
   /* ------------------------------ notification ------------------------------ */
   const [notification, setNotification] = useState<string>("");
+
+
   /* ------------------------------------ - ----------------------------------- */
 
   /* ----------------------- get pending friend request ----------------------- */
   const [friendShip, setFriendShip] = useState<friendShip[]>([]);
+  const [GameNotificat, setGameNoticat] = useState<notification[]>([]);
   useEffect(() => {
     const fetchfriendShip = async () => {
       try {
@@ -110,6 +118,18 @@ const dispatch = useDispatch();
     };
     fetchfriendShip();
   }, [notification, userSession]);
+
+  const getGameInvitation = () => {
+    if (userId) {
+        fetch(`http://localhost:3000/game/invitations/${userId}`)
+        .then(data => data.json())
+        .then (res => {setGameNoticat(res); console.log(res)})
+    }
+  }
+
+  useEffect (() => {
+      getGameInvitation();
+  }, [])
   /* ------------------------------------ - ----------------------------------- */
   /* -------------------------- get received messages ------------------------- */
   const [messages, setMessages] = useState<MessageData[]>([]);
@@ -140,9 +160,13 @@ const dispatch = useDispatch();
   /* -------------------------- friend requset socket ------------------------- */
   useEffect(() => {
 
-    // gameSocket.on("gameInvitation", data => {
-    //   console.log(data);
-    // })
+    gameSocket.on("gameInvitation", () => getGameInvitation(), );
+
+    gameSocket.on('AcceptedGame', data => {
+      console.log(data);
+      const { gameId } = data;
+      router.push(`/game/${gameId}`)
+    });
 
     socket.on("DeleteRequest", (data) => {
       setNotification(data.userId + data.stats + data.friendId);
@@ -200,13 +224,16 @@ const dispatch = useDispatch();
           className="cursor-pointer"
         />
         {((pendingUsers && pendingUsers.length > 0) ||
-          (pendingMessages && pendingMessages.length > 0)) && (
+          (pendingMessages && pendingMessages.length > 0) ||
+          (GameNotificat && GameNotificat.length > 0)
+          ) && (
           <div className="absolute w-[12px] h-[12px] top-1 md:right-1 right-4 bg-red-400 rounded-full"></div>
         )}
       </div>
       {toggle_notif &&
         ((pendingUsers && pendingUsers.length > 0) ||
-          (pendingMessages && pendingMessages.length > 0)) && (
+          (pendingMessages && pendingMessages.length > 0)||
+          (GameNotificat && GameNotificat.length > 0)) && (
             <ul className="max-h-[400px] overflow-y-scroll overflow-hidden gradients shadow-lg flex flex-col gap-[40px] px-[3rem] py-[2rem] absolute w-[80%] md:w-[500px] top-[15vh] md:top-[60px] right-0 z-10">
               {pendingUsers?.map((user, index) => (
                 <li key={index} className="flex justify-between items-center">
@@ -294,6 +321,9 @@ const dispatch = useDispatch();
                         </div>
                 </li>
               ))}
+              {
+                GameNotificat.map((not, index) => <Challenge key={index} notification={not} userId={userId}/>)
+              }
             </ul>
         )}
     </>

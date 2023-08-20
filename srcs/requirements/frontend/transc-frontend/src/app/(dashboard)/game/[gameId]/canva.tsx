@@ -1,5 +1,7 @@
 'use client'
 import React, { useEffect, useRef } from 'react'
+import { Context } from 'react-responsive'
+import Cookies from 'universal-cookie'
 
 interface GameEntity {
   id : String,
@@ -28,32 +30,83 @@ interface Player {
 }
 
 interface PropsType {
-  gameData : GameEntity | undefined
+  gameData : GameEntity | undefined;
+  gameState : string | undefined
 }
 
+const cookie = new Cookies();
 
-const Canvas = ({ gameData } : PropsType) => {
+
+const Canvas = ({ gameData, gameState } : PropsType) => {
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   const convertValueX = (gamePoint : number, canvasValue : number, gameValue : number) : number => {
-    return ((gamePoint * canvasValue) / gameValue);
+    const t = ((canvasValue) / gameValue);
+    return t * gamePoint
   }
 
   const drawBall = (context : any, r : number, x : number, y : number) => {
     context.beginPath();
+    context.fillStyle = "#3E3B6A"
     context.arc(x, y, r, 0, 2 * Math.PI)
     context.fill();
+    // context.closePath();
   };
 
   const writeScore = (context : any, x : number, score1 : number) => {
-    context.font = "14px Arial";
+    context.font = "20px Arial";
     context.textAlign = 'center'
     context.globalAlpha = 0.3
     const text = score1.toString();
-    const y = 20;
+    const y = 26;
     context.fillText(text, x, y);
+
   }
+
+  const writeText = (context : any, w : number, h : number) => {
+    if (gameState === 'finished' || gameState === 'canceled')
+    {
+      const y : number = h / 2;
+      const userId : string = cookie.get('id');
+      const x = gameData?.player1.id === userId ? (w / 4) : ((3 * w) / 4);
+      const text : string = userId === gameData?.winner ? "WIN" : (gameData?.winner ? "LOST" : "DRAW")
+      context.fillStyle = "#3E3B6A"
+      context.font = "50px Arial";
+      context.textAlign = 'center';
+      context.fillText(text, x, y);
+    }
+  }
+
+  // const replayButton = (context: any, w: number, h: number) => {
+  //   if (gameState === 'finished' || gameState === 'canceled') {
+  //       const y: number = ((3 * h) / 4);
+  //       const userId: string = cookie.get('id');
+  //       const x = gameData?.player1.id === userId ? (w / 4) : ((3 * w) / 4);
+  //       const text = "Play Again";
+  //       const buttonColor = "#3E3B6A"; // Color for both text and border
+  //       const borderRadius = 10; // Radius of the button corners
+
+  //       // Draw border
+  //       context.strokeStyle = buttonColor;
+  //       context.lineWidth = 2;
+  //       context.fillStyle = 'transparent'; // No background color
+  //       context.beginPath();
+  //       context.moveTo(x - w / 8, y - h / 8 + borderRadius);
+  //       context.lineTo(x + w / 8, y - h / 8 + borderRadius);
+  //       context.arcTo(x + w / 8, y - h / 8, x + w / 8 - borderRadius, y - h / 8, borderRadius);
+  //       context.lineTo(x - w / 8 + borderRadius, y - h / 8);
+  //       context.arcTo(x - w / 8, y - h / 8, x - w / 8, y - h / 8 + borderRadius, borderRadius);
+  //       context.closePath();
+  //       context.stroke();
+
+  //       // Draw text
+  //       context.fillStyle = buttonColor;
+  //       context.font = "10px Arial";
+  //       context.textAlign = 'center';
+  //       context.fillText(text, x, y);
+  //   }
+  // }
 
   const drawMiddleLine = (context : any, w : number, h : number) => {
     context.strokeStyle = "white"
@@ -63,14 +116,15 @@ const Canvas = ({ gameData } : PropsType) => {
     context.moveTo(w / 2, 0);
     context.lineTo(w/2, h);
     context.stroke();
+    // context.closePath();
   }
   
   const drawPaddle = (context : any, x : number, y : number, h : number, w : number) => {
-    context.beginPath();
     context.fillStyle = "#3E3B6A"
-    context.setLineDash([0, 0])
-    context.fillRect(x, y, w, h);
-    context.stroke();
+    context.beginPath();
+    context.roundRect(x, y, w, h);
+    context.fill();
+    // context.closePath();
   }
 
   const drawGame = (context : any, canvas : any) => {
@@ -95,9 +149,10 @@ const Canvas = ({ gameData } : PropsType) => {
     drawPaddle(context, player2_X, player2_Y, paddleH, w_paddle);
     writeScore(context, w / 2 - 40, score1);
     writeScore(context, w / 2 + 40, score2);
+    // writeText(context, w, h);
+    // replayButton(context, w, h)
     context.globalAlpha = 1
   }
-
   useEffect(() => {
     if (canvasRef) {
       if (canvasRef.current) {
@@ -109,7 +164,7 @@ const Canvas = ({ gameData } : PropsType) => {
         }
       }
     }
-  }, [gameData]);
+  }, [gameData, gameState]);
 
   return (
     <canvas ref={canvasRef} className=' w-full border h-full rounded-lg shadow  '></canvas>

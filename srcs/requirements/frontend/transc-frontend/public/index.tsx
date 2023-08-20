@@ -55,12 +55,14 @@ import bulr_c3 from "./blur_color_3.svg";
 import question from "./question.png"
 import GIF from './wait.gif'
 import bgMain from './bg_main.png'
+import waitingGIF from './waitingf.gif'
 
 import vs from "./VS.svg";
 import closeCircle from './closecircle.png'
 import sms from './sms.svg'
 import happy from './happy.svg'
 import Sad from './Sad.svg'
+import star from './Star 4.svg'
  
 import editChannelName from './editChannelName.svg'
 import confirmName from './confirmName.svg'
@@ -71,6 +73,8 @@ export {
   Sad,
   sms,
   bgMain,
+  waitingGIF,
+  star,
   closeCircle,
   vs,
   logo_b,
@@ -163,6 +167,10 @@ import _1337_friends from "./achievements/1337_friends.svg"
 import _1337_games from "./achievements/1337_games.svg"
 import _1337_in_score from "./achievements/1337_in_score.svg"
 import _1337_messages from "./achievements/1337_messages.svg"
+import rectangle from "./Rectangle 193 (1).svg"
+import cercle from "./Ellipse 75.svg"
+import levelImg from "./Star 4.svg"
+
 export {
   _create_account,
   _have_one_friend,
@@ -183,7 +191,10 @@ export {
   _1337_friends,
   _1337_games,
   _1337_in_score,
-  _1337_messages
+  _1337_messages,
+  rectangle,
+  cercle,
+  levelImg
 }
 /* ------------------------------ Achievements ------------------------------ */
 

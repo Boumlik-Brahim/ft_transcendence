@@ -4,25 +4,80 @@ import { GameEntity, Player } from './entity/game.entity';
 import { v4 as uuidv4 } from 'uuid';
 import { Server, Socket } from 'socket.io';
 import { CANCELLED } from 'dns';
+import { time } from 'console';
+
+interface GameInvitation {
+    id : string,
+    senderId : string
+}
 
 @Injectable()
 export class GameService {
     private gameMap = new Map<String, GameEntity>();
     private usersConnected = new Map<string, Socket>();
     private inTheQueue : String | null;
+    private Vitesse = 0.1;
 
     constructor(private prisma : PrismaService) {}
+
+    /**
+     * This is end point to obtain all pending invitaion for a specific user
+     * @param id 
+     * @returns 
+     */
+    async getInvitations(id : string)  {
+        const invitations = await this.prisma.gamesInvitation.findMany ({
+            where : {
+                AND : [
+                    {
+                        receiverId : id,
+                        status : 'PENDING'
+                    }
+                ]
+            }
+        });
+        const notifications = await Promise.all(invitations.map(async (invit) => {
+            const user = await this.prisma.user.findUnique({
+                where : {
+                    id : invit.senderId
+                }
+            });
+            return {id : invit.id, message : `${user.name} invited you to play a game`, userImg : user.Avatar}
+        }))
+        return notifications;
+    }
+
+    /**
+     *  Add user in the connected user map
+     * @param id 
+     * @param socket 
+     */
 
     addUser(id : string, socket : Socket) {
         this.usersConnected.set(id, socket);
     }
 
+    isConneted (id : string, client : Socket) : boolean {
+        // const _client : Socket = this.usersConnected.get(id);
+        // if (_client && client.id === _client.id)
+        //     return true;
+        // else {
+        //     return false;
+        // }
+        return true;
+    }
+
+    /**
+     * Delete user inthe connected user map
+     * @param socket 
+     * @returns 
+     */
     deleteUser(socket : Socket) {
-        for (const [key, value] of this.gameMap.entries()) {
-            if (socket.id === value.id) {
-                this.gameMap.delete(key);
-                return ;
-            }
+        const arrayOfUserConnected = Array.from(this.usersConnected.values());
+        const indexToDelete = arrayOfUserConnected.findIndex((_socket) => socket.id === _socket.id);
+        if (indexToDelete != -1) {
+            const keyToDelete = Array.from(this.usersConnected.keys())[indexToDelete]
+            this.usersConnected.delete(keyToDelete);
         }
     }
 
@@ -35,7 +90,7 @@ export class GameService {
      */
     async inviteAfriend(senderId : string, receiverId : string, client : Socket, maxScore? : number) {
         const receiverSocket : Socket = this.usersConnected.get(receiverId);
-        const socre = maxScore ? maxScore : 10;
+        const score = maxScore ? maxScore : 10;
         try {
             const sender = await this.prisma.user.findUnique({
                 where : {
@@ -73,9 +128,9 @@ export class GameService {
                 client.emit('error', 'You are not allowed to play against this one');
                 return ;
             }
-            const game : GameEntity = this.getGameInitValue(senderId, receiverId, maxScore);
+            const game : GameEntity = this.getGameInitValue(senderId, receiverId, score);
             this.gameMap.set(game.id, game);
-            const invitation = await this.prisma.gamesInvitation.create({
+            await this.prisma.gamesInvitation.create({
                 data : {
                     senderId,
                     receiverId,
@@ -85,7 +140,7 @@ export class GameService {
             });
             client.emit("Success", {id : game.id});
             if (receiverSocket) {
-                receiverSocket.emit('gameInvitation', {id : invitation.id, message : `${sender.name} invite you to play a game`});
+                receiverSocket.emit('gameInvitation');
             }
         }
         catch (error) {
@@ -93,6 +148,13 @@ export class GameService {
         }
     }
 
+    /**
+     * Reject Invitation From Another user
+     * @param client 
+     * @param invitationId 
+     * @param userId 
+     * @returns 
+     */
 
     async rejectInvitation (client : Socket, invitationId : string, userId : string) {
         try {
@@ -112,20 +174,28 @@ export class GameService {
                     gameId
                 }, 
                 data : {
-                    status : 'CANCELED'
+                    status : 'REJECTED'
                 }
             });
             const senderSocket = this.usersConnected.get(senderId);
             if (senderSocket)
             {
-                senderSocket.emit('rejectInvitation', `Your invitation is rejected by ${user.name}`);
+                senderSocket.emit('error_access');
             }
+            client.emit('gameInvitation');
         }
         catch (error) {
             client.emit("error", error);
         }
     }
 
+    /**
+     * Accept Invitation From Another User
+     * @param client 
+     * @param invitationId 
+     * @param userId 
+     * @returns 
+     */
     async AcceptInvitation (client : Socket, invitationId : string, userId : string) {
         try {
             const user = await this.prisma.user.findUnique({
@@ -193,6 +263,11 @@ export class GameService {
         else this.joinAqueue(creatorId, client);
 }
 
+/**
+ * Update User Status if he's in the Game or Not
+ * @param userId 
+ * @param inThegame 
+ */
 async updateUserSatusInTheGame (userId : string, inThegame : boolean) {
     const status = inThegame ? 'INAGAME' : 'ONLINE';
     try {
@@ -264,25 +339,10 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
      * Here is The logique about the Game
      * @param gameValue 
      */
-    gameLogique(gameValue : GameEntity) {
+    gameLogique(gameValue : GameEntity, deltaTime : number) {
         this.collision(gameValue)
-        gameValue.ball_x += (gameValue.vx * gameValue.ball_speed);
-        gameValue.ball_y += (gameValue.vy * gameValue.ball_speed );
-    }
-
-    /**
-     * here is The Logique about taking the collision Angle between the Paddle and the Ball
-     * @param ball_y 
-     * @param paddle_y 
-     * @param paddle_middle 
-     * @returns 
-     */
-    paddleCollisionAngle(ball_y : number, paddle_y : number, paddle_middle : number) : number {
-        const collisionPoint = ball_y - (paddle_y + paddle_middle);
-        const NormalisePoint = collisionPoint / paddle_middle;
-        const maxBounceAngle = (Math.PI / 4);
-        const angle = NormalisePoint * maxBounceAngle;
-        return angle;
+        gameValue.ball_x += gameValue.vx * gameValue.ball_speed;
+        gameValue.ball_y += gameValue.vy  * gameValue.ball_speed;
     }
 
     /**
@@ -303,11 +363,9 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
         } = gameValue;
 
         const ball_left = ball_x - radius;
-        const ball_right = ball_x + radius;
         const ball_top = ball_y - radius;
+        const ball_right = ball_x + radius;
         const ball_bottom = ball_y + radius;
-
-        const paddle_middle = h_paddle / 2;
         const paddle1_surface = player1.paddleX + w_paddle;
         const paddle2_surface = player2.paddleX;
         const paddle1_bottom = player1.paddleY + h_paddle;
@@ -315,43 +373,11 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
         const paddle1_top = player1.paddleY;
         const paddle2_top = player2.paddleY;
 
-        if (ball_left <= paddle1_surface && ball_y > paddle1_top && ball_y < paddle1_bottom)
+        if (ball_right <= 0 || ball_right >= gameValue.W_screen)
         {
-            gameValue.ball_speed += 0.2;
-            const angle = this.paddleCollisionAngle(ball_y, paddle1_top, paddle_middle);
-            gameValue.vx = gameValue.ball_speed * Math.cos(angle);
-            gameValue.vy = gameValue.ball_speed * Math.sin(angle);
-            if (gameValue.vx < 0)
-            {
-                gameValue.vx *= -1;
-            }
-        }
-        else if (ball_right >= paddle2_surface && ball_y > paddle2_top && ball_y < paddle2_bottom)
-        {
-            gameValue.ball_speed += 0.2;
-            const angle = this.paddleCollisionAngle(ball_y, paddle2_top, paddle_middle);
-            gameValue.vx = gameValue.ball_speed * Math.cos(angle);
-            gameValue.vy = gameValue.ball_speed * Math.sin(angle);
-            if (gameValue.vx > 0)
-            {
-                gameValue.vx *= -1;
-            }
-        }  
-        else if (ball_right > W_screen || ball_left < 0)
-        {
-            gameValue.ball_speed = 1;
-            gameValue.vx *= -1;
             gameValue.ball_x = W_screen / 2;
             gameValue.ball_y = H_screen / 2;
-            if (ball_right > W_screen) {
-                gameValue.player1.score += 1;
-                if (gameValue.player1.score === gameValue.scoreLimit)
-                {
-                    gameValue.gameStatus.status = 'finished';
-                    gameValue.winner = gameValue.player1.id;
-                }
-            }
-            else if (ball_left < 0) {
+            if (ball_right < 0) {
                 gameValue.player2.score += 1;
                 if (gameValue.player2.score === gameValue.scoreLimit)
                 {
@@ -359,11 +385,43 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
                     gameValue.winner = gameValue.player2.id;
                 }
             }
+            else if (ball_right > gameValue.W_screen) {
+                gameValue.player1.score += 1;
+                if (gameValue.player1.score === gameValue.scoreLimit)
+                {
+                    gameValue.gameStatus.status = 'finished';
+                    gameValue.winner = gameValue.player1.id;
+                }
+            }
         }
-        else if (ball_bottom > H_screen || ball_top < 0)
+        else if (ball_y - radius <= 0 || ball_y + radius >= H_screen)
         {
             gameValue.vy *= -1;
         }
+
+        else if (ball_left <= paddle1_surface && ball_top < paddle1_bottom && ball_bottom > paddle1_top && gameValue.vx < 0) 
+        {
+            const maxScore = 2;
+            if (gameValue.ball_speed < maxScore) gameValue.ball_speed += this.Vitesse;
+            if ((ball_left < paddle1_surface && ball_y > paddle1_bottom && gameValue.vy < 0) ||  (ball_left > paddle1_surface &&  ball_y < paddle1_top && gameValue.vy > 0)) {
+                // gameValue.vy *= -1;
+            }
+            else {
+                gameValue.vx *= -1;
+            }
+        } 
+        else if (ball_right >= paddle2_surface && ball_top < paddle2_bottom && ball_bottom > paddle2_top && gameValue.vx > 0)
+        {
+            const maxScore = 2;
+            if (gameValue.ball_speed < maxScore) gameValue.ball_speed += this.Vitesse;
+            if ((ball_right > paddle2_surface && ball_y > paddle2_bottom && gameValue.vy < 0) ||  (ball_right > paddle2_surface &&  ball_y < paddle2_top && gameValue.vy > 0)) {
+                // gameValue.vy *= -1;
+            }
+            else {
+                gameValue.vx *= -1;
+            }
+        }
+        
     }
     
     /**
@@ -372,15 +430,19 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
      * @param server 
      */
     gameLoop(game : GameEntity, server : any) {
+        let lastTimestamp = performance.now();
         const id = setInterval(() => {
-            this.updatePaddle(game);
+            const currentTimestamp = performance.now();
+            const deltaTime = (currentTimestamp - lastTimestamp) / 1000
             if (game.gameStatus.status === 'started')
             {
-                this.gameLogique(game);
+                this.updatePaddle(game);
+                this.gameLogique(game, deltaTime);
             }
             server.to(game.id).emit("gameData", game);
             this.istheGameEnd(game, id, server);
-        }, 1000 / 60);
+            lastTimestamp = currentTimestamp;
+        }, 16);
     }
 
     /**
@@ -463,7 +525,6 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
      * @returns 
      */
     getGameInitValue(player1Id : String, player2Id : String, maxScore : number) : GameEntity {
-        // const ballDirectionX : number = Math.round(Math.random()) === 1 ? -1 : 1;
         const _id = uuidv4();
         const newGameValue : GameEntity =  {
             id : _id,
@@ -473,18 +534,18 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
             ball_y : 50,
             radius : 4,
             vx : 1,
-            vy : 1,
+            vy : 0.5,
             player1 : {
                 id : player1Id,
                 inThegame : false,
-                paddleX : 10,
+                paddleX : 5,
                 paddleY : 0,
                 score : 0
             },
             player2 : {
                 id : player2Id,
                 inThegame : false,
-                paddleX : 230,
+                paddleX : 235,
                 paddleY : 80,
                 score : 0
             },
@@ -594,6 +655,7 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
                 game.winner = game.player1.id;
             else if (game.player1.score <  game.player2.score)
                 game.winner = game.player2.id;
+            this.gameMap.set(game.id, game);
        }
     }
 
@@ -607,10 +669,12 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
         const { gameStatus } = game;
         if (gameStatus.status === 'stopped')
         {
-            this.checkTimeToEnd(game.gameStatus.update_t, 10, game);
+            this.checkTimeToEnd(game.gameStatus.update_t, 30, game);
         } 
-        if (gameStatus.status === 'finished' || gameStatus.status === 'canceled')
+        if (gameStatus.status === 'finished')
         {
+            if (game.player1.inThegame) this.updateUserSatusInTheGame(game.player1.id as string, false);
+            if (game.player2.inThegame) this.updateUserSatusInTheGame(game.player2.id as string, false);
             server.to(game.id).emit('gameSate', {state : game.gameStatus.status});
             if (game.winner)
             {
@@ -639,60 +703,6 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
         return null;
     }
 
-    /**
-     * make a pause to stop the game for a moment
-     * @param playerId 
-     * @param gameId 
-     * @param client 
-     */
-
-    pauseOrSart(playerId : String, gameId : String, client : any) {
-        const game : GameEntity = this.getGame(playerId, gameId, client);
-        if (game) {
-            game.gameStatus.status = game.gameStatus.status === 'pause' ? 'started' : 'pause';
-            game.gameStatus.update_t = new Date().getTime();
-            this.gameMap.set(gameId, game);
-        }
-    }
-
-    /**
-     * Cancel a game
-     * @param playerId 
-     * @param gameId 
-     * @param client 
-     */
-
-    async cancelGame(playerId : String, gameId : String, client : any) {
-        const game : GameEntity = this.getGame(playerId, gameId, client);
-        if (game) {
-            if (game.gameStatus.status === 'waiting')
-            {
-                if (game.id === this.inTheQueue)
-                    this.inTheQueue = null;
-                this.gameMap.delete(gameId);
-                client.emit('error_access');
-            }
-            else
-            {
-                if (playerId === game.player1.id)
-                {
-                    game.winner = game.player2.id
-                    game.player2.score = 1;
-                    game.player1.score = 0;
-                }
-                else
-                {
-                    game.winner = game.player1.id
-                    game.player2.score = 0;
-                    game.player1.score = 1;
-                }
-                game.gameStatus.status = 'canceled';
-                this.gameMap.set(gameId, game)
-            }
-            this.updateUserSatusInTheGame(playerId as string, false);
-            client.leave(gameId);
-        }
-    }
 
     /**
      * Quit a game maybe by accident or by yourself, we are gonna wait for a moment after that the game will finish
@@ -701,7 +711,7 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
      * @param client 
      */
 
-    quiteGame(playerId : String, gameId : String, client : any) {
+    async quiteGame(playerId : String, gameId : String, client : any) {
         const game : GameEntity = this.getGame(playerId, gameId, client);
         if (game) {
             if (game.id === this.inTheQueue)
@@ -720,6 +730,17 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
                     game.gameStatus.status = 'stopped';
                     game.gameStatus.update_t = new Date().getTime();
                     this.gameMap.set(gameId, game);
+                }
+                else {
+                    await this.prisma.gamesInvitation.update({
+                        where : {
+                            gameId : gameId as string
+                        }, 
+                        data : {
+                            status : 'CANCELED'
+                        }
+                    });
+                    this.gameMap.delete(gameId);
                 }
             }
             this.updateUserSatusInTheGame(playerId as string, false);
