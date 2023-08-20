@@ -10,7 +10,6 @@ import {
 import axios from "axios";
 import { close_r, message_b, notification_b, send_b, sms } from "../public";
 import Image from "next/image";
-// import { socket } from "@/app/(dashboard)/profile/[userId]/page";
 import { io } from "socket.io-client";
 import Cookies from "universal-cookie";
 import Link from "next/link";
@@ -163,7 +162,6 @@ const dispatch = useDispatch();
     gameSocket.on("gameInvitation", () => getGameInvitation(), );
 
     gameSocket.on('AcceptedGame', data => {
-      console.log(data);
       const { gameId } = data;
       router.push(`/game/${gameId}`)
     });

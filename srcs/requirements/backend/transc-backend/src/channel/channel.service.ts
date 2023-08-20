@@ -303,7 +303,6 @@ export class ChannelService {
       const muteTime = new Date(mutedTime);
       if(muteTime.getMinutes() > unmuteTime.getMinutes())
       {
-        console.log('dkhl lhna');
         unmuteTime.setMinutes(unmuteTime.getMinutes() + (muteTime.getMinutes() - unmuteTime.getMinutes()));
       }
       

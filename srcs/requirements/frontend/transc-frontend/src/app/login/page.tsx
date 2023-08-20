@@ -20,7 +20,6 @@ export default function page()  {
     async function checkTwoFa() {
       try{
         if (userId !== undefined) {
-          console.log("we will fetch now ********", userId);
           const res = await axios.get(`${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${userId}`, {withCredentials: true});
           if (res.data.isTwoFactorEnabled)
             setTwoFa(true);

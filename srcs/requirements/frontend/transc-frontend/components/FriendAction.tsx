@@ -267,7 +267,6 @@ function FriendAction({ userId, userSessionId }: Props) {
               <div
                 className="card_friend gradients"
                 onClick={async (event) => {
-                  console.log("Status == ", friendShipStatus);
                   if (friendShipStatus === "NOFRIEND") {
                     await createFriend(userSessionId, userId);
                     setFriendShipStatus("PENDING");
@@ -285,7 +284,6 @@ function FriendAction({ userId, userSessionId }: Props) {
                       stats: "CancelFriendShip",
                     });
                   } else if (friendShipStatus === "ACCEPTED") {
-                    console.log("Status == ACCEPTED :", friendShipStatus);
                     await deleteFriend(userSessionId, userId);
                     setFriendShipStatus("NOFRIEND");
                     socket.emit("DeleteFriendShip", {

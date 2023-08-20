@@ -49,7 +49,7 @@ function Sidebar() {
     }
     const handleLogOut = async () => {
         const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${userId}/userStatus`,{
-            method: 'PATCH',
+            method: "PUT",
             credentials: "include",
             headers: {
                 'Content-Type': 'application/json',

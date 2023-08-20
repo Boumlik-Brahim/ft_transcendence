@@ -297,7 +297,6 @@ async updateUserSatusInTheGame (userId : string, inThegame : boolean) {
 async joinGame(userId : string, gameId : string, client : Socket, server : Server) {
     try {
         const game = this.gameMap.get(gameId);
-        console.log(game);
         if (!game) {
             client.emit("error_access");
             return;
@@ -307,7 +306,6 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
                 return;
             }
             client.join(gameId);
-            console.log(game);
             client.emit('gameSate', {state : game.gameStatus.status});
             client.emit('gameData', game);
             if (userId === game.player1.id)
@@ -577,7 +575,6 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
                 }
             });
             if (!userSate) {
-                console.log("IF Fodi");
                 const p = await this.prisma.userStat.create({
                     data: {
                         winsNumbr : 1,
@@ -603,7 +600,6 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
         catch (error) {
             console.log(error);
         }
-        console.log(" fode oulare ");
     }
 
     /**

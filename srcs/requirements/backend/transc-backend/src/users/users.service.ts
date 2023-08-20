@@ -612,7 +612,6 @@ export class UsersService {
 
   //* ----------------------------------------------------------GetUserGamesService------------------------------------------------------- *//
   async getUsergames(userId : string) : Promise<GamesHistories[]> {
-    console.log(userId)
     try {
       const games = await this.prisma.gamesHistories.findMany(
         {

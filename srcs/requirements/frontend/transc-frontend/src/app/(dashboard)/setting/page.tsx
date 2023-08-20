@@ -84,7 +84,6 @@ function page() {
     if (userData){
       const username = userData;
       setUserData('');
-      console.log("Username:", username); 
       await fetch(`${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${userSession}/update/username`,{
         method: "POST",
         credentials: "include",

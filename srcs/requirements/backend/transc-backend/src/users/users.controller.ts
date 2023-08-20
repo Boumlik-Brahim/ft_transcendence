@@ -54,7 +54,7 @@ export class UsersController {
   //   return updateUser;
   // }
 
-  @Patch(':id/userStatus')
+  @Put(':id/userStatus')
   // @UseGuards(JwtAuthGuard)
   async updateUserStatus(@Param('id') id: string, @Body('status') status: 'ONLINE' | 'OFFLINE' | 'INAGAME'): Promise<User> {
     const updateUser = await this.usersService.updateUserStatus(id, status);
@@ -230,7 +230,7 @@ export class UsersController {
           filename: (req, file, cb) => {
             const timestamp = new Date().getTime();
             const fileExtension = file.originalname.split('.').pop();
-            const userId = req.params.id; // console.log(req.params.id);
+            const userId = req.params.id;
             const newFileName = `${timestamp}-${userId}.${fileExtension}`;
             (req as any).newFileName = `${process.env.APP_URI}:3000/${newFileName}`; // Set newFileName in the request object
             cb(null, newFileName);

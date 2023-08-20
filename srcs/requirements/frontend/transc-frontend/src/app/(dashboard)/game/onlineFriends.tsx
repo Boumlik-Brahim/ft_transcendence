@@ -61,18 +61,18 @@ const OnlineFriends = ({ setOponent, setIsRandom } : Props) => {
     const OnlineFriends=  users?.filter(friend => friend.status === 'ONLINE');
 
     return (
-        <div className='w-[30%] h-full hidden lg:flex justify-center items-center '>
+        <div className='w-[25%] h-full hidden lg:flex justify-center items-center '>
             <div className='h-[100vh] w-full bg-primary p-4'>
                 <h1 className='game_font mt-5 text-center text-white  '> Online  Players ({OnlineFriends?.length})</h1>
-                <div className='mt-10'>
+                <div className='mt-10 w-full'>
                 {
                     OnlineFriends?.map((user, index) => (
                     <div className='w-full flex justify-around items-center mt-5' key={index}>
-                        <div className='flex gap-3 items-center w-[50%]'>
-                        <div className='h-auto m-auto relative'>
+                        <div className='flex items-center w-[50%]'>
+                        <div className='h-auto m-auto relative flex justify-end'>
                             <Image src={user.Avatar} height='61' width='61' className='rounded-full border-2 border-green-500' alt='no player' />
                         </div>
-                        <h1 className='text-primary text-[12px] font-[700]'>{user.name}</h1>
+                        <h1 className='text-white text-[18px] font-[700] block w-[50%]'>{user.name}</h1>
                         </div>
                         <button className='p-1 border text-white text-[10px]   rounded-[40px] w-[80px]  hover:text-white' onClick={() => handleSelect(user.id)}>
                             Challenge

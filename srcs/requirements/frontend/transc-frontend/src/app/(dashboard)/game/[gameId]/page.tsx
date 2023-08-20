@@ -111,10 +111,9 @@ const Page = ( {params} : any) => {
                 socket.off('error_access');
                 socket.off('gameData');
                 socket.off('gameSate');
-                socket.emit('quiteGame', {gameId : id, userId});
                 document.addEventListener('keydown', () => {});
             }
-        }, []);
+        }, [socket]);
 
 
 

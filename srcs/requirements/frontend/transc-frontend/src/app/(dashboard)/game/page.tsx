@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation';
 import { getCookie } from 'cookies-next';
 import { vs } from '../../../../public';
 import Sidebar from "../../../../components/Sidebar";
+import './game.css'
 import Notification from '../../../../components/Notification';
 
 
@@ -27,12 +28,10 @@ const Game = () => {
   const [isRamdom, setIsramdom] = useState<boolean>(true);
   const [maxScore, setMaxScore] = useState<number>(10);
   const myId : string = getCookie('id') as string;
-  console.log(getCookie('accessToken'), 'token');
   const router = useRouter();
   const socket = useSocket();
 
   const createGame = (isRamdomOponent : boolean, id : string | undefined) : void => {
-    console.log(oponentId);
     if (!socket) return;
     if (!socket.connected) return ;
     if (myId) {
@@ -43,15 +42,12 @@ const Game = () => {
         maxScore
       }
       socket.emit('createGame', data);
-      console.log("inside")
     }
   }
   
   useEffect(() => {
     if (socket)
     {
-      socket.connect();
-  
       socket.on('Success', data => {
         console.log(data);
         const { id } = data;
@@ -70,14 +66,14 @@ const Game = () => {
         socket.off('error')
       }
     }
-  }, [myId]);
+  }, [myId, socket]);
 
 
   return (
       <>
       <Sidebar />
-      <div className='flex  items-start justify-center lg:gap-2 w-full h-[100vh] '>
-        <div className='mt-5 h-auto w-full flex flex-col items-center justify-center lg:w-[70%] '>
+      <div className='flex  items-start justify-center lg:gap-2 w-full h-[100vh]'>
+        <div className='mt-5 h-auto w-full flex flex-col items-center justify-center lg:w-[75%] '>
           <div className='flex items-center justify-around w-full'>
             <h1 className='text-[30px] text-center text-primary m-10 font-bold game_font text-press'>Play</h1>
             <div className="md:block hidden">
@@ -110,7 +106,7 @@ const Game = () => {
           }
           {
             oponentName === '' && (
-              <form className='w-full flex justify-center items-center mt-10 gap-2'>
+            <form className='w-full flex justify-center items-center mt-10 gap-2'>
               <label className='text-[#3E3B6A] font-[400] text-[15px]' > Max Score </label>
               <input 
                 type="range" id="numberInput" name="numberInput" min="10" max="100" step="10" 
@@ -121,8 +117,7 @@ const Game = () => {
                 <div className='text-[#3E3B6A] font-[400] text-[15px]'>
                   {maxScore}
                 </div>
-              </form>
-              
+            </form>
             )
           }
         </div>

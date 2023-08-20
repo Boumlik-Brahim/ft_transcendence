@@ -66,7 +66,6 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
 
     @SubscribeMessage('inviteUser')
     async handleInviteUser(@MessageBody() payload: CreateFriendDto, @ConnectedSocket() socket: Socket): Promise<void> {
-        console.log(payload);
         const user = await this.usersService.findOne(payload.userId);
         for (const [key, val] of this.connectedClientsService.getAllClients()) {
             if (val === payload.friendId) {
