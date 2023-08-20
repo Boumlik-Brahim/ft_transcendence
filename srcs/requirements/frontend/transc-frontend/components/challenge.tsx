@@ -5,7 +5,6 @@ import { close_r } from "../public";
 import Image from "next/image";
 
 interface Props {
-    key : number,
     notification : {
         id : string,
         message : string
@@ -13,9 +12,9 @@ interface Props {
     user: users_int
 }
 
-function challenge({key, notification, user} : Props) {
+function challenge({notification, user} : Props) {
   return (
-    <li key={key} className="flex justify-between items-center">
+    <div className="flex justify-between items-center">
       <div className="relative flex items-center gap-[10px] w-[100px]">
         <Image
           src={user.Avatar}
@@ -52,7 +51,7 @@ function challenge({key, notification, user} : Props) {
           }}
         />
       </div>
-    </li>
+    </div>
   );
 }
 

@@ -121,7 +121,7 @@ const dispatch = useDispatch();
 
   const getGameInvitation = () => {
     if (userId) {
-        fetch(`http://localhost:3000/game/invitations/${userId}`)
+        fetch(`${process.env.NEXT_PUBLIC_APP_URI}:3000/game/invitations/${userId}`)
         .then(data => data.json())
         .then (res => {setGameNoticat(res); console.log(res)})
     }
@@ -303,17 +303,14 @@ const dispatch = useDispatch();
                       </div>
                     </div>
                   </div>
-<div className="flex">
-
+                  <div className="flex">
                   <div onClick={() => handleSubmitNotif({ userSession, msg })}>
-                    {/* <Link href={`/chat/${roomId}`}>  */}
                       <Image
                         src={send_b}
                         width={30}
                         alt="decline"
                         className="cursor-pointer hover:opacity-60"
                         />
-                    {/* </Link> */}
                     </div>
                   <div className=" bg-red-500 h-[30px] w-[30px] rounded-full flex justify-center items-center font-semibold text-[white]">
                     {msg.numberOfMsg}
@@ -322,7 +319,7 @@ const dispatch = useDispatch();
                 </li>
               ))}
               {
-                GameNotificat.map((not, index) => <Challenge key={index} notification={not} userId={userId}/>)
+                GameNotificat.map((not, index) => <li key={index}><Challenge notification={not} userId={userId}/></li>)
               }
             </ul>
         )}

@@ -620,7 +620,10 @@ export class UsersService {
             OR : [
               { playerA_id : userId}, {playerB_id : userId }
             ]
-          }
+          },
+          orderBy: {
+            created_at: 'desc',
+          },
       });
       return games;
     }catch (error) {

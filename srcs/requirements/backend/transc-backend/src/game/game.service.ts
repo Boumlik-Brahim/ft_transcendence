@@ -16,7 +16,8 @@ export class GameService {
     private gameMap = new Map<String, GameEntity>();
     private usersConnected = new Map<string, Socket>();
     private inTheQueue : String | null;
-    private Vitesse = 0.1;
+    private Vitesse = 0.15;
+    private maxSpeed = 3;
 
     constructor(private prisma : PrismaService) {}
 
@@ -52,11 +53,11 @@ export class GameService {
      * @param id 
      * @param socket 
      */
-
     addUser(id : string, socket : Socket) {
         this.usersConnected.set(id, socket);
     }
 
+    
     isConneted (id : string, client : Socket) : boolean {
         // const _client : Socket = this.usersConnected.get(id);
         // if (_client && client.id === _client.id)
@@ -377,6 +378,7 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
         {
             gameValue.ball_x = W_screen / 2;
             gameValue.ball_y = H_screen / 2;
+            gameValue.ball_speed = 1.5;
             if (ball_right < 0) {
                 gameValue.player2.score += 1;
                 if (gameValue.player2.score === gameValue.scoreLimit)
@@ -401,8 +403,8 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
 
         else if (ball_left <= paddle1_surface && ball_top < paddle1_bottom && ball_bottom > paddle1_top && gameValue.vx < 0) 
         {
-            const maxScore = 2;
-            if (gameValue.ball_speed < maxScore) gameValue.ball_speed += this.Vitesse;
+            
+            if (gameValue.ball_speed < this.maxSpeed) gameValue.ball_speed += this.Vitesse;
             if ((ball_left < paddle1_surface && ball_y > paddle1_bottom && gameValue.vy < 0) ||  (ball_left > paddle1_surface &&  ball_y < paddle1_top && gameValue.vy > 0)) {
                 // gameValue.vy *= -1;
             }
@@ -553,7 +555,7 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
             h_paddle : 20,
             playerSpeed : 8,
             scoreLimit : maxScore,
-            ball_speed : 1,
+            ball_speed : 1.5,
             gameStatus  : {
                 update_t : new Date().getTime(),
                 status : 'waiting'

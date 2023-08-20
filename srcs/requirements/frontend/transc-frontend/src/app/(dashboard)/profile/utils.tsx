@@ -59,7 +59,7 @@ export async function updateFriend(userId: string, friendId: string) {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${userId}/friend/${friendId}`,
       {
-        method: "PATCH",
+        method: "PUT",
         credentials: "include",
         headers: {
           "Content-Type": "application/json",

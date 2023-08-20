@@ -6,7 +6,6 @@ import { useSocket } from "@/app/socket";
 
 interface Props {
     userId : string,
-    key : number,
     notification : {
         id : string,
         message : string,
@@ -14,10 +13,10 @@ interface Props {
     }
 }
 
-function Challenge({key, notification, userId} : Props) {
+function Challenge({notification, userId} : Props) {
     const socket = useSocket();
     return (
-        <li key={key} className="flex justify-between items-center">
+        <div className="flex justify-between items-center">
             <div className="relative flex items-center gap-[10px] w-[300px] ">
                 <Image
                 src={notification.userImg}
@@ -49,7 +48,7 @@ function Challenge({key, notification, userId} : Props) {
                 }}
                 />
             </div>
-        </li>
+        </div>
     );
 }
 

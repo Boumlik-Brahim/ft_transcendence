@@ -12,7 +12,6 @@ const gameURL = `${process.env.NEXT_PUBLIC_APP_URI}:3000/game`
 const cookies = new Cookies;
 
 const gameIO = io(gameURL, {
-  autoConnect : false,
   auth: { token: cookies.get('accessToken') }
 });
 const SocketContext = createContext<Socket>(gameIO);

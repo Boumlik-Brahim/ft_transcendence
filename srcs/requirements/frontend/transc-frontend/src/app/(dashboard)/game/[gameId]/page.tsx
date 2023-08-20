@@ -53,7 +53,7 @@ interface CreateGameType {
 
 const Page = ( {params} : any) => {
     const router = useRouter();
-    const [gameSate, setGameSate] = useState<string | undefined>('started');
+    const [gameSate, setGameSate] = useState<string | undefined>();
     const [gameData, setGameData] = useState<GameEntity | undefined>();
     const userId = getCookie('id') as string;
     const oponentId = userId === gameData?.player1.id ? gameData?.player2.id : gameData?.player1.id;
@@ -88,16 +88,16 @@ const Page = ( {params} : any) => {
             socket.emit(code, {gameId : id, userId})
         }, false);
         
-        // socket.on('error_access', () => {
-        //     router.push('/game')
-        // })
+        socket.on('error_access', () => {
+            router.push('/game')
+        })
         
         socket.on('gameData', (data) => setGameData(data))
         
-        // socket.on('gameSate', data => {
-        //     const { state } = data;
-        //     setGameSate(state);
-        // });
+        socket.on('gameSate', data => {
+            const { state } = data;
+            setGameSate(state);
+        });
 
         socket.on('Success', data => {
             console.log(data);

@@ -110,7 +110,7 @@ const Game = () => {
           }
           {
             oponentName === '' && (
-            <form className='w-full flex justify-center items-center mt-10 gap-2'>
+              <form className='w-full flex justify-center items-center mt-10 gap-2'>
               <label className='text-[#3E3B6A] font-[400] text-[15px]' > Max Score </label>
               <input 
                 type="range" id="numberInput" name="numberInput" min="10" max="100" step="10" 
@@ -122,6 +122,7 @@ const Game = () => {
                   {maxScore}
                 </div>
               </form>
+              
             )
           }
         </div>

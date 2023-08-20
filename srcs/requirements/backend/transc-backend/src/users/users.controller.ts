@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Controller, Get, Post,Req, Body, Patch, Param, Delete, UploadedFile, UseInterceptors, UseGuards  } from '@nestjs/common';
+import { Controller, Get, Post,Req, Body, Patch, Param, Delete, UploadedFile, UseInterceptors, UseGuards, Put  } from '@nestjs/common';
 import { Achievement, BlockedUser, Friend, GamesHistories, User, UserStat } from '@prisma/client';
 import { diskStorage } from 'multer';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -181,7 +181,7 @@ export class UsersController {
     return Friends;
   }
   
-  @Patch('/:userId/friend/:friendId')
+  @Put('/:userId/friend/:friendId')
   // @UseGuards(JwtAuthGuard)
   async updateFriend(@Param('userId') userId: string, @Param('friendId') friendId: string): Promise<Friend> {
     const updateFriend = await this.usersService.updateFriend(userId, friendId);
