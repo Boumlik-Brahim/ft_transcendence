@@ -24,6 +24,10 @@ function page() {
   }, []);
   /* ------------------------------------ - ----------------------------------- */
 
+  /* ------------------------- get url ID from url ------------------------- */
+  const { userId } = useParams();
+  /* ------------------------------------ - ----------------------------------- */
+
   /* ------------------------------- fetch user ------------------------------- */
   const [users, setUsers] = useState<users_int[]>([]);
 
@@ -134,7 +138,7 @@ function page() {
                 </ul>
               </div>
             </div>
-            <Friendsbar userId={userSession} userSessionId={userSession} />
+            <Friendsbar userId={userId} userSessionId={userSession} />
           </div>
         </>
       )}

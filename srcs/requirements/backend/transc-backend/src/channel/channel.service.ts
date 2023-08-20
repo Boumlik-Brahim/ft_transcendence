@@ -423,7 +423,7 @@ export class ChannelService {
   
   async findOneKickedMember(channelId: string, userId: string): Promise<KickedMember> {
     try{
-      return await this.prisma.kickedMember.findUniqueOrThrow({
+      return await this.prisma.kickedMember.findUnique({
         where: {
           kickedMemberAndChannel: {
             userId,

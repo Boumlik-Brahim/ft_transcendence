@@ -128,7 +128,7 @@ function Friendsbar({ userId, userSessionId }: Props) {
           <ul className="w-full flex flex-col gap-[30px] min-w-[200px]">
             {friends.map((friend, index) => (
               <li key={index} className="flex justify-between items-center">
-                <Link href={`${friend.id}`}>
+                <Link href={`${process.env.NEXT_PUBLIC_APP_URI}:5173/profile/${friend.id}`}>
                   <div className="relative flex items-center gap-[10px] w-[100px]">
                     <div
                       className={`absolute 

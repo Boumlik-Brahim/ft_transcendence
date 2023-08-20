@@ -256,7 +256,7 @@ const dispatch = useDispatch();
               {pendingMessages?.map((msg, index) => (
                 <li key={index} className="flex justify-between items-center">
                   <div className="flex items-center">
-                    <div className="flex gap-[10px] items-center w-[300px]">
+                    <div className="flex gap-[10px] items-center w-[100px] md:w-[300px]">
                       <Image
                         src={msg.user.Avatar}
                         width={80}
@@ -276,6 +276,7 @@ const dispatch = useDispatch();
                       </div>
                     </div>
                   </div>
+<div className="flex">
 
                   <div onClick={() => handleSubmitNotif({ userSession, msg })}>
                     {/* <Link href={`/chat/${roomId}`}>  */}
@@ -284,12 +285,13 @@ const dispatch = useDispatch();
                         width={30}
                         alt="decline"
                         className="cursor-pointer hover:opacity-60"
-                      />
+                        />
                     {/* </Link> */}
                     </div>
                   <div className=" bg-red-500 h-[30px] w-[30px] rounded-full flex justify-center items-center font-semibold text-[white]">
                     {msg.numberOfMsg}
                   </div>
+                        </div>
                 </li>
               ))}
             </ul>

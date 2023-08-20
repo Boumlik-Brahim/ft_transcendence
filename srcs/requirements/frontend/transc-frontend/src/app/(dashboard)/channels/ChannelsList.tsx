@@ -16,6 +16,8 @@ import axios from "axios";
 
 
 import { Button, Checkbox, Label, Modal, TextInput } from 'flowbite-react';
+import Cookies from "universal-cookie";
+import Notification from "../../../../components/Notification";
 
 
 function ChannelsList() {
@@ -202,15 +204,22 @@ function ChannelsList() {
 
   return (
     <>
+  
+
       <div className={`${(!isCreateChannelOn.createChannelBtnToggled) ? "flex-1  w-full h-full " : "hidden"} ${isCreateChannelPopUpOn.createChannelPopUpToggled ? "blur-sm " : ""} `}>
         {
           isLgScreenState && <>
             <div className="w-full h-[30vh] bg-white flex flex-col items-center justify-between px-[7%]">
               <div className="w-full h-[50%] flex items-center justify-between">
-                <h1 className="text-primary text-xl font-press font-normal uppercase">
+                {/* <h1 className="text-primary text-xl font-press font-normal uppercase">
                   Channels
-                </h1>
-                <Image src={"/notification_b.svg"} alt="search" width={24} height={24} />
+                </h1> */}
+                {/* <Image src={"/notification_b.svg"} alt="search" width={24} height={24} /> */}
+
+
+
+             
+
               </div>
               <div className="w-full h-[50%] flex items-center" >
                 <div className={`${`h-[54px] w-[397px] border-2 ${!check ? " border-red-500" : " border-gray-300"}  rounded-[61px] flex items-center `}`}>

@@ -101,24 +101,29 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
           this.server.to(socket.id).emit('joinedSuccessfully');
         }
       }else{
-        const user = await this.usersService.findOne(payload.userId);
-        if (channel.channelType === 'PUBLIC' || channel.channelType === 'PRIVATE'){
-          await this.channelService.createChannelMember({"userId": payload.userId, "channelId": payload.channelId, "role": 'MEMBER'});
-          socket.join(payload.channelId);
-          this.server.to(payload.channelId).emit('onMessage', `${user.name} has joined channel: ${channel.channelName}`);
-          this.server.to(socket.id).emit('refrechMember');
-        }
-        else if (channel.channelType === 'PROTECTED' && payload.channelPasword){
-          const hachedChannelPswd = createHash('sha256').update(payload.channelPasword).digest('hex');
-          if (channel.channelPassword === hachedChannelPswd){
+        const kickedMember = await this.channelService.findOneKickedMember(payload.channelId, payload.userId);
+        if (!kickedMember){
+          const user = await this.usersService.findOne(payload.userId);
+          if (channel.channelType === 'PUBLIC' || channel.channelType === 'PRIVATE'){
             await this.channelService.createChannelMember({"userId": payload.userId, "channelId": payload.channelId, "role": 'MEMBER'});
             socket.join(payload.channelId);
             this.server.to(payload.channelId).emit('onMessage', `${user.name} has joined channel: ${channel.channelName}`);
-            this.server.to(socket.id).emit('joinedSuccessfully');
             this.server.to(socket.id).emit('refrechMember');
-          }else{
-            this.server.to(socket.id).emit('error', `Invalid password ${payload.channelPasword}`);
           }
+          else if (channel.channelType === 'PROTECTED' && payload.channelPasword){
+            const hachedChannelPswd = createHash('sha256').update(payload.channelPasword).digest('hex');
+            if (channel.channelPassword === hachedChannelPswd){
+              await this.channelService.createChannelMember({"userId": payload.userId, "channelId": payload.channelId, "role": 'MEMBER'});
+              socket.join(payload.channelId);
+              this.server.to(payload.channelId).emit('onMessage', `${user.name} has joined channel: ${channel.channelName}`);
+              this.server.to(socket.id).emit('joinedSuccessfully');
+              this.server.to(socket.id).emit('refrechMember');
+            }else{
+              this.server.to(socket.id).emit('error', `Invalid password ${payload.channelPasword}`);
+            }
+          }
+        }else{
+          this.server.to(socket.id).emit('error', `You are kicked from this Channel`);
         }
       }
     }catch(error){

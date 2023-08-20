@@ -6,6 +6,7 @@ import { CreateChatDto } from '../dto/create-chat.dto';
 import { ConnectedClientsService } from 'src/connected-clients.service';
 import { PrismaService } from 'prisma/prisma.service';
 import { AppGateway } from 'src/app.gateway';
+import { UsersService } from 'src/users/users.service';
 @WebSocketGateway( {
   namespace: 'chatGateway',
   cors: { 
@@ -17,6 +18,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   
   constructor(private readonly chatService: ChatService,
     private readonly connectedClientsService: ConnectedClientsService,
+    private readonly usersService: UsersService,
     private prisma: PrismaService,
     private appGateway: AppGateway) {}
 
@@ -64,27 +66,28 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   
   @SubscribeMessage('message')
   async handleEvent(@MessageBody() payload: CreateChatDto, @ConnectedSocket() socket: Socket): Promise<void> {
-    const hasshedRoomName = await this.chatService.generateHashedRommId(payload.senderId, payload.recieverId);
-
-    if (!socket.rooms.has(hasshedRoomName)){
-      socket.join(hasshedRoomName);
-      this.logger.log(`joinRoom: ${socket.id} joined ${hasshedRoomName}`);
+    const blockedUser = await this.usersService.findOneBlockedUser(payload.recieverId, payload.senderId);
+    if(!blockedUser){
+      const hasshedRoomName = await this.chatService.generateHashedRommId(payload.senderId, payload.recieverId);  
+      if (!socket.rooms.has(hasshedRoomName)){
+        socket.join(hasshedRoomName);
+        this.logger.log(`joinRoom: ${socket.id} joined ${hasshedRoomName}`);
+      }
+      this.server.to(hasshedRoomName).emit('getMessage',{ senderId: payload.senderId, receiverId: payload.recieverId, text: payload.content, room: hasshedRoomName});
+      await this.chatService.createChat(payload);
+  
+      for (const [key, val] of this.connectedClientsService.getAllClientsFromChat()) {
+        if (val === payload.recieverId) {
+          this.server.to(key).emit('refresh');
+        }
+      };
+      
+      for (const [key, val] of this.connectedClientsService.getAllClients()) {
+        if (val === payload.recieverId) {
+          this.appGateway.server.to(key).emit('notifMessage', payload);
+        }
+      };
     }
-    
-    this.server.to(hasshedRoomName).emit('getMessage',{ senderId: payload.senderId, receiverId: payload.recieverId, text: payload.content, room: hasshedRoomName});
-    await this.chatService.createChat(payload);
-
-    for (const [key, val] of this.connectedClientsService.getAllClientsFromChat()) {
-      if (val === payload.recieverId) {
-        this.server.to(key).emit('refresh');
-      }
-    };
-    
-    for (const [key, val] of this.connectedClientsService.getAllClients()) {
-      if (val === payload.recieverId) {
-        this.appGateway.server.to(key).emit('notifMessage', payload);
-      }
-    };
   }
   
   handleDisconnect(client: Socket): void {

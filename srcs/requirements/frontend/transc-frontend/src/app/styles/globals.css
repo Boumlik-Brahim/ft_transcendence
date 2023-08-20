@@ -28,7 +28,7 @@ body {
 }
 
 .wrapper {
-  @apply flex flex-col items-center justify-between gap-[20px] xs:gap-[40px] w-[80%] mb-[5rem];
+  @apply flex flex-col items-center justify-between gap-[20px] xs:gap-[40px] w-[80%]  mt-[100px];
 }
 
 /* .game_font{
@@ -49,7 +49,7 @@ body {
 
 .my_container{
   @apply flex flex-1 flex-col items-center lg:gap-[100px];
-  @apply py-[100px] overflow-scroll overflow-x-hidden;
+  @apply overflow-scroll overflow-x-hidden;
 }
 
 .status{

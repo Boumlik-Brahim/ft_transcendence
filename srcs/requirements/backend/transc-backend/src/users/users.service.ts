@@ -401,6 +401,24 @@ export class UsersService {
       });
     };
   }
+
+  async findOneBlockedUser(userID: string, blockedUserId: string): Promise<BlockedUser> {
+    try{
+      return await this.prisma.blockedUser.findFirst({
+        where: {
+          userId: userID,
+          blockedUserId: blockedUserId
+        }
+      });
+    }catch (error) {
+      throw new HttpException({
+        status: HttpStatus.NOT_FOUND,
+        error: 'NotFoundException',
+      }, HttpStatus.NOT_FOUND, {
+        cause: error
+      });
+    };
+  }
   
   async findBlockedUser(userID: string, blockedID: string): Promise<BlockedUser[]> {
     try{
