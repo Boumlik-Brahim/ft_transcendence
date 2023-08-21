@@ -11,6 +11,7 @@ import { useEffect } from "react";
 import Cookies from 'universal-cookie';
 import { useParams } from 'next/navigation';
 import Notification from './Notification';
+import { useRouter } from 'next/navigation';
 
 
 function getPath(nav: string, id: string) {
@@ -22,6 +23,7 @@ function getPath(nav: string, id: string) {
 }
 
 function Sidebar() {
+    const router = useRouter();
 
     /* ------------------------- get url ID from url ------------------------- */
     const { userId } = useParams();
@@ -49,11 +51,13 @@ function Sidebar() {
     const handleLogOut = async () => {
         const res = await fetch(`http://localhost:3000/users/${userId}/userStatus`,{
             method: 'PATCH',
+            credentials: "include",
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(updateData),
         })
+        router.push(`http://localhost:5173/`)
         cookies.remove('accessToken', { path: '/' });
     }
     
