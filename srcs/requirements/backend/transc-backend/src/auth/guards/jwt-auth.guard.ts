@@ -8,17 +8,17 @@ export class JwtAuthGuard implements CanActivate {
 
   canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest();
-    const token = request.cookies['accessToken'];
+    const accessToken = request.headers.authorization?.split(' ')[1];
 
-    if (!token) {
+    if (!accessToken) {
       this.logger.warn('No access token cookie found.');
       return false;
     }
 
-    this.logger.debug('Access token cookie:', token);
+    this.logger.debug('Access token cookie:', accessToken);
 
     try {
-      const decoded = jwt.verify(token, JWT_SECRET);
+      const decoded = jwt.verify(accessToken, JWT_SECRET);
       request.user = decoded;
       return true;
     } catch (error) {
