@@ -63,6 +63,7 @@ import sms from './sms.svg'
 import happy from './happy.svg'
 import Sad from './Sad.svg'
 import star from './Star 4.svg'
+import result from './result.gif'
  
 import editChannelName from './editChannelName.svg'
 import confirmName from './confirmName.svg'
@@ -72,6 +73,7 @@ export {
   happy,
   Sad,
   sms,
+  result,
   bgMain,
   waitingGIF,
   star,

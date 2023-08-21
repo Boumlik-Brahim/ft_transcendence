@@ -11,20 +11,20 @@ interface Props {
 
 export default function Member({img, name, job, paragraph, intraUrl, gitUrl} : Props) {
     return (
-        <div className="w-[210px] h-[359px] m-[30px] shadow-2xl rounded-lg flex flex-col justify-around items-center">
+        <div className="w-[270px] h-[420px] m-[30px] hover:shadow-2xl rounded-lg flex flex-col justify-around items-center">
             <Image
                 src={img}
-                width={100}
-                height={100}
+                width={120}
+                height={120}
                 alt=""
-                className=""
+                className="rounded-full hover:border-4 border-green-300"
             />
             <h1 className=''>
                 Hi I'm <span className='font-bold'>{name}</span>
             </h1>
             <h2 className="mt-[-30px]">{job}</h2>
             <p className='
-                text-center w-[129px] h-[54px] text-[10px]'>
+                text-center w-[129px] h-[80px] text-[12px]'>
                 {paragraph}
             </p>
             <div className='flex items-center'>

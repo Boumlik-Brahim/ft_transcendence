@@ -24,6 +24,7 @@ function getPath(nav: string, id: string) {
 
 function Sidebar() {
     const router = useRouter();
+
     /* ------------------------- get url ID from url ------------------------- */
     const { userId } = useParams();
     const cookies = new Cookies();
