@@ -90,13 +90,14 @@ function page() {
                           href={`profile/${ply.user.id}`}
                           className="flex items-center gap-[10px] max-w-[100px] xs:max-w-[200px]"
                         >
-                          <Image
+                          {/* <Image
                             src={ply.user.Avatar}
                             width={70}
                             height={70}
                             alt="avatar"
                             className="rounded-full object-cover"
-                          />
+                          /> */}
+                          <img src={ply.user.Avatar} alt="avatar" className="rounded-full object-cover w-[70px] h-[70px]"/>
                           <p className="text-xs xs:text-sm font-semibold text-primary">
                             {ply.user.name}
                           </p>
