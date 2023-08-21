@@ -10,6 +10,7 @@ import Sidebar from '../../../../components/Sidebar';
 function page() {
   const cookies = new Cookies();
   const userId: string = cookies.get('id');
+  const accessToken: string = cookies.get('accessToken');
   const [disableTwoFa, setDisableTwoFa] = useState<boolean>(false);
   const [imageUrl, setImageUrl] = useState<string>("");
   const [userData, setUserData] = useState<string>("");
@@ -19,6 +20,10 @@ function page() {
       try{
         const data = await fetch(`http://localhost:3000/users/${userId}/image`,{
           credentials: "include",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
         });
         if (data.ok){
           const userData = await data.json();
@@ -36,6 +41,10 @@ function page() {
     async function check () {
       const userData = await fetch(`http://localhost:3000/users/${userId}`,{
         credentials: "include",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
       });
       const user = await userData.json();
       if (user.isTwoFactorEnabled){
@@ -56,6 +65,7 @@ function page() {
               method: 'PATCH',
               credentials: "include",
               headers: {
+                Authorization: `Bearer ${accessToken}`,
                 'Content-Type': 'application/json',
               },
               body: JSON.stringify({ isTwoFactorEnabled: false }), 
@@ -84,6 +94,7 @@ function page() {
         method: "POST",
         credentials: "include",
         headers: {
+          Authorization: `Bearer ${accessToken}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ userName: username }), 
@@ -104,6 +115,10 @@ function page() {
         method: 'POST',
         body: formData,
         credentials: "include",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
       });
     }
     catch(error) {
@@ -112,7 +127,7 @@ function page() {
   };
   return (
     <>
-      {/* <Sidebar/> */}
+      <Sidebar/>
       <div className="layouts">
         <div className='px-[20%] w-full h-[80vh] flex flex-col justify-evenly gap-4 item-center text-[#3E3B6A]'>
           <div className=' self-cneter flex justify-center item-center font-press
@@ -170,10 +185,10 @@ function page() {
             <button onClick={handleSaveClick} className='w-[240px] h-[40px] self-center text-white text-lg bg-[#3E3B6A] rounded-lg'>SAVE</button>
           </div>
         </div>
-        {/* <Friendsbar
+        <Friendsbar
           userId= {userId}
           userSessionId = {userId}
-        /> */}
+        />
       </div>
     </>
   );
