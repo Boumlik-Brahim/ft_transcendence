@@ -93,13 +93,14 @@ function page() {
 
             <div className="wrapper">
               <div className="flex flex-col gap-[40px] lg:gap-[70px] items-center justify-around lg:h-[500px] w-[200px] xs:w-[300px] md:w-[400px] gradients px-[1rem] py-[1rem] xs:py-[2rem]">
-                <Image
+                {/* <Image
                   src={profileUser.Avatar}
                   width={300}
                   height={300}
                   alt="avatar"
                   className="rounded-full object-cover"
-                />
+                /> */}
+                <img src={profileUser.Avatar} alt="avatar" className="rounded-full object-cover w-[300px] h-[300px]"/>
                 <div className="flex flex-col items-center gap-[10px] w-[80%]">
                   <p
                     id="name_user"

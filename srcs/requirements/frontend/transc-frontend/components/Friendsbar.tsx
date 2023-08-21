@@ -82,13 +82,15 @@ function Friendsbar({ userId, userSessionId }: Props) {
                                 : "bg-[#f8c303]"
                             }`}
                     ></div>
-                    <Image
+                    {/* <Image
                       src={friend?.Avatar}
                       width={70}
                       height={70}
                       alt={friend?.name}
                       className="rounded-full max-w-[70px] max-h-[70px] w-[70px] h-[70px] object-cover"
-                    />
+                    /> */}
+                    <img src={friend?.Avatar} alt="avatar" className="rounded-full max-w-[70px] max-h-[70px] w-[70px] h-[70px] object-cover"/>
+
                     <p className="text-white font-medium text-[1rem]">
                       {friend?.name}
                     </p>
