@@ -44,14 +44,23 @@ export default function page()  {
     setIsLgScreen(isLgScreen);
   }, [isLgScreen]);
   //^ -------------------------------------------------------------------------------
+
   return (
     <>
-      {(isLgScreenState) && (<>
-        <div className='h-[20vh] flex justify-center items-center bg-gray-200 font-press text-[40px] text-primary '>
-          <p className='w-[520px] h-[44px]'>Welcome Back!</p>
-        </div></>)
-      }  
-      <div className={` w-full h-screen flex flex-col justify-around items-center bg-gray-200 py-[10%]
+      <div className='w-screen h-screen flex justify-center items-center'>
+        {(isLgScreenState) && (<>
+          <div className='absolute top-0 h-[20vh] w-full z-10 flex justify-center items-center bg-gray-200 bg-opacity-50 font-press text-[40px] text-primary '>
+            <p className='w-[520px] h-[44px]'>Welcome Back!</p>
+          </div></>)
+        }
+        < Image
+            src={"https://cdn.dribbble.com/users/482851/screenshots/2925978/media/ae36ef4ae4efe2fb5de838353de9a16b.gif"}
+            width={100}
+            height={100}
+            alt=""
+            className='w-full h-screen'
+          /> 
+      <div className={` absolute w-full h-screen flex flex-col justify-around items-center bg-gray-200 bg-opacity-50 py-[10%]
         lg:h-[80vh] lg:flex-row-reverse`}>
         <div className=' w-full h-[10vh] flex flex-col justify-around items-center 
           lg:w-2/5 lg:h-full'>
@@ -65,24 +74,19 @@ export default function page()  {
           <div>
             {
               isLgScreenState && (showLogin == "" ? (
-                <div
-                    className={`
-                        w-[200px] h-[50px] font-press text-[12px] rounded-full text-[#3E3B6A] bg-white flex items-center justify-between p-4
-                        md:w-[300px] md:h-[70px]`}
-                    >
-                    <Link 
-                      href="http://localhost:3000/auth"
-                      >
-                        <p className='md:text-[20px]'>Login With</p>
-                    </Link>
-                    <Image
-                      src={"../42Logo.svg"}
-                      width={30}
-                      height={30}
-                      alt=""
-                      className="md:w-[40px] md:h-[40px]"
-                    />
-                  </div>
+                <Link 
+                   href="http://localhost:3000/auth"
+                   className='py-3.5 px-4 border rounded-lg border-gray-700 w-full mt-4 flex justify-start items-center bg-white'
+                 >
+                   <Image
+                     src={"../42Logo.svg"}
+                     width={30}
+                     height={30}
+                     alt=""
+                     className="md:w-[40px] md:h-[40px]"
+                   /> 
+                   <p className="text-base font-medium ml-4 text-gray-700">Continue with 42</p>
+                 </Link>
               ) : (
                   <div >
                     {twoFa && <TwoFaForm userId={userId}/>}
@@ -97,27 +101,28 @@ export default function page()  {
             width={400}
             height={400}
             alt=""
-            className="md:w-[700px] md:h-[700px] lg:w-[900px] lg:h-[900px]"
+            className=" h-[100vh] md:w-[700px] md:h-[700px] lg:w-[900px] lg:h-[900px]"
           />
         </div>
         <div
           className={`
-              ${showLogin} w-[200px] h-[50px] font-press text-[12px] rounded-full text-[#3E3B6A] bg-white flex items-center justify-between p-4
+              ${showLogin} flex items-center justify-between p-4
                 md:w-[300px] md:h-[70px]
                 lg:hidden`}
         >
           <Link 
-            href="http://localhost:3000/auth"
-            >
-              <p className='md:text-[20px]'>Login With</p>
-          </Link>
-          <Image
-            src={"../42Logo.svg"}
-            width={30}
-            height={30}
-            alt=""
-            className="md:w-[40px] md:h-[40px]"
-          />
+             href="http://localhost:3000/auth"
+             className='py-3.5 px-4 border rounded-lg border-gray-700 w-full mt-4 flex justify-start items-center bg-white'
+           >
+             <Image
+               src={"../42Logo.svg"}
+               width={30}
+               height={30}
+               alt=""
+               className="md:w-[40px] md:h-[40px]"
+             /> 
+             <p className="text-base font-medium ml-4 text-gray-700">Continue with 42</p>
+           </Link>
         </div>
         <div >
           {twoFa && 
@@ -126,8 +131,8 @@ export default function page()  {
             </div>}
         </div>
       </div>
+
+      </div>
     </>
   );
 }
-
-// export default page
