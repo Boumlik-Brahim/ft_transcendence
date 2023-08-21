@@ -236,3 +236,128 @@ body {
   animation-duration: 0.8s;
 }
 
+
+
+/*---------------- brahim part : --------------------*/
+.game-container-lg {
+  position: relative;
+  width: 1000px;
+  height: 500px;
+  /* border: 2px solid white; */
+}
+
+/* .game-container-md {
+  position: relative;
+  width: 700px;
+  height: 500px;
+} */
+
+.paddle {
+  position: absolute;
+  width: 15px;
+  height: 100px;
+  background-color: #53BBB5;
+  border-radius: 10px;
+}
+
+.paddle-left {
+  left: 10px;
+  animation: movePaddleLeft 4s linear infinite;
+}
+
+.paddle-right {
+  right: 10px;
+  animation: movePaddleRight 4s linear infinite;
+}
+
+.bg {
+  background-color: #E8E8E8;
+}
+
+.ball {
+  position: absolute;
+  width: 25px;
+  height: 25px;
+  background-color: #53BBB5;
+  border-radius: 50%;
+  animation: moveBall 4s linear infinite;
+}
+
+@keyframes moveBall {
+  0%, 100% {
+    transform: translate(20px, 200px);
+  }
+  25% {
+    transform: translate(955px, 500px);
+  }
+  50% {
+    transform: translate(20px, 600px);
+  }
+  75% {
+    transform: translate(955px, 40px);
+  }
+}
+
+@keyframes movePaddleLeft {
+  0%, 100% {
+    transform: translateY(180px);
+  }
+  25% {
+    transform: translateY(400px);
+  }
+  50% {
+    transform: translateY(590px);
+  }
+  75% {
+    transform: translateY(60px);
+  }
+}
+
+@keyframes movePaddleRight {
+  0%, 100% {
+    transform: translateY(100px);
+  }
+  25% {
+    transform: translateY(500px);
+  }
+  50% {
+    transform: translateY(100px);
+  }
+  75% {
+    transform: translateY(20px);
+  }
+}
+
+/*------------------------------------------------------------*/
+
+/*---------------------- Features Animation -------------------*/
+@keyframes fadeInFromLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-300px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-fadeInFromLeft {
+  animation: fadeInFromLeft 1.5s ease-in-out forwards;
+}
+
+@keyframes fadeInFromRight {
+  0% {
+    opacity: 0;
+    transform: translateX(300px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-fadeInFromRight {
+  animation: fadeInFromRight 1.5s ease-in-out forwards;
+}
+/*---------------------------------------------------------------------*/
