@@ -12,7 +12,7 @@ import { UsersService } from 'src/users/users.service';
 import { Cron, CronExpression } from '@nestjs/schedule';
 
 @WebSocketGateway({
-  namespace: 'channelGateway',
+  // namespace: 'channelGateway',
   cors: {
     origin: `${process.env.APP_URI}:5173/channels`,
   },
@@ -32,6 +32,8 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
 
   private clientId;
 
+  private connectedClientsInChannel: Map<string, string> = new Map();
+
   //* ----------------------------------------------------------------Connection----------------------------------------------------------- *//
   afterInit(server: any) {
     this.logger.log('Channel Server Initialized!');
@@ -39,6 +41,12 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   
   handleConnection(client: Socket) {
     const userId = client.handshake.auth.userId as string;
+    if (userId && client.id){
+      if(!this.connectedClientsInChannel.has(client.id))
+      {
+          this.connectedClientsInChannel.set(client.id, userId);
+      }
+    }
     console.log(`Socket ID: ${client.id}, User: ${userId} is connected on Channel gateway`);
     this.clientId = client.id;
     this.logger.log(`Client connected to Channel server: ${client.id}`);
@@ -209,6 +217,11 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
         await this.channelService.removeChannelMember(payload.channelId, payload.userId);
         this.server.to(payload.channelId).emit('onMessage', `${user.name} is kicked from channel: ${channel.channelName}`);
         this.server.to(payload.channelId).emit('refrechMember');
+        for (const [key, val] of this.connectedClientsInChannel) {
+          if (val === payload.userId) {
+            this.server.to(key).emit('redirect');
+          }
+        };
       }else{
         this.server.to(socket.id).emit('error', 'Invalid Member');
       }
@@ -246,6 +259,14 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
       this.server.to(this.clientId).emit('refrechMember');
     }
   }
+
+  @Cron(CronExpression.EVERY_30_SECONDS)
+  async handleUnBanAdmin(): Promise<void> {
+    const Count = await this.channelService.handleUnbanneAdmin();
+    if (Count.count === 1){
+      this.server.to(this.clientId).emit('refrechMember');
+    }
+  }
   
   @SubscribeMessage('muteMember')
   async handleMuteMember(@MessageBody() payload: { channelId: string, userId: string, mutedTime: string }, @ConnectedSocket() socket: Socket): Promise<void> {
@@ -272,6 +293,14 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   @Cron(CronExpression.EVERY_30_SECONDS)
   async handleUnMuteMember(): Promise<void> {
     const Count = await this.channelService.handleUnmuteMember();
+    if (Count.count === 1){
+      this.server.to(this.clientId).emit('refrechMember');
+    }
+  }
+
+  @Cron(CronExpression.EVERY_30_SECONDS)
+  async handleUnMuteAdmin(): Promise<void> {
+    const Count = await this.channelService.handleUnmuteAdmin();
     if (Count.count === 1){
       this.server.to(this.clientId).emit('refrechMember');
     }
@@ -358,6 +387,7 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   
   //* --------------------------------------------------------------Disconection---------------------------------------------------------- *//
   handleDisconnect(client: Socket) {
+    this.connectedClientsInChannel.delete(client.id);
     this.logger.log(`Client disconnected from Channel server: ${client.id}`);
   }
   //* --------------------------------------------------------------Disconection---------------------------------------------------------- *//

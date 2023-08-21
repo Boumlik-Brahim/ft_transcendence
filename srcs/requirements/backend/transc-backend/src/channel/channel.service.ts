@@ -182,24 +182,27 @@ export class ChannelService {
   }
     
   async findAllChannelMembers(channelId: string): Promise<ChannelMember[]> {
-    try{
-      return await this.prisma.channelMember.findMany({
-        where: {
-          channelId: channelId,
-          role: 'MEMBER'
-        },
-        orderBy: {
-          created_at: 'asc',
-        },
-      });
-    }catch (error) {
+    return this.prisma.channelMember.findMany({
+      where: {
+        channelId,
+        OR: [
+          {role: 'MEMBER'},
+          {role: 'MUTED_MEMBER'},
+          {role: 'BANNED_MEMBER'},
+        ]
+      },
+      orderBy: {
+        created_at: 'asc',
+      },
+    })
+    .catch (error => {
       throw new HttpException({
         status: HttpStatus.NOT_FOUND,
         error: 'NotFoundException',
       }, HttpStatus.NOT_FOUND, {
         cause: error
       });
-    };
+    });
   }
   
   async findOneChannelMember(channelId: string, userId: string): Promise<ChannelMember> {
@@ -225,6 +228,18 @@ export class ChannelService {
     };
   }
   
+  async findOneChannelMemberStatus(channelId: string, userId: string): Promise<string> {
+    const member = await this.prisma.channelMember.findUnique({
+      where: {
+        userAndChannel: {
+          userId: userId,
+          channelId: channelId
+        },
+      },
+    })
+    return member.role;
+  }
+
   async updateChannelMember(channelId: string, userId: string, updateChannelMemberDto: UpdateChannelMemberDto): Promise<ChannelMember> {
     try{
       return await this.prisma.channelMember.update({
@@ -255,19 +270,36 @@ export class ChannelService {
         unbanneTime.setMinutes(unbanneTime.getMinutes() + (bannTime.getMinutes() - unbanneTime.getMinutes()));
       }
   
-      return await this.prisma.channelMember.update({
-        where: {
-          userAndChannel: {
-            userId: userId,
-            channelId: channelId
+      const status = await this.findOneChannelMemberStatus(channelId, userId);
+      if (status === "MEMBER"){
+        return await this.prisma.channelMember.update({
+          where: {
+            userAndChannel: {
+              userId: userId,
+              channelId: channelId
+            },
           },
-        },
-        data: {
-          role: 'BANNED_MEMBER',
-          bannedTime: bannedTime,
-          unbanneTime: unbanneTime
-        }
-      });
+          data: {
+            role: 'BANNED_MEMBER',
+            bannedTime: bannedTime,
+            unbanneTime: unbanneTime
+          }
+        });
+      }else if (status === "ADMIN"){
+        return await this.prisma.channelMember.update({
+          where: {
+            userAndChannel: {
+              userId: userId,
+              channelId: channelId
+            },
+          },
+          data: {
+            role: 'BANNED_ADMIN',
+            bannedTime: bannedTime,
+            unbanneTime: unbanneTime
+          }
+        });
+      }
     }catch (error) {
       throw new HttpException({
         status: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -297,6 +329,25 @@ export class ChannelService {
     return updatedChannelMembers;
   }
 
+  @Cron(CronExpression.EVERY_30_SECONDS)
+  async handleUnbanneAdmin(): Promise<{ count: number }> {
+    const currentDate = new Date();
+    const updatedChannelMembers = await this.prisma.channelMember.updateMany({
+      where: {
+        role: 'BANNED_ADMIN',
+        unbanneTime: {
+          lte: currentDate
+        },
+      },
+      data: {
+        role: 'ADMIN',
+        bannedTime: new Date(0),
+        unbanneTime: new Date(0)
+      }
+    });
+    return updatedChannelMembers;
+  }
+
   async updateChannelMemberMutedTime(channelId: string, userId: string, mutedTime: string): Promise<ChannelMember> {
     try{
       const unmuteTime = new Date();
@@ -305,20 +356,37 @@ export class ChannelService {
       {
         unmuteTime.setMinutes(unmuteTime.getMinutes() + (muteTime.getMinutes() - unmuteTime.getMinutes()));
       }
-      
-      return await this.prisma.channelMember.update({
-        where: {
-          userAndChannel: {
-            userId: userId,
-            channelId: channelId
+
+      const status = await this.findOneChannelMemberStatus(channelId, userId);
+      if (status === "MEMBER"){
+        return await this.prisma.channelMember.update({
+          where: {
+            userAndChannel: {
+              userId: userId,
+              channelId: channelId
+            },
           },
-        },
-        data: {
-          role: 'MUTED_MEMBER',
-          mutedTime: mutedTime,
-          unmuteTime: unmuteTime
-        }
-      });
+          data: {
+            role: 'MUTED_MEMBER',
+            mutedTime: mutedTime,
+            unmuteTime: unmuteTime
+          }
+        });
+      }else if (status === "ADMIN"){
+        return await this.prisma.channelMember.update({
+          where: {
+            userAndChannel: {
+              userId: userId,
+              channelId: channelId
+            },
+          },
+          data: {
+            role: 'MUTED_ADMIN',
+            mutedTime: mutedTime,
+            unmuteTime: unmuteTime
+          }
+        });
+      }
     }catch (error) {
       throw new HttpException({
         status: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -341,6 +409,25 @@ export class ChannelService {
       },
       data: {
         role: 'MEMBER',
+        mutedTime: new Date(0),
+        unmuteTime: new Date(0)
+      }
+    });
+    return updatedChannelMembers;
+  }
+
+  @Cron(CronExpression.EVERY_30_SECONDS)
+  async handleUnmuteAdmin(): Promise<{ count: number }> {
+    const currentDate = new Date();
+    const updatedChannelMembers = await this.prisma.channelMember.updateMany({
+      where: {
+        role: 'MUTED_ADMIN',
+        unmuteTime: {
+          lte: currentDate
+        },
+      },
+      data: {
+        role: 'ADMIN',
         mutedTime: new Date(0),
         unmuteTime: new Date(0)
       }
@@ -605,24 +692,27 @@ export class ChannelService {
   }
 
   async findAllChannelAdmins(channelId: string): Promise<ChannelMember[]> {
-    try{
-      return await this.prisma.channelMember.findMany({
-        where: {
-          channelId,
-          role: 'ADMIN'
-        },
-        orderBy: {
-          created_at: 'asc',
-        },
-      });
-    }catch (error) {
+    return this.prisma.channelMember.findMany({
+      where: {
+        channelId,
+        OR: [
+          {role: 'ADMIN'},
+          {role: 'MUTED_ADMIN'},
+          {role: 'BANNED_ADMIN'},
+        ]
+      },
+      orderBy: {
+        created_at: 'asc',
+      },
+    })
+    .catch (error => {
       throw new HttpException({
         status: HttpStatus.NOT_FOUND,
         error: 'NotFoundException',
       }, HttpStatus.NOT_FOUND, {
         cause: error
       });
-    };
+    });
   }
 
   async findAllBannedMembers(channelId: string): Promise<ChannelMember[]> {

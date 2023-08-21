@@ -70,6 +70,12 @@ export class ChannelController {
     return channelMember;
   }
   
+  @Get('/:channelId/memberStatus/:id')
+  async findOneChannelMemberStatus(@Param('channelId') channelId: string, @Param('id') id: string): Promise<string> {
+    const channelMemberStatus = await this.channelService.findOneChannelMemberStatus(channelId, id);
+    return channelMemberStatus;
+  }
+  
   @Patch('/:channelId/member/:id')
   async updateChannelMember(@Param('channelId') channelId: string, @Param('id') id: string, @Body() updateChannelMemberDto: UpdateChannelMemberDto): Promise<ChannelMember> {
     const updatedChannel = await this.channelService.updateChannelMember(channelId, id, updateChannelMemberDto);
