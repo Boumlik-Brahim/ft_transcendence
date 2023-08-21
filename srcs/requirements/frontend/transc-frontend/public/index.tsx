@@ -58,11 +58,13 @@ import bgMain from './bg_main.png'
 
 import vs from "./VS.svg";
 import closeCircle from './closecircle.png'
+import result from './result.gif'
  
 
 
 
 export {
+  result,
   bgMain,
   closeCircle,
   vs,
