@@ -38,6 +38,7 @@ export class GameGateway {
       try {
         const user = jwt.verify(token, JWT_SECRET) as {id : string}
         const { id } = user;
+        console.log(id, " ------- userId -------", user);
         this.gameService.addUser(id, client);
       }
       catch {
