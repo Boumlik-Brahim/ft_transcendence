@@ -78,7 +78,7 @@ const Game = () => {
       <Sidebar />
       <div className='layouts'>
         <div className='my_container relative '>
-          <div className='wrapper relative bg-red-300'>
+          <div className='wrapper relative'>
             <h1 className='text-[30px] text-center text-primary m-10 font-bold game_font text-press'>Play</h1>
             <div className="md:block absolute right-[0px] top-[0px] hidden">
               <Notification userId={myId} userSession={myId}/>
@@ -111,16 +111,16 @@ const Game = () => {
           {
             oponentName === '' && (
             <form className='w-full flex justify-center items-center mt-10 gap-2'>
-              <label className='text-[#3E3B6A] font-[400] text-[15px]' > Max Score </label>
+              {/* <label className='text-[#3E3B6A] font-[400] text-[15px]' > Max Score </label> */}
               <input 
                 type="range" id="numberInput" name="numberInput" min="10" max="100" step="10" 
                 defaultValue={10} 
                 className='range-input appearance-none bg-[#F3F3F3] w-[180px] md:w-[280px] rounded-full'
                 onChange={e => setMaxScore(parseInt(e.target.value))}
               />
-                <div className='text-[#3E3B6A] font-[400] text-[15px]'>
+                {/* <div className='text-[#3E3B6A] font-[400] text-[15px]'>
                   {maxScore}
-                </div>
+                </div> */}
               </form>
             )
           }
