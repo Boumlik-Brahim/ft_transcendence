@@ -31,7 +31,7 @@ export class AuthController {
     async callback(@Req() req: any, @Res() res: any) : Promise<any>{
         try {
             let user = await this.authService.getUser(req);
-            const token = await this.authService.signToken(req);
+            const token = await this.authService.signToken(user);
             res.cookie('id', user.id);
             res.cookie('accessToken', token);
             return this.login(res, user);

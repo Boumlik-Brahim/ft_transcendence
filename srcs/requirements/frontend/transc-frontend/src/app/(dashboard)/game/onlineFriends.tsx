@@ -61,7 +61,7 @@ const OnlineFriends = ({ setOponent, setIsRandom } : Props) => {
     const OnlineFriends=  users?.filter(friend => friend.status === 'ONLINE');
 
     return (
-        <div className='w-[30%] h-full hidden lg:flex justify-center items-center '>
+        <div className='friend'>
             <div className='h-[100vh] w-full bg-primary p-4'>
                 <h1 className='game_font mt-5 text-center text-white  '> Online  Players ({OnlineFriends?.length})</h1>
                 <div className='mt-10'>

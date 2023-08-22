@@ -76,11 +76,11 @@ const Game = () => {
   return (
       <>
       <Sidebar />
-      <div className='flex  items-start justify-center lg:gap-2 w-full h-[100vh] '>
-        <div className='mt-5 h-auto w-full flex flex-col items-center justify-center lg:w-[70%] '>
-          <div className='flex items-center justify-around w-full'>
+      <div className='layouts'>
+        <div className='my_container relative '>
+          <div className='wrapper relative bg-red-300'>
             <h1 className='text-[30px] text-center text-primary m-10 font-bold game_font text-press'>Play</h1>
-            <div className="md:block hidden">
+            <div className="md:block absolute right-[0px] top-[0px] hidden">
               <Notification userId={myId} userSession={myId}/>
             </div>
 
