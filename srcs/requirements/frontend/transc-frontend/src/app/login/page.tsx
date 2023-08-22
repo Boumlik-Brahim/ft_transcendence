@@ -73,7 +73,7 @@ export default function page()  {
             {
               isLgScreenState && (showLogin == "" ? (
                 <Link 
-                   href="http://localhost:3000/auth"
+                   href={`${process.env.NEXT_PUBLIC_APP_URI}:3000/auth`}
                    className='py-3.5 px-4 border rounded-lg border-gray-700 w-full mt-4 flex justify-start items-center bg-white'
                  >
                    <Image
@@ -109,7 +109,7 @@ export default function page()  {
                 lg:hidden`}
         >
           <Link 
-             href="http://localhost:3000/auth"
+             href={`${process.env.NEXT_PUBLIC_APP_URI}:3000/auth`}
              className='py-3.5 px-4 border rounded-lg border-gray-700 w-full mt-4 flex justify-start items-center bg-white'
            >
              <Image

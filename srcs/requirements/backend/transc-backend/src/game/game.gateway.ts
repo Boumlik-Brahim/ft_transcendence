@@ -33,11 +33,13 @@ export class GameGateway {
   }
 
   handleConnection(client : Socket) {
+    console.log("New user tries to connect")
     const token = client.handshake.auth.token;
     if (token) {
       try {
-        const user = jwt.verify(token, JWT_SECRET) as {id : string}
+        const user = jwt.verify(token, JWT_SECRET) as {id : string, email : string, iat: number}
         const { id } = user;
+        if (user.id)
         console.log(id, " ------- userId -------", user);
         this.gameService.addUser(id, client);
       }
@@ -129,8 +131,10 @@ export class GameGateway {
       client.emit("error", "Permission denied")
       return;
     }
+    
     if (!data) return; 
     const { gameId, userId } = data;
+    console.log(gameId, userId, "fode oulae -------- ---------- ------------ -----");
     if (gameId && userId) 
     {
       this.gameService.quiteGame(userId, gameId, client);

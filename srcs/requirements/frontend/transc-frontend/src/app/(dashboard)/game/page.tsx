@@ -11,7 +11,6 @@ import { useRouter } from 'next/navigation';
 import { getCookie } from 'cookies-next';
 import { vs } from '../../../../public';
 import Sidebar from "../../../../components/Sidebar";
-import './game.css'
 import Notification from '../../../../components/Notification';
 
 
@@ -72,16 +71,16 @@ const Game = () => {
   return (
       <>
       <Sidebar />
-      <div className='flex  items-start justify-center lg:gap-2 w-full h-[100vh]'>
-        <div className='mt-5 h-auto w-full flex flex-col items-center justify-center lg:w-[75%] '>
-          <div className='flex items-center justify-around w-full'>
-            <h1 className='text-[30px] text-center text-primary m-10 font-bold game_font text-press'>Play</h1>
-            <div className="md:block hidden">
+      <div className='layouts'>
+        <div className='my_container relative'>
+          <div className='wrapper relative'>
+            <h1 className='title text-press'>Play</h1>
+            <div className="md:block absolute right-[0px] top-[0px] hidden">
               <Notification userId={myId} userSession={myId}/>
             </div>
 
           </div>
-          <div className='md:flex items-sart justify-center gap-2 m-auto md:max-h-[348px] relative'>
+          <div className='md:flex items-sart justify-center gap-2 md:max-h-[348px] relative'>
             <div className='flex flex-col-reverse md:flex-col'>
               <Player playerId={myId}  inputValue={oponentName} setInputValue={setOponentName} />
             </div>
@@ -104,20 +103,20 @@ const Game = () => {
               </button>
             )
           }
-          {
+              {
             oponentName === '' && (
             <form className='w-full flex justify-center items-center mt-10 gap-2'>
               <label className='text-[#3E3B6A] font-[400] text-[15px]' > Max Score </label>
               <input 
                 type="range" id="numberInput" name="numberInput" min="10" max="100" step="10" 
                 defaultValue={10} 
-                className='range-input appearance-none bg-[#F3F3F3] w-[180px] md:w-[280px] rounded-full'
+                className='range-input appearance-none  bg-[#F3F3F3] w-[180px] md:w-[280px] rounded-full'
                 onChange={e => setMaxScore(parseInt(e.target.value))}
               />
                 <div className='text-[#3E3B6A] font-[400] text-[15px]'>
                   {maxScore}
                 </div>
-            </form>
+              </form>
             )
           }
         </div>
