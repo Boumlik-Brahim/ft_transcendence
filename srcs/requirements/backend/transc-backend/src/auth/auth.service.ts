@@ -50,6 +50,7 @@ export class AuthService {
     
     async signToken(@Req() req: any) : Promise<string>{
         const payload: JwtPayload = {id: req.user.id, email: req.user.email};
+        console.log("here's the Payload -> ", req.user);
         return await this.jwt.signAsync(payload, {secret: JWT_SECRET});
     }
     
