@@ -5,16 +5,24 @@ import { users_int } from "../interfaces";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import axios from "axios";
+import Cookies from "universal-cookie";
 
 function Search({ id }: { id: string }) {
   /* ------------------------------- fetch user ------------------------------- */
   const [users, setUsers] = useState<users_int[]>();
   const [result, setRsult] = useState<users_int[]>();
+  const cookies = new Cookies();
+  const accessToken = cookies.get('accessToken');
 
   useEffect(() => {
     const fetchAll = async () => {
       try {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_APP_URI}:3000/users`,{ withCredentials: true });
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_APP_URI}:3000/users`,{ 
+          withCredentials: true, 
+          headers: {
+                  Authorization: `Bearer ${accessToken}`,
+                }, 
+          });
         setUsers(response.data);
       } catch (error) {
         console.log(error);

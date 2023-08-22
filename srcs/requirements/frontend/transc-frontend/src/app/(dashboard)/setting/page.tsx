@@ -116,11 +116,11 @@ function page() {
       await fetch(`${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${userId}/upload`, {
         method: 'POST',
         body: formData,
-        credentials: "include",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
-        },
+        // credentials: "include",
+        // headers: {
+        //   Authorization: `Bearer ${accessToken}`,
+        //   'Content-Type': 'application/json',
+        // },
       });
     }
     catch(error) {
@@ -137,30 +137,6 @@ function page() {
           <div className="wrapper relative">
             <div className="md:block absolute right-[0px] top-[0px] hidden">
             {  <Notification userId={userId} userSession={userId} />}
-            </div>
-          </div>
-          <div className='px-[20%] w-full h-[80vh] flex flex-col justify-evenly gap-4 item-center text-[#3E3B6A]'>
-          <div className=' self-cneter flex justify-center item-center font-press
-            md:text-2xl'>
-            <h1 className='text-center'>Edit Profile</h1>
-          </div>
-          <div className='flex flex-col self-center'>
-            <img src={imageUrl} alt="" className='rounded-full border-8 border-green-400 w-[240px] h-[240px]'/>
-            <div className=" w-12 h-12 bg-white flex items-center justify-center self-center mt-[-20px] rounded-full relative">
-              <label className="">
-                <svg className="w-8 h-8 cursor-pointer tracking-wide" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                  <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
-                </svg>
-                <input
-                  id="fileInput"
-                  type="file"
-                  className="hidden"
-                  onChange={handleFileChange}
-                />
-              </label>
-              <p className="absolute mt-6 ml-10 text-sm text-center w-24 bg-opacity-50 bg-black text-white py-1 rounded opacity-0 hover:opacity-100">
-                Upload Image
-              </p>
             </div>
           </div>
           <div className='px-[20%] w-full h-[80vh] flex flex-col justify-evenly gap-4 item-center text-[#3E3B6A]'>
@@ -219,7 +195,7 @@ function page() {
               <button onClick={handleSaveClick} className='w-[240px] h-[40px] self-center text-white text-lg bg-[#3E3B6A] rounded-lg'>SAVE</button>
             </div>
           </div>
-          </div>
+      </div>
         <Friendsbar
           userId= {userId}
           userSessionId = {userId}

@@ -42,7 +42,7 @@ interface notification  {
 }
 
 function Notification({ userId, userSession }: props) {
-
+  const accessToken = cookies.get('accessToken');
   const gameSocket = useSocket()
 
 // &--------------------------------------  CHAT PART ------------------------------------
@@ -107,7 +107,12 @@ const dispatch = useDispatch();
         const response =
           userSession &&
           (await axios.get(
-            `${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${userSession}/pending`,{ withCredentials: true }
+            `${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${userSession}/pending`,{ 
+                withCredentials: true, 
+                headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                      }, 
+                }
           ));
         response && setFriendShip(response.data);
         if (friendShip.length === 0) setToggle_notif(false);
@@ -137,7 +142,12 @@ const dispatch = useDispatch();
       try {
         const response =
           userSession &&
-          (await axios.get(`${process.env.NEXT_PUBLIC_APP_URI}:3000/chat/${userSession}`,{ withCredentials: true }));
+          (await axios.get(`${process.env.NEXT_PUBLIC_APP_URI}:3000/chat/${userSession}`,{ 
+            withCredentials: true, 
+            headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                  }, 
+            }));
         response && setMessages(response.data);
         if (messages.length === 0) setToggle_notif(false);
       } catch (error) {

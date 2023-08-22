@@ -46,6 +46,7 @@ import { useEffect, useState } from "react";
 import { users_int } from "../interfaces";
 import axios from "axios";
 import { socket } from "./Notification";
+import Cookies from "universal-cookie"
 // import { socket } from "@/app/(dashboard)/profile/[userId]/page";
 
 type Props = {
@@ -54,6 +55,8 @@ type Props = {
 };
 
 export default function Achievements({ userId, userSessionId }: Props) {
+  const cookies = new Cookies();
+  const accessToken = cookies.get('accessToken');
   /* ------------------------------ fetch Friend ------------------------------ */
   const [notification, setNotification] = useState<string>("");
   const [friends, setFriends] = useState<users_int[]>([]);
@@ -65,7 +68,12 @@ export default function Achievements({ userId, userSessionId }: Props) {
         //   credentials: "include"
         // })
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${userId}/friend`,{ withCredentials: true }
+          `${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${userId}/friend`,{ 
+              withCredentials: true, 
+              headers: {
+                      Authorization: `Bearer ${accessToken}`,
+                    }, 
+ }
         );
         // const data = await response.json(); 
         setFriends(response.data);
@@ -89,7 +97,12 @@ export default function Achievements({ userId, userSessionId }: Props) {
         // const data = await response.json(); 
         // setFriends(data);
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_APP_URI}:3000/chat/msgNumber/${userId}`,{ withCredentials: true }
+          `${process.env.NEXT_PUBLIC_APP_URI}:3000/chat/msgNumber/${userId}`,{ 
+            withCredentials: true, 
+            headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                  }, 
+            }
         );
         setMsgNum(response.data);
       } catch (error) {

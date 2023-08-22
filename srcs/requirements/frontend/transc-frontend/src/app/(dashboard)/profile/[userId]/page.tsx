@@ -31,15 +31,15 @@ function page() {
   /* ------------------------- get url ID from url ------------------------- */
   const { userId } = useParams();
   /* ------------------------------------ - ----------------------------------- */
-
+  
   /* --------------------------- get userSession ID --------------------------- */
+  const cookies = new Cookies();
+  const accessToken = cookies.get('accessToken');
   const [userSession, setUserSession] = useState<string>("");
   useEffect(() => {
-    const cookies = new Cookies();
     setUserSession(cookies.get("id"));
   }, []);
   /* ------------------------------------ - ----------------------------------- */
-
   /* ------------------------------ fetch userId ------------------------------ */
   const [profileUser, setProfileUser] = useState<users_int>();
   useEffect(() => {
@@ -51,7 +51,12 @@ function page() {
         // const res = await response.json();
         // setProfileUser(res)
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${userId}`,{ withCredentials: true }
+          `${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${userId}`,{ 
+              withCredentials: true, 
+              headers: {
+                      Authorization: `Bearer ${accessToken}`,
+                    }, 
+              }
         );
         setProfileUser(response.data);
        
@@ -69,7 +74,12 @@ function page() {
     const fetchUserStat = async () => {
       try {
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${userId}/userStat`,{ withCredentials: true }
+          `${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${userId}/userStat`,{ 
+              withCredentials: true, 
+              headers: {
+                      Authorization: `Bearer ${accessToken}`,
+                    }, 
+              }
         );
         setUserStat(response.data);
       } catch (error) {

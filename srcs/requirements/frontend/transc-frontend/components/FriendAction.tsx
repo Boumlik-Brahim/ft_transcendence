@@ -60,6 +60,7 @@ function FriendAction({ userId, userSessionId }: Props) {
   const dispatch = useDispatch();
   const [roomId, setRoomId] = useState("");
   const router = useRouter();
+  const accessToken = cookies.get('accessToken');
   (userId !== userSessionId) && (
 
     // &--------------------------------------  CHAT PART ------------------------------------  
@@ -141,7 +142,12 @@ function FriendAction({ userId, userSessionId }: Props) {
 
         
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${userSessionId}/friendShip/${userId}`, { withCredentials: true }
+          `${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${userSessionId}/friendShip/${userId}`, { 
+              withCredentials: true, 
+              headers: {
+                      Authorization: `Bearer ${accessToken}`,
+                    }, 
+              }
         );
         if (response.data && response.data.length > 0) {
           if (response.data[0]?.friendShipStatus === "PENDING")
@@ -170,7 +176,12 @@ function FriendAction({ userId, userSessionId }: Props) {
     const fetchblocked = async () => {
       try {
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${userSessionId}/block/${userId}`,{ withCredentials: true }
+          `${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${userSessionId}/block/${userId}`,{ 
+              withCredentials: true, 
+              headers: {
+                      Authorization: `Bearer ${accessToken}`,
+                    }, 
+              }
         );
         if (response.data && response.data.length > 0) {
           setBlockStat(response.data);
@@ -195,7 +206,12 @@ function FriendAction({ userId, userSessionId }: Props) {
     const fetchUserStat = async () => {
       try {
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${userId}/userStat`, { withCredentials: true }
+          `${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${userId}/userStat`, { 
+              withCredentials: true, 
+              headers: {
+                      Authorization: `Bearer ${accessToken}`,
+                    }, 
+              }
         );
         setUserStat(response.data);
       } catch (error) {
@@ -216,8 +232,14 @@ function FriendAction({ userId, userSessionId }: Props) {
         // })
         // const res = await response.json();
         // setFriends(res);
+        console.log("from friend req : ------------------------> ", accessToken);
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${userId}/friend`,{ withCredentials: true }
+          `${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${userId}/friend`,{ 
+              withCredentials: true, 
+              headers: {
+                  Authorization: `Bearer ${accessToken}`,
+              }, 
+              }
         );
         setFriends(response.data);
       } catch (error) {

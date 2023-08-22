@@ -3,6 +3,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { history } from "../interfaces";
 import { getOpponents } from "@/app/(dashboard)/profile/utils";
+import Cookies from "universal-cookie";
 
 type Props = {
   userId: string;
@@ -12,13 +13,20 @@ type Props = {
 
 
 export default function History({ userId, userSessionId }: Props) {
+  const cookies = new Cookies();
+  const accessToken = cookies.get('accessToken');
     /* ------------------------------- get history ------------------------------ */
     const [history, setHistory] = useState<history[]>([]);
     useEffect(() => {
         const fetchHistory = async () => {
         try {
             const response = await axios.get(
-            `${process.env.NEXT_PUBLIC_APP_URI}:3000/users/getGames/${userId}`,{ withCredentials: true }
+            `${process.env.NEXT_PUBLIC_APP_URI}:3000/users/getGames/${userId}`,{ 
+                withCredentials: true, 
+                headers: {
+                  Authorization: `Bearer ${accessToken}`,
+                }, 
+                }
             );
             setHistory(response.data);
           } catch (error) {

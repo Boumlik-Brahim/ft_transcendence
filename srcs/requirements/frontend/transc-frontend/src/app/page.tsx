@@ -193,7 +193,7 @@ export default function Page() {
           text-center font-roboto mt-[30px]
           md:text-[15px]"
         >
-          Website Made By ColoNail AndRoskoot (L'Armi au Maroc) 💪❤️
+          Website Made By Colonel Ondroskotch (L'Armie au Maroc) 💪❤️
         </h3>
         <div
           className="

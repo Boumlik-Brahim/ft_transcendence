@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { Controller, Get, Post,Req, Body, Patch, Param, Delete, UploadedFile, UseInterceptors, UseGuards, Put  } from '@nestjs/common';
 import { Achievement, BlockedUser, Friend, GamesHistories, User, UserStat } from '@prisma/client';
 import { diskStorage } from 'multer';
@@ -27,37 +26,36 @@ export class UsersController {
   }
   
   @Get()
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   async findAll(): Promise<User[]> {
     const users = await this.usersService.findAll();
     return users;
   }
   
   @Get(':senderID/receivers')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   async findAllUsersReceivers(@Param('senderID') senderID: string): Promise<User[]> {
     const users = await this.usersService.findAllUsersReceivers(senderID);
     return users;
   }
   
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   async findOne(@Param('id') id: string): Promise<User> {
     const user = await this.usersService.findOne(id);
     return user;
   }
   
   // @Patch(':id')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   // async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto): Promise<User> {
   //   const updateUser = await this.usersService.update(id, updateUserDto);
   //   return updateUser;
   // }
 
   @Put(':id/userStatus')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   async updateUserStatus(@Param('id') id: string, @Body('status') status: 'ONLINE' | 'OFFLINE' | 'INAGAME'): Promise<User> {
-    console.log("status :::::::::::::::::::::::: ", status);
     const updateUser = await this.usersService.updateUserStatus(id, status);
     return updateUser;
   }
@@ -76,14 +74,14 @@ export class UsersController {
   }
 
   @Get('/:userId/userStat')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   async findOneUserStat(@Param('userId') userId: string): Promise<UserStat> {
     const userStat = await this.usersService.findOneUserStat(userId);
     return userStat;
   }
   
   @Patch('/:userId/userStat')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   async updateUserStat(@Param('userId') userId: string, @Body() updateUserStatDto: UpdateUserStatDto): Promise<UserStat> {
     const updateUserStat = await this.usersService.updateUserStat(userId, updateUserStatDto);
     return updateUserStat;
@@ -98,7 +96,7 @@ export class UsersController {
   //* ---------------------------------------------------------------getGamesByUser------------------------------------------------------- *//
 
   @Get('/getGames/:userId')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   async getUserGames(@Param('userId') userId : string) : Promise<GamesHistories[]> {
     try {
       const games = await this.usersService.getUsergames(userId);
@@ -118,7 +116,7 @@ export class UsersController {
   }
   
   @Get('/:userId/achievement')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   async findAllAchievements(@Param('userId') userId: string): Promise<Achievement[]> {
     const achievements = await this.usersService.findAllAchievements(userId);
     return achievements;
@@ -133,7 +131,7 @@ export class UsersController {
   }
   
   @Get('/:userId/blockedUser')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   async findAllBlockedUser(@Param('userId') userId: string): Promise<BlockedUser[]> {
     const blockedUsers = await this.usersService.findAllBlockedUsers(userId);
     return blockedUsers;
@@ -141,7 +139,7 @@ export class UsersController {
 
   
   @Get('/:userId/block/:friendId')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   async findBlockedUser(@Param('userId') userId: string, @Param('friendId') blockedId: string): Promise<BlockedUser[]> {
     const blockedUsers = await this.usersService.findBlockedUser(userId, blockedId);
     return blockedUsers;
@@ -155,35 +153,35 @@ export class UsersController {
 
   //* ---------------------------------------------------------------friendCRUDOp--------------------------------------------------------- *//
   @Post('/friend')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   async createFriend(@Body() createFriendDto: CreateFriendDto): Promise<Friend> {
     const friend = await this.usersService.createFriend(createFriendDto);
     return friend;
   }
   
   @Get('/:userId/friendShip/:friendId')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   async friendShip(@Param('userId') userId: string, @Param('friendId') friendId: string ): Promise<Friend[]> {
     const friendShip = await this.usersService.friendShip(userId, friendId);
     return friendShip;
   }
   
   @Get('/:userId/pending')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   async pendingReq(@Param('userId') userId: string): Promise<Friend[]> {
     const friendShip = await this.usersService.pendingReq(userId);
     return friendShip;
   }
 
   @Get('/:userId/friend')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   async findAllFriends(@Param('userId') userId: string): Promise<Friend[]> {
     const Friends = await this.usersService.findAllFriends(userId);
     return Friends;
   }
   
   @Put('/:userId/friend/:friendId')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   async updateFriend(@Param('userId') userId: string, @Param('friendId') friendId: string): Promise<Friend> {
     const updateFriend = await this.usersService.updateFriend(userId, friendId);
     return updateFriend;
@@ -206,16 +204,16 @@ export class UsersController {
   
   // @Post('/:userId/stat')
   // async setUserStat(@Body() createUserStat: CreateFriendDto): Promise<UserStat>{
-    //   const userStat = await this.usersService.getUserStats(userId);
-    //   return userStat;
-    // }
-    // //* ---------------------------------------------------------------- USER_STAT --------------------------------------------------------- *//
+  //   const userStat = await this.usersService.getUserStats(userId);
+  //   return userStat;
+  // }
+  // //* ---------------------------------------------------------------- USER_STAT --------------------------------------------------------- *//
 
 
 
   //* ---------------------------------------------------------------updateUsersFields--------------------------------------------------------- *//
   @Patch(':id/two-factor')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   async updateTwoFactorStatus(
     @Param('id') userId: string,
     @Body('isTwoFactorEnabled') isTwoFactorEnabled: boolean,
@@ -224,6 +222,7 @@ export class UsersController {
   }
 
   @Post(':id/upload')
+  // @UseGuards(JwtAuthGuard)
   @UseInterceptors(
   FileInterceptor('file', {
       storage: diskStorage({
@@ -240,7 +239,6 @@ export class UsersController {
       }),
       )
   async local(@Param('id') userId: string,@UploadedFile() file: Express.Multer.File, @Req() req: any) {
-    console.log((req as any).newFileName)
     await this.usersService.updateAvatarUrl(userId, (req as any).newFileName);
     return {
       statusCode: 200,
@@ -254,9 +252,9 @@ export class UsersController {
   }
 
   @Get(':userId/image')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   async getUserAvatar(@Param("userId") userId: string){
     return await this.usersService.getAvatar(userId);
   }
-    
+
 }
