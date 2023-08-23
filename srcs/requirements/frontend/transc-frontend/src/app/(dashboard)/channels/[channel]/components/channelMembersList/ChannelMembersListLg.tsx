@@ -2,19 +2,20 @@
 
 import Image from "next/image"
 import ChannelMemberInfoBox from "../channelMemberBox/ChannelMemberInfoBox"
+import ChannelMemberInfoBoxLg from "../channelMemberBox/ChannelMemberInfoBoxLg"
 
 
-export default function ChannelMembersListSm({channelId}:{ channelId : string}) {
+export default function ChannelMembersListLg({channelId}:{ channelId : string}) {
     return (
         <div className="w-full h-[35%]  px-[12%]  ">
             <div className="w-full h-[20%]   flex items-center">
-                <div className="w-[75px] h-[23px] pl-[5px] flex items-center justify-center  text-white text-[15px] font-poppins font-semibold underline uppercase">
+                <div className="w-[75px] pl-[4%] h-[23px] flex items-center justify-center  text-white text-[15px] font-poppins font-semibold  uppercase">
                     members
                 </div>
             </div>
             <div className="w-full h-[80%] overflow-auto no-scrollbar  relative py-[5px]">
 
-                <ChannelMemberInfoBox
+                <ChannelMemberInfoBoxLg
                     channelId ={channelId}
                 />
                 

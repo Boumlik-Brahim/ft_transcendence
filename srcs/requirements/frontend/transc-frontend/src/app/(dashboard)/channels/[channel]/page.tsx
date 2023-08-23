@@ -14,7 +14,10 @@ import { Socket, io } from "socket.io-client";
 import Cookies from 'universal-cookie';
 import { socket } from '../page'
 import { useMediaQuery } from "react-responsive";
+import ChannelMembersListPageMd from "./ChannelMembersListPageMd";
 
+import { redirect, useRouter } from 'next/navigation'
+import ChannelMembersListPageLg from "./ChannelMembersListPageLg";
 
 interface Message {
   id?: string,
@@ -41,6 +44,10 @@ interface channel {
 }
 
 function Page({ params }: any) {
+
+
+  const router = useRouter()
+
   //^ ---------------------------  screen sizes states ----------------------------
   const isMdScreen = useMediaQuery({ minWidth: 768 });
   const isLgScreen = useMediaQuery({ minWidth: 1200 });
@@ -124,6 +131,7 @@ function Page({ params }: any) {
   //^ ---------------- fetch channel info -------------------------
   const [channelInfo, setChannelInfo] = useState<channel>();
   const [channelName, setChannelName] = useState<string>("");
+  const [channelType, setChannelType] = useState<string>("");
 
   useEffect(() => {
     async function fetchPrivateChannel() {
@@ -131,6 +139,7 @@ function Page({ params }: any) {
         const response = await axios.get<channel>(`http://localhost:3000/channel/${params.channel}`);
         response && setChannelInfo(response.data);
         response && setChannelName(response.data.channelName);
+        response && setChannelType(response.data.channelType);
 
       } catch (error) {
         alert(error);
@@ -192,6 +201,42 @@ function Page({ params }: any) {
   //^ -------------------------------------------------------------
 
 
+  //^ ------------------------------- check Member Status -----------------------------
+  const [channelMemberStatus, setChannelMemberStatus] = useState("")
+  const [isMuted, setIsMuted] = useState(false);
+
+    socket.on("refrechMember", () => {
+        setRefresh(!refresh);
+        console.log("-------------------------- should hide input -------------------------------");
+    })
+    
+    useEffect(() => {
+        async function fetchMemberStatus() {
+            try {
+                const response = await axios.get(`http://localhost:3000/channel/${params.channel}/memberStatus/${userIdFromCookie}`);
+                console.log(response);
+                response && setChannelMemberStatus(response.data);
+                response && console.log("=========/ ",response.data,"/========= ");
+
+              response && ((response.data.role === "MUTED_MEMBER" ) ? setIsMuted(true) : setIsMuted(false))
+            } catch (error) {
+                alert(error);
+            }
+        }
+        fetchMemberStatus();
+        
+    }, [refresh]);
+
+
+  //^  ----------------------------------------------------------------------------------------------------------
+
+
+  useEffect(() => {
+    socket.on("redirectAfterGetKicked", () => {
+        console.log("!! --- You have been kicked from this channel --- !!")
+        router.push(`/channels/`)
+    })
+}, [socket])
 
   return (
     <>
@@ -255,19 +300,29 @@ function Page({ params }: any) {
             }
 
           </div>
-          <MessageInputChannelBox
+         {  <MessageInputChannelBox
             channelId={params.channel}
-
-          />
+            channelMemberStatus = {channelMemberStatus}
+          />}
         </div>
 
-        <ChannelMembersListPage 
-            channelId = {params.channel}
+        <ChannelMembersListPage
+          channelId={params.channel}
+          channelType = {channelType}
         />
       </div>
       {
-        (isMdScreenState || isLgScreenState) &&
-        <div className="w-[25%] md:w-[20%] h-screen bg-primary"></div>
+        (isMdScreenState && !isLgScreenState) &&
+        <ChannelMembersListPageMd
+          channelId={params.channel}
+        />
+      }
+       {
+        ( isLgScreenState ) &&
+        <ChannelMembersListPageLg
+          channelId={params.channel}
+          channelType = {channelType}
+        />
       }
 
     </>

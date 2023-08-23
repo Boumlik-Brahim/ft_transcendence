@@ -2,19 +2,20 @@
 
 import Image from "next/image";
 import ChannelAdminInfoBox from "../channelMemberBox/ChannelAdminInfoBox";
+import ChannelAdminInfoBoxLg from "../channelMemberBox/ChannelAdminInfoBoxLg";
 
-function ChannelAdminListSm({ channelId }: { channelId: string }) {
+function ChannelAdminListLg({ channelId }: { channelId: string }) {
     return (
         <>
-            <div className="w-full h-[30%]  px-[12%]">
-                <div className="w-full h-[20%]   flex items-center">
-                    <div className="w-[75px] h-[23px] flex items-center justify-center  text-white text-[15px] font-poppins font-semibold underline uppercase">
+            <div className="w-full h-[30%]  px-[12%] ">
+                <div className="w-full h-[20%] flex items-center  ">
+                    <div className="w-[75px] h-[23px] flex items-center justify-center  text-white text-[15px] font-poppins font-semibold  uppercase">
                         admins
                     </div>
                 </div>
                 <div className="w-full h-[80%] overflow-auto no-scrollbar py-[5px] relative ">
 
-                    <ChannelAdminInfoBox
+                    <ChannelAdminInfoBoxLg
                         channelId={channelId}
                     />
 
@@ -27,4 +28,4 @@ function ChannelAdminListSm({ channelId }: { channelId: string }) {
         </>
     )
 }
-export default ChannelAdminListSm;
+export default ChannelAdminListLg;

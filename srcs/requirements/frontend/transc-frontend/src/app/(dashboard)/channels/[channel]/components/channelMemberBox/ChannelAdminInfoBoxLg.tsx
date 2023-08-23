@@ -1,15 +1,19 @@
 "use client"
 
+import axios from "axios";
 import Image from "next/image"
-
 import { useEffect, useState } from "react";
 import Cookies from 'universal-cookie';
-import axios from "axios";
-import MemberBoxInfo from './MemberBoxInfo'
-import { redirect, useRouter } from 'next/navigation'
-import { socket } from "../../../page";
 
-interface channelMembers {
+import AdminBoxInfo from './AdminBoxInfo'
+import { socket } from "../../../page";
+import AdminBoxInfoLg from "./AdminBoxInfoLg";
+
+
+
+        
+
+interface channelAdmins {
     id: string,
     userId: string,
     channelId: string,
@@ -21,7 +25,8 @@ interface channelMembers {
     created_at: string
 }
 
-interface MemberData {
+
+interface AdminData {
     id: string;
     name: string;
     email: string;
@@ -37,92 +42,85 @@ const userIdFromCookie = cookies.get('id');
 
 
 
-function ChannelMemberInfoBox({ channelId }: { channelId: string }) {
+function ChannelAdminInfoBoxLg({ channelId }: { channelId: string }) {
 
     //  ^ ---------------------- Fetch Channel Admins --------------------------
-    const [channelMembers, setChannelMembers] = useState<channelMembers[]>([]);
-    const [memberData, setMemberData] = useState<MemberData[]>([]);
-    const [channelMembersCheck, setChannelMembersCheck] = useState(false);
-
+    const [channelAdmins, setChannelAdmins] = useState<channelAdmins[]>([]);
+    const [adminData, setAdminData] = useState<AdminData[]>([]);
+    const [channelAdminsCheck, setChannelAdminsCheck] = useState(false);
     const [refresh, setRefresh] = useState(false);
 
-  
     socket.on("memberKickedSuccessfully", () => {
         setRefresh(!refresh);
-        setMemberData([]);
+        setAdminData([]);
 
     })
-
     socket.on("refrechMember", () => {
         setRefresh(!refresh);
-        setMemberData([]);
-
+        setAdminData([]);
     })
-   
 
 
-    //* fetching Channel Members  
+    //* fetching Channel Admins  
     useEffect(() => {
-        async function fetchMembers() {
+        async function fetchAdmins() {
             try {
-                const response = await axios.get<channelMembers[]>(`http://localhost:3000/channel/${channelId}/member`);
-                setChannelMembers(response.data);
+                const response = await axios.get<channelAdmins[]>(`http://localhost:3000/channel/${channelId}/admin`);
+                setChannelAdmins(response.data);
             } catch (error) {
                 alert(error);
             }
         }
-        fetchMembers();
+        fetchAdmins();
     }, [refresh]);
 
 
     useEffect(() => {
-        const fetchMemberData = async (userId: string) => {
+        const fetchAdminData = async (userId: string) => {
             try {
-                const response = await axios.get<MemberData>(`http://localhost:3000/users/${userId}`);
-                const memberDataTemp: MemberData = response.data;
-                setMemberData((prevData) => [...prevData, memberDataTemp]);
+                const response = await axios.get<AdminData>(`http://localhost:3000/users/${userId}`);
+                const adminData: AdminData = response.data;
+                setAdminData((prevData) => [...prevData, adminData]);
             } catch (error) {
                 alert(error);
             }
         };
-        setMemberData([]);
-        channelMembers.map((member) => {
-            fetchMemberData(member.userId);
+        setAdminData([]);
+        channelAdmins.map((admin) => {
+            fetchAdminData(admin.userId);
         });
-    }, [channelMembers])
 
+    }, [channelAdmins])
 
-
-    const members = memberData.map((member, i) => {
-
+    const admins = adminData.map((admin) => {
         return (
-            <MemberBoxInfo
-                userId={member.id}
+            <AdminBoxInfoLg
+                userId={admin.id}
                 channelId={channelId}
-                userName={member.name}
-                profilePic={member.Avatar}
-                key={i}
+                userName={admin.name}
+                profilePic={admin.Avatar}
+                key={admin.id}
             />
         )
     })
 
 
-
-
     //  ^ ----------------------------------------------------------------------
+
 
     return (
         <>
             {
-                members.length !== 0
+                admins.length !== 0
                     ?
-                    members
+                    admins
                     :
                     <div className="w-full h-[85%] text-channel-500 text-[13px] flex items-center justify-center font-poppins font-light tracking-wide ">
-                        No regular members here
+                        No admins available
                     </div>
             }
+            
         </>
     )
 }
-export default ChannelMemberInfoBox;
+export default ChannelAdminInfoBoxLg;

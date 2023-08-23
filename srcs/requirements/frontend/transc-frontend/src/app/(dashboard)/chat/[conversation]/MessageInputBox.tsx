@@ -81,9 +81,9 @@ function MessageInputBox({ inputRef }: Props) {
                 <input
                     placeholder="Type your message"
                     className={`
-                                h-[40px] lg:h-[38px] w-full rounded-full text-primary font-poppins font-semibold text-[11px] pl-3.5  
+                                h-[40px] lg:h-[38px] w-full rounded-full text-primary font-poppins font-light text-[11px] pl-3.5  
                                 focus:outline-none  focus:border-primary focus:ring-2 focus:ring-primary
-                                placeholder:font-semibold placeholder:text-gray-500 placeholder:text-[11px] 
+                                placeholder:font-light placeholder:text-gray-500 placeholder:text-[11px] 
                                 md:h-[45px] md:text-[14px]  md:placeholder:text-[13px]
                     `} 
                     name="content"

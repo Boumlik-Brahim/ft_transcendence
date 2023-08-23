@@ -8,6 +8,7 @@ import axios from "axios";
 import MemberBoxInfo from './MemberBoxInfo'
 import { redirect, useRouter } from 'next/navigation'
 import { socket } from "../../../page";
+import MemberBoxInfoLg from "./MemberBoxInfoLg";
 
 interface channelMembers {
     id: string,
@@ -37,7 +38,7 @@ const userIdFromCookie = cookies.get('id');
 
 
 
-function ChannelMemberInfoBox({ channelId }: { channelId: string }) {
+function ChannelMemberInfoBoxLg({ channelId }: { channelId: string }) {
 
     //  ^ ---------------------- Fetch Channel Admins --------------------------
     const [channelMembers, setChannelMembers] = useState<channelMembers[]>([]);
@@ -96,7 +97,7 @@ function ChannelMemberInfoBox({ channelId }: { channelId: string }) {
     const members = memberData.map((member, i) => {
 
         return (
-            <MemberBoxInfo
+            <MemberBoxInfoLg
                 userId={member.id}
                 channelId={channelId}
                 userName={member.name}
@@ -125,4 +126,4 @@ function ChannelMemberInfoBox({ channelId }: { channelId: string }) {
         </>
     )
 }
-export default ChannelMemberInfoBox;
+export default ChannelMemberInfoBoxLg;

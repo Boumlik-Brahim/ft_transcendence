@@ -7,7 +7,7 @@ import { RootState } from '@/app/store/store';
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Cookies from 'universal-cookie';
-import {socket} from '../../../page'
+import { socket } from '../../../page'
 
 import { redirect, useRouter } from 'next/navigation'
 
@@ -31,7 +31,7 @@ interface Owner {
     updated_at: string
 }
 
-function ChannelOwnerListSm({ channelId }: { channelId: string }) {
+function ChannelOwnerListMd({ channelId }: { channelId: string }) {
 
 
     const cookies = new Cookies();
@@ -76,57 +76,21 @@ function ChannelOwnerListSm({ channelId }: { channelId: string }) {
     },[channelData,channelOwnerData])
 
 
-
-    const dispatch = useDispatch();
-    const isShowChannelMembersOn = useSelector((state: RootState) => state.toggleShowChannelMembers);
-
-    const handleShowChannelMembers = () => {
-        dispatch(ShowChannelMembers());
-    }
-
-    const handleRemoveChannel = () =>{
-        socket.emit("removeChannel", {
-            channelId: channelId,
-            userId: userIdFromCookie,
-        })  
-        console.log("!! -- remove btn has been clicked  --!!")
-    }
-
-    const router = useRouter()
-
-    useEffect(()=>{
-        socket.on("channelDeletedSuccessfully", () => {
-            console.log("!! Channel removed !!");
-            router.push(`/channels/`)
-        })
-    },[socket])
-
-
     return (
-        <div className="w-full h-[20%] ">
-            <div className="w-full h-[40%]  flex items-end justify-between px-[12%]">
-                <div className="w-[75px] h-[23px] flex items-center justify-center  text-white text-[15px] font-poppins font-semibold underline uppercase">
-                    Owner
+        <div className="w-full h-[10vh] ">
+            <div className="w-full h-full flex">
+                <div className={`${`h-full  ${removeChannelPermission ? "w-[70%] justify-end" : "w-full justify-center"} flex items-center `}`}>
+                    <Image src={`${channelOwnerData ? channelOwnerData.Avatar : "https://cdn.pixabay.com/photo/2017/07/03/09/54/dog-2467149_1280.jpg"}`} alt="delete channel" width={50} height={50} className="rounded-full" />
                 </div>
-                <Image key={1} src={"/close_w.svg"} width={25} height={25} alt={"close"} className="md:w-[34px] md:h-[34px] cursor-pointer" onClick={handleShowChannelMembers} />
-            </div>
-            <div className="w-full h-[60%]  flex items-center justify-center">
-                <div className="h-full w-[80%] flex ">
-                    <div className="w-[80%] h-full flex items-center px-[27px]">
-                        <Image src={`${channelOwnerData ? channelOwnerData?.Avatar : "https://cdn.pixabay.com/photo/2017/07/03/09/54/dog-2467149_1280.jpg"}`} alt="delete channel" width={41} height={41} className="rounded-full" />
-                        <div className="w-[130px] h-full flex items-center ml-[16px] text-white text-[15px] font-poppins font-medium truncate">
-                            {channelOwnerData?.name}
-                        </div>
+               { removeChannelPermission && 
+                    <div className="h-full w-[30%]  flex items-center justify-start pl-[7px]">
+                        <Image src={"/trash.svg"} alt="delete channel" width={15} height={15} />
                     </div>
-                    <div className={`${(removeChannelPermission) ? "w-[20%] h-full  flex items-center" : "hidden"}`}>
-                        <Image src={"/trash.svg"} alt="delete channel" width={16} height={16} onClick={handleRemoveChannel}/>
-                    </div>
-                </div>
+                }
             </div>
-            <div className="w-full flex justify-center ">
-                <span className="w-[75%] h-px bg-stone-300 " />
-            </div>
+            <div className="w-[80%] h-px bg-stone-300 ml-[10%]" />
+            
         </div>
     )
 }
-export default ChannelOwnerListSm; 
+export default ChannelOwnerListMd; 
