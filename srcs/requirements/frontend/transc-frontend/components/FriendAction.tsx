@@ -44,6 +44,8 @@ import { RootState } from '@/app/store/store';
 import { socket } from "./Notification";
 import exp from "constants";
 import { createHash } from "crypto";
+import { CreateGameType } from "@/app/(dashboard)/game/page";
+import { useSocket } from "@/app/socket";
 //& --------------------------
 
 type Props = {
@@ -57,12 +59,35 @@ type Props = {
 // }, [])
 
 function FriendAction({ userId, userSessionId }: Props) {
+
+
+
+  
+  
+  
+  
+  
   const dispatch = useDispatch();
   const [roomId, setRoomId] = useState("");
+  const mySocket = useSocket()
   const router = useRouter();
   const accessToken = cookies.get('accessToken');
-  (userId !== userSessionId) && (
 
+  const createGame = (isRamdomOponent : boolean) : void => {
+    if (!mySocket) return;
+    if (!mySocket.connected) return ;
+    if (userSessionId) {
+      const data : CreateGameType = {
+        invitedId : userId,
+        creatorId : userSessionId,
+        isRamdomOponent,
+      }
+      mySocket.emit('createGame', data);
+    }
+  }
+
+  (userId !== userSessionId) && (
+    
     // &--------------------------------------  CHAT PART ------------------------------------  
     useEffect(() => {
       // socketChat.emit("joinRoom", {
@@ -73,7 +98,8 @@ function FriendAction({ userId, userSessionId }: Props) {
         // socketChat.on("joined", (data) => {
           //   setRoomId(data.roomName);
           // });
-          
+
+      
           const roomID = [userSessionId, userId].sort().join('-');
           const hasshedRoomName = createHash('sha256').update(roomID).digest('hex');
           setRoomId(hasshedRoomName);
@@ -86,6 +112,8 @@ function FriendAction({ userId, userSessionId }: Props) {
     dispatch(setOtherUser(userId));
     dispatch(selectedOne(userId));
     // dispatch(setRefreshOn());
+
+    
 
     try {
       const res = await axios.put(`${process.env.NEXT_PUBLIC_APP_URI}:3000/chat/${userSessionId}/${userId}`, {"seen": true});
@@ -136,7 +164,24 @@ function FriendAction({ userId, userSessionId }: Props) {
   const [friendShipStatus, setFriendShipStatus] = useState<string>("");
 
   /* -------------------------- set  friendShipStatus ------------------------- */
+
+
+    useEffect(() => {
+
+      mySocket.on('Success', data => {
+        console.log(data);
+        const { id } = data;
+        router.push(`/game/${id}`)
+      });
+
+      return (() => {
+        mySocket.off('Success');
+      });
+      
+    }, [mySocket])
+
   useEffect(() => {
+
     const fetchfriendShip = async () => {
       try {
 
@@ -348,7 +393,7 @@ function FriendAction({ userId, userSessionId }: Props) {
                   <Image src={send_b} width={30} alt="avatar" />
                   </Link>}
               </div> 
-              <div className="card_friend gradients">
+              <div className="card_friend gradients" onClick={() => createGame(false)}>
                 <Image src={game_b} width={30} alt="avatar" />
               </div>
             </>

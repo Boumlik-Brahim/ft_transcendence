@@ -15,7 +15,8 @@ export interface GameEntity {
     scoreLimit : number,
     ball_speed : number,
     gameStatus : gameState,
-    winner : null | String
+    winner : null | String,
+    randomPlayer : boolean
 }
 
 export interface Player {
@@ -23,7 +24,9 @@ export interface Player {
     inThegame : boolean,
     paddleX : number,
     paddleY : number,
-    score : number
+    score : number,
+    downPress : boolean,
+    upPress : boolean
 }
 
 export interface gameState {

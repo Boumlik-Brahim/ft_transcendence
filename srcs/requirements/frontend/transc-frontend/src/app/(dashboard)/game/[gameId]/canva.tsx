@@ -34,8 +34,6 @@ interface PropsType {
   gameState : string | undefined
 }
 
-const cookie = new Cookies();
-
 
 const Canvas = ({ gameData, gameState } : PropsType) => {
 
@@ -63,50 +61,6 @@ const Canvas = ({ gameData, gameState } : PropsType) => {
     context.fillText(text, x, y);
 
   }
-
-  const writeText = (context : any, w : number, h : number) => {
-    if (gameState === 'finished' || gameState === 'canceled')
-    {
-      const y : number = h / 2;
-      const userId : string = cookie.get('id');
-      const x = gameData?.player1.id === userId ? (w / 4) : ((3 * w) / 4);
-      const text : string = userId === gameData?.winner ? "WIN" : (gameData?.winner ? "LOST" : "DRAW")
-      context.fillStyle = "#3E3B6A"
-      context.font = "50px Arial";
-      context.textAlign = 'center';
-      context.fillText(text, x, y);
-    }
-  }
-
-  // const replayButton = (context: any, w: number, h: number) => {
-  //   if (gameState === 'finished' || gameState === 'canceled') {
-  //       const y: number = ((3 * h) / 4);
-  //       const userId: string = cookie.get('id');
-  //       const x = gameData?.player1.id === userId ? (w / 4) : ((3 * w) / 4);
-  //       const text = "Play Again";
-  //       const buttonColor = "#3E3B6A"; // Color for both text and border
-  //       const borderRadius = 10; // Radius of the button corners
-
-  //       // Draw border
-  //       context.strokeStyle = buttonColor;
-  //       context.lineWidth = 2;
-  //       context.fillStyle = 'transparent'; // No background color
-  //       context.beginPath();
-  //       context.moveTo(x - w / 8, y - h / 8 + borderRadius);
-  //       context.lineTo(x + w / 8, y - h / 8 + borderRadius);
-  //       context.arcTo(x + w / 8, y - h / 8, x + w / 8 - borderRadius, y - h / 8, borderRadius);
-  //       context.lineTo(x - w / 8 + borderRadius, y - h / 8);
-  //       context.arcTo(x - w / 8, y - h / 8, x - w / 8, y - h / 8 + borderRadius, borderRadius);
-  //       context.closePath();
-  //       context.stroke();
-
-  //       // Draw text
-  //       context.fillStyle = buttonColor;
-  //       context.font = "10px Arial";
-  //       context.textAlign = 'center';
-  //       context.fillText(text, x, y);
-  //   }
-  // }
 
   const drawMiddleLine = (context : any, w : number, h : number) => {
     context.strokeStyle = "white"
@@ -149,10 +103,9 @@ const Canvas = ({ gameData, gameState } : PropsType) => {
     drawPaddle(context, player2_X, player2_Y, paddleH, w_paddle);
     writeScore(context, w / 2 - 40, score1);
     writeScore(context, w / 2 + 40, score2);
-    // writeText(context, w, h);
-    // replayButton(context, w, h)
     context.globalAlpha = 1
   }
+
   useEffect(() => {
     if (canvasRef) {
       if (canvasRef.current) {

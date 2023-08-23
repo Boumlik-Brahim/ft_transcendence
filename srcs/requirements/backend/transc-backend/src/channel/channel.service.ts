@@ -237,7 +237,9 @@ export class ChannelService {
         },
       },
     })
-    return member.role;
+    if(member){
+      return member.role;
+    }
   }
 
   async updateChannelMember(channelId: string, userId: string, updateChannelMemberDto: UpdateChannelMemberDto): Promise<ChannelMember> {

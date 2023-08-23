@@ -242,7 +242,7 @@ const dispatch = useDispatch();
         ((pendingUsers && pendingUsers.length > 0) ||
           (pendingMessages && pendingMessages.length > 0)||
           (GameNotificat && GameNotificat.length > 0)) && (
-            <ul className="max-h-[400px] overflow-y-scroll overflow-hidden gradients shadow-lg flex flex-col gap-[40px] px-[3rem] py-[2rem] absolute w-[80%] md:w-[500px] top-[15vh] md:top-[60px] right-0 z-10">
+            <ul className="max-h-[400px] overflow-y-scroll no-scrollbar overflow-hidden gradients shadow-lg flex flex-col gap-[40px] px-[3rem] py-[2rem] absolute w-[80%] md:w-[500px] top-[15vh] md:top-[60px] right-0 z-10">
               {pendingUsers?.map((user, index) => (
                 <li key={index} className="flex justify-between items-center">
                   <div className="relative flex items-center gap-[10px] w-[100px]">

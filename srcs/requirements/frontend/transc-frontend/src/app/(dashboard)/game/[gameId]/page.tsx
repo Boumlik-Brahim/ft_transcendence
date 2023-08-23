@@ -34,7 +34,8 @@ export interface GameEntity {
     playerSpeed : number,
     scoreLimit : number,
     ball_speed : number,
-    winner : null | String
+    winner : null | String,
+    randomPlayer : boolean
 }
 
 interface Player {
@@ -47,7 +48,7 @@ interface Player {
 interface CreateGameType {
     invitedId? : String, 
     creatorId : String, 
-    isRamdomOponent : boolean,
+    isRamdomOponent? : boolean,
     maxScore : number | undefined
 }
 
@@ -57,6 +58,7 @@ const Page = ( {params} : any) => {
     const [gameData, setGameData] = useState<GameEntity | undefined>();
     const userId = getCookie('id') as string;
     const oponentId = userId === gameData?.player1.id ? gameData?.player2.id : gameData?.player1.id;
+    const [isOnline, setIsOnline] = useState<boolean>(true)
     const id = params.gameId;
     const socket = useSocket();
 
@@ -67,7 +69,7 @@ const Page = ( {params} : any) => {
           const data : CreateGameType = {
             invitedId : oponentId,
             creatorId : userId,
-            isRamdomOponent : false,
+            isRamdomOponent : gameData?.randomPlayer,
             maxScore : gameData?.scoreLimit
         }
           socket.emit('createGame', data);
@@ -80,12 +82,20 @@ const Page = ( {params} : any) => {
     }
 
     useEffect(() => {
+        if (!socket) return ;
+        if (!socket?.connected) return ;
+
         socket.emit('joinGame', {gameId : id, userId});
-        
         document.addEventListener('keydown', (event) => {
             const code = event.code;
             if (code === 'ArrowRight' || code === 'ArrowLeft')
-            socket.emit(code, {gameId : id, userId})
+                socket.emit(code, {gameId : id, userId})
+        }, false);
+
+        document.addEventListener('keyup', (event) => {
+            const code = event.code;
+            if (code === 'ArrowRight' || code === 'ArrowLeft')
+                socket.emit('keyup', {gameId : id, userId})
         }, false);
         
         socket.on('error_access', () => {
@@ -105,13 +115,17 @@ const Page = ( {params} : any) => {
             router.push(`/game/${id}`)
         });
 
+
+
         return () => {
                 socket.off('joinGame');
                 socket.off('Success');
                 socket.off('error_access');
                 socket.off('gameData');
                 socket.off('gameSate');
+                socket.emit('quiteGame', {gameId : id, userId});
                 document.addEventListener('keydown', () => {});
+                window.addEventListener('offline', () => {})
             }
         }, [socket]);
 

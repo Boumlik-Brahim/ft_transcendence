@@ -38,10 +38,11 @@ export class GameGateway {
     if (token) {
       try {
         const user = jwt.verify(token, JWT_SECRET) as {id : string, email : string, iat: number}
+        console.log(user, "whitout id")
         const { id } = user;
         if (user.id)
         console.log(id, " ------- userId -------", user);
-        this.gameService.addUser(id, client);
+        this.gameService.addUser(id, client, this.server);
       }
       catch {
         return false
@@ -98,7 +99,7 @@ export class GameGateway {
   }
 
   @SubscribeMessage('ArrowRight')
-  keyDown(@MessageBody() data: JoinGameDto, @ConnectedSocket() client: Socket) {
+  paddleMoveUp(@MessageBody() data: JoinGameDto, @ConnectedSocket() client: Socket) {
     if (!this.gameService.isConneted(data.userId, client)) {
       client.emit("error", "Permission denied")
       return;
@@ -107,12 +108,26 @@ export class GameGateway {
     const { gameId, userId } = data;
     if (gameId && userId) 
     {
-      this.gameService.ArrowDown(gameId, userId, client);
+      this.gameService.paddleMoveUp(gameId, userId, client);
+    }
+  }
+
+  @SubscribeMessage('keyup')
+  paddleStopMove(@MessageBody() data: JoinGameDto, @ConnectedSocket() client: Socket) {
+    if (!this.gameService.isConneted(data.userId, client)) {
+      client.emit("error", "Permission denied")
+      return;
+    }
+    if (!data) return; 
+    const { gameId, userId } = data;
+    if (gameId && userId) 
+    {
+      this.gameService.paddleStopMove(gameId, userId, client);
     }
   }
 
   @SubscribeMessage('ArrowLeft')
-  keyUp(@MessageBody() data: JoinGameDto, @ConnectedSocket() client: Socket) {
+  paddleMoveDown(@MessageBody() data: JoinGameDto, @ConnectedSocket() client: Socket) {
     if (!this.gameService.isConneted(data.userId, client)) {
       client.emit("error", "Permission denied")
       return;
@@ -121,12 +136,13 @@ export class GameGateway {
     const { gameId, userId } = data;
     if (gameId && userId) 
     {
-      this.gameService.ArrowUp(gameId, userId, client);
+      this.gameService.paddleMoveDown(gameId, userId, client);
     }
   }
 
   @SubscribeMessage('quiteGame')
   quitGame(@MessageBody() data: JoinGameDto, @ConnectedSocket() client: Socket) {
+    console.log("fode oulae -------- ---------- ------------ out -----");
     if (!this.gameService.isConneted(data.userId, client)) {
       client.emit("error", "Permission denied")
       return;
@@ -134,14 +150,14 @@ export class GameGateway {
     
     if (!data) return; 
     const { gameId, userId } = data;
-    console.log(gameId, userId, "fode oulae -------- ---------- ------------ -----");
     if (gameId && userId) 
     {
-      this.gameService.quiteGame(userId, gameId, client);
+      this.gameService.quiteGame(userId, gameId, client, 'ONLINE');
     }
   }
   
   handleDisconnect(client : Socket) {
+    console.log("fode oulare leaves")
     this.gameService.deleteUser(client);
   }
 

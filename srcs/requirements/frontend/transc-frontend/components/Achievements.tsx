@@ -43,7 +43,7 @@ import {
   _your_first_game_gif,
 } from "../public";
 import { useEffect, useState } from "react";
-import { users_int } from "../interfaces";
+import { history, userStat, users_int } from "../interfaces";
 import axios from "axios";
 import { socket } from "./Notification";
 import Cookies from "universal-cookie"
@@ -86,6 +86,29 @@ export default function Achievements({ userId, userSessionId }: Props) {
   /* ------------------------------------ - ----------------------------------- */
 
   /* ----------------------------- message Number ----------------------------- */
+  const [history, setHistory] = useState<history[]>();
+
+  useEffect(() => {
+    const getHistory = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_APP_URI}:3000/users/getGames/${userId}`,{ 
+            withCredentials: true, 
+            headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                  }, 
+            }
+        );
+        setHistory(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getHistory();
+  }, [userId]);
+
+  /* ------------------------------------ - ----------------------------------- */
+  /* ----------------------------- history games ----------------------------- */
   const [msgNum, setMsgNum] = useState<number>();
 
   useEffect(() => {
@@ -114,6 +137,32 @@ export default function Achievements({ userId, userSessionId }: Props) {
 
   /* ------------------------------------ - ----------------------------------- */
 
+
+
+
+  /* ----------------------------- fetch userStat ----------------------------- */
+  const [userStat, setUserStat] = useState<userStat>();
+  useEffect(() => {
+    const fetchUserStat = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${userId}/userStat`,{ 
+              withCredentials: true, 
+              headers: {
+                      Authorization: `Bearer ${accessToken}`,
+                    }, 
+              }
+        );
+        setUserStat(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchUserStat();
+  }, [userId]);
+  /* ------------------------------------ - ----------------------------------- */
+
+
   /* -------------------------- friend requset socket ------------------------- */
   useEffect(() => {
     socket.on("AcceptRequest", (data) => {
@@ -137,7 +186,7 @@ export default function Achievements({ userId, userSessionId }: Props) {
   }, [notification]);
   /* ------------------------------------ - ----------------------------------- */
   return (
-    friends && (
+    friends && history && (
       <div className="wrapper">
         <p className="title">Achievements</p>
         <div className="xl:w-[932px] lg:w-[712px] s:w-[506px] w-[300px]">
@@ -164,7 +213,9 @@ export default function Achievements({ userId, userSessionId }: Props) {
                 alt="ach"
               />
             </div>
-            <div className="relative achievement_disabled ml-[103px] s:ml-0 mt-[-35px] lg:mt-0">
+            <div className={`relative ${
+                history && (history.length < 1) && "achievement_disabled"
+              } ml-[103px] s:ml-0 mt-[-35px] lg:mt-0`}>
               <Image src={_your_first_game} alt="ach" />
               <Image
                 src={_your_first_game_gif}
@@ -213,7 +264,9 @@ export default function Achievements({ userId, userSessionId }: Props) {
                 alt="ach"
               />
             </div>
-            <div className="relative achievement_disabled lg:ml-[103px] xl:ml-0 mt-[-35px] ml-[103px] s:ml-0">
+            <div className={`relative ${
+                history && (history.length < 19) && "achievement_disabled"
+              } lg:ml-[103px] xl:ml-0 mt-[-35px] ml-[103px] s:ml-0`}>
               <Image src={_19_games} alt="ach" />
               <Image
                 src={_19_games_gif}
@@ -222,7 +275,7 @@ export default function Achievements({ userId, userSessionId }: Props) {
                 alt="ach"
               />
             </div>
-            <div className="relative achievement_disabled mt-[-35px] ">
+            <div className={`relative ${userStat && (Number(userStat.rate) < 19) && "achievement_disabled" }  mt-[-35px] `}>
               <Image src={_19_in_score} alt="ach" />
               <Image
                 src={_19_in_score_gif}
@@ -258,7 +311,9 @@ export default function Achievements({ userId, userSessionId }: Props) {
                 alt="ach"
               />
             </div>
-            <div className="relative achievement_disabled mt-[-35px] ml-[103px] s:ml-0">
+            <div className={`relative ${
+                history && (history.length < 21) && "achievement_disabled"
+              } mt-[-35px] ml-[103px] s:ml-0`}>
               <Image src={_21_games} alt="ach" />
               <Image
                 src={_21_games_gif}
@@ -267,7 +322,7 @@ export default function Achievements({ userId, userSessionId }: Props) {
                 alt="ach"
               />
             </div>
-            <div className="relative achievement_disabled mt-[-35px] ">
+            <div className={`relative  ${userStat && (Number(userStat.rate) < 21) && "achievement_disabled" }  mt-[-35px] `}>
               <Image src={_21_in_score} alt="ach" />
               <Image
                 src={_21_in_score_gif}
@@ -303,7 +358,9 @@ export default function Achievements({ userId, userSessionId }: Props) {
                 alt="ach"
               />
             </div>
-            <div className="relative achievement_disabled mt-[-35px] ml-[103px] s:ml-0">
+            <div className={`relative ${
+                history && (history.length < 42) && "achievement_disabled"
+              } mt-[-35px] ml-[103px] s:ml-0`}>
               <Image src={_42_games} alt="ach" />
               <Image
                 src={_42_games_gif}
@@ -312,7 +369,7 @@ export default function Achievements({ userId, userSessionId }: Props) {
                 alt="ach"
               />
             </div>
-            <div className="relative achievement_disabled mt-[-35px] ">
+            <div className={`relative  ${userStat && (Number(userStat.rate) < 42) && "achievement_disabled" }  mt-[-35px] `}>
               <Image src={_42_in_score} alt="ach" />
               <Image
                 src={_42_in_score_gif}
@@ -348,7 +405,9 @@ export default function Achievements({ userId, userSessionId }: Props) {
                 alt="ach"
               />
             </div>
-            <div className="relative achievement_disabled mt-[-35px] lg:ml-[103px] xl:ml-0 ml-[103px] s:ml-0">
+            <div className={`relative ${
+                history && (history.length < 1337) && "achievement_disabled"
+              } mt-[-35px] lg:ml-[103px] xl:ml-0 ml-[103px] s:ml-0`}>
               <Image src={_1337_games} alt="ach" />
               <Image
                 src={_1337_games_gif}
@@ -357,7 +416,7 @@ export default function Achievements({ userId, userSessionId }: Props) {
                 alt="ach"
               />
             </div>
-            <div className="relative achievement_disabled mt-[-35px]">
+            <div className={`relative  ${userStat && (Number(userStat.rate) < 1337) && "achievement_disabled" }  mt-[-35px]`}>
               <Image src={_1337_in_score} alt="ach" />
               <Image
                 src={_1337_in_score_gif}

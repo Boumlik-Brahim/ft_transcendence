@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Server, Socket } from 'socket.io';
 import { CANCELLED } from 'dns';
 import { time } from 'console';
+import { Status } from '@prisma/client';
 
 interface GameInvitation {
     id : string,
@@ -53,8 +54,9 @@ export class GameService {
      * @param id 
      * @param socket 
      */
-    addUser(id : string, socket : Socket) {
+    async addUser(id : string, socket : Socket, server : Server) {
         this.usersConnected.set(id, socket);
+        const games = Array.from(this.gameMap.values());
     }
 
     
@@ -68,17 +70,74 @@ export class GameService {
         return true;
     }
 
+
+    // async checkIfThereVAlidInvitation (senderId : string, receiverId) {
+    //     try {
+    //         const gameInvitations = await this.prisma.gamesInvitation.findMany({
+    //             where : {
+    //                 OR : [
+    //                     {
+    //                         AND : [
+    //                             {
+    //                                 senderId : senderId
+    //                             },
+    //                             {
+    //                                 receiverId : receiverId
+    //                             },
+    //                             {
+    //                                 status : 'PENDING'
+    //                             }
+    //                         ]
+    //                     },
+    //                     {
+    //                         AND : [
+    //                             {
+    //                                 senderId : receiverId
+    //                             },
+    //                             {
+    //                                 receiverId: senderId
+    //                             },
+    //                             {
+    //                                 status : 'PENDING'
+    //                             }
+    //                         ]
+    //                     }
+    //                 ]
+    //             }
+    //         });
+    //         if (gameInvitations.length > 0) {
+    //             const gameInvitation = gameInvitations[0];
+    //             const senderclient = this.usersConnected.get(senderId);
+    //             senderclient.emit("Success", {id : gameInvitation.id});
+    //             return true;
+    //         }
+    //         return false;
+    //     }
+    //     catch (error) { 
+    //         console.log(error);
+    //     } 
+    // } 
+
+
     /**
      * Delete user inthe connected user map
      * @param socket 
      * @returns 
      */
-    deleteUser(socket : Socket) {
+    async deleteUser(socket : Socket) {
         const arrayOfUserConnected = Array.from(this.usersConnected.values());
         const indexToDelete = arrayOfUserConnected.findIndex((_socket) => socket.id === _socket.id);
         if (indexToDelete != -1) {
             const keyToDelete = Array.from(this.usersConnected.keys())[indexToDelete]
             this.usersConnected.delete(keyToDelete);
+            const games = Array.from(this.gameMap.values());
+            if (games) {
+                games.map(game => {
+                    if (keyToDelete === game?.player1.id || keyToDelete === game?.player2.id) {
+                     this.quiteGame(keyToDelete, game.id, socket, 'ONLINE');
+                    }
+                })
+            }
         }
     }
 
@@ -129,7 +188,7 @@ export class GameService {
                 client.emit('error', 'You are not allowed to play against this one');
                 return ;
             }
-            const game : GameEntity = this.getGameInitValue(senderId, receiverId, score);
+            const game : GameEntity = this.getGameInitValue(senderId, receiverId, score, false);
             this.gameMap.set(game.id, game);
             await this.prisma.gamesInvitation.create({
                 data : {
@@ -168,6 +227,7 @@ export class GameService {
                 where : { id : invitationId }
             })
             if (!invitation || !user || invitation.status !== 'PENDING' || userId !== invitation.receiverId) return ;
+            console.log("Rejecte The Game")
             const { gameId, senderId} = invitation;
             this.gameMap.delete(gameId);
             await this.prisma.gamesInvitation.update({
@@ -237,7 +297,7 @@ export class GameService {
     async joinAqueue(creatorId : string, client : Socket) {
         const maxScore = 10;
         if (this.inTheQueue == null) {
-            const game : GameEntity = this.getGameInitValue(creatorId, '', 10);
+            const game : GameEntity = this.getGameInitValue(creatorId, '', 10, true);
             this.inTheQueue = game.id;
             this.gameMap.set(game.id, game);
             client.emit("Success", {id : game.id});
@@ -269,9 +329,13 @@ export class GameService {
  * @param userId 
  * @param inThegame 
  */
-async updateUserSatusInTheGame (userId : string, inThegame : boolean) {
-    const status = inThegame ? 'INAGAME' : 'ONLINE';
+async updateUserSatusInTheGame (userId : string, status : 'ONLINE' | 'OFFLINE' | 'INAGAME') {
     try {
+        const user = await this.prisma.user.findUnique({
+            where : {
+                id : userId
+            }
+        })
         await this.prisma.user.update({
             where : {
                 id : userId
@@ -283,6 +347,7 @@ async updateUserSatusInTheGame (userId : string, inThegame : boolean) {
     }
     catch (error) {}
 }
+
 
 
 /**
@@ -316,7 +381,7 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
             {
                 game.player2.inThegame = true;
             }
-            this.updateUserSatusInTheGame(userId, true);
+            this.updateUserSatusInTheGame(userId, 'INAGAME');
             if (game.player1.inThegame && game.player2.inThegame)
             {
                 if (game.gameStatus.status !== 'pause' )
@@ -339,9 +404,27 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
      * @param gameValue 
      */
     gameLogique(gameValue : GameEntity, deltaTime : number) {
-        this.collision(gameValue)
-        gameValue.ball_x += gameValue.vx * gameValue.ball_speed;
-        gameValue.ball_y += gameValue.vy  * gameValue.ball_speed;
+        
+        // Paddle movement update
+            if (gameValue.player1.upPress) {
+                    if (gameValue.player1.paddleY + gameValue.h_paddle < gameValue.H_screen)
+                        gameValue.player1.paddleY += gameValue.playerSpeed;
+            }
+            if (gameValue.player1.downPress) {
+                if (gameValue.player1.paddleY > 0)
+                    gameValue.player1.paddleY -= gameValue.playerSpeed;
+            }   
+            if (gameValue.player2.upPress) {
+                if (gameValue.player2.paddleY + gameValue.h_paddle < gameValue.H_screen)
+                    gameValue.player2.paddleY += gameValue.playerSpeed;
+            }
+            if (gameValue.player2.downPress) {
+                if (gameValue.player2.paddleY > 0)
+                    gameValue.player2.paddleY -= gameValue.playerSpeed;
+            }
+            gameValue.ball_x += gameValue.vx * gameValue.ball_speed;
+            gameValue.ball_y += gameValue.vy  * gameValue.ball_speed;
+            this.collision(gameValue)
     }
 
     /**
@@ -371,13 +454,23 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
         const paddle2_bottom = player2.paddleY + h_paddle;
         const paddle1_top = player1.paddleY;
         const paddle2_top = player2.paddleY;
-
-        if (ball_right <= 0 || ball_right >= gameValue.W_screen)
+        
+        if (ball_left <= paddle1_surface  && ball_y >= paddle1_top && ball_y <= paddle1_bottom && gameValue.vx < 0 && ball_left  >= player1.paddleX) 
+        {
+            if (gameValue.ball_speed < this.maxSpeed) gameValue.ball_speed += this.Vitesse;
+            gameValue.vx *= -1;
+        } 
+        else if (ball_right >= paddle2_surface && ball_y >= paddle2_top && ball_y <= paddle2_bottom && gameValue.vx > 0 && ball_right  <= player2.paddleX + w_paddle)
+        {
+            if (gameValue.ball_speed < this.maxSpeed) gameValue.ball_speed += this.Vitesse;
+            gameValue.vx *= -1;
+        }
+        else if (ball_right <= 0 || ball_right >= gameValue.W_screen)
         {
             gameValue.ball_x = W_screen / 2;
             gameValue.ball_y = H_screen / 2;
             gameValue.ball_speed = 1.5;
-            if (ball_right < 0) {
+            if (ball_right <= 0) {
                 gameValue.player2.score += 1;
                 if (gameValue.player2.score === gameValue.scoreLimit)
                 {
@@ -385,7 +478,7 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
                     gameValue.winner = gameValue.player2.id;
                 }
             }
-            else if (ball_right > gameValue.W_screen) {
+            else if (ball_right >= gameValue.W_screen) {
                 gameValue.player1.score += 1;
                 if (gameValue.player1.score === gameValue.scoreLimit)
                 {
@@ -397,38 +490,14 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
         else if (ball_y - radius <= 0 || ball_y + radius >= H_screen)
         {
             gameValue.vy *= -1;
-        }
-
-        else if (ball_left <= paddle1_surface && ball_top < paddle1_bottom && ball_bottom > paddle1_top && gameValue.vx < 0) 
-        {
-            
-            if (gameValue.ball_speed < this.maxSpeed) gameValue.ball_speed += this.Vitesse;
-            if ((ball_left < paddle1_surface && ball_y > paddle1_bottom && gameValue.vy < 0) ||  (ball_left > paddle1_surface &&  ball_y < paddle1_top && gameValue.vy > 0)) {
-                // gameValue.vy *= -1;
-            }
-            else {
-                gameValue.vx *= -1;
-            }
-        } 
-        else if (ball_right >= paddle2_surface && ball_top < paddle2_bottom && ball_bottom > paddle2_top && gameValue.vx > 0)
-        {
-            const maxScore = 2;
-            if (gameValue.ball_speed < maxScore) gameValue.ball_speed += this.Vitesse;
-            if ((ball_right > paddle2_surface && ball_y > paddle2_bottom && gameValue.vy < 0) ||  (ball_right > paddle2_surface &&  ball_y < paddle2_top && gameValue.vy > 0)) {
-                // gameValue.vy *= -1;
-            }
-            else {
-                gameValue.vx *= -1;
-            }
-        }
-        
+        }  
     }
     
     /**
      * This is the loop Of the game
      * @param game 
      * @param server 
-     */
+    */
     gameLoop(game : GameEntity, server : any) {
         let lastTimestamp = performance.now();
         const id = setInterval(() => {
@@ -438,11 +507,11 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
             {
                 this.updatePaddle(game);
                 this.gameLogique(game, deltaTime);
+                server.to(game.id).emit("gameData", game);
             }
-            server.to(game.id).emit("gameData", game);
             this.istheGameEnd(game, id, server);
             lastTimestamp = currentTimestamp;
-        }, 16);
+        }, 1000/50);
     }
 
     /**
@@ -451,19 +520,16 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
      * @param playerId 
      * @param client 
      */
-    ArrowUp(gameId : String, playerId : String, client : any) {
+    paddleMoveUp(gameId : String, playerId : String, client : any) {
         const game : GameEntity = this.getGame(playerId, gameId, client);
         if (game && game.gameStatus.status === 'started') {
             if (playerId === game.player1.id) {
-                if (game.player1.paddleY > 0)
-                    game.player1.paddleY -= game.playerSpeed;
-                this.gameMap.set(gameId, game);
+                game.player1.upPress = true;
             }
-            else if (playerId === game.player2.id) {
-                if (game.player2.paddleY > 0)
-                    game.player2.paddleY -= game.playerSpeed;
-                this.gameMap.set(gameId, game);
+            if (playerId === game.player2.id) {
+                game.player2.upPress = true;
             }
+            this.gameMap.set(gameId, game);
         }
     }
 
@@ -473,20 +539,33 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
      * @param playerId 
      * @param client 
      */    
-    ArrowDown(gameId : String, playerId : String, client : any) {
+    paddleMoveDown(gameId : String, playerId : String, client : any) {
         const game : GameEntity = this.getGame(playerId, gameId, client);
         if (game && game.gameStatus.status === 'started') {
             if (playerId === game.player1.id) {
-                if (game.player1.paddleY + game.h_paddle < game.H_screen)
-                game.player1.paddleY += game.playerSpeed;
-                this.gameMap.set(gameId, game)   
+                game.player1.downPress = true;
             }
             if (playerId === game.player2.id) {
-                if (game.player2.paddleY + game.h_paddle < game.H_screen)
-                game.player2.paddleY += game.playerSpeed;
-                this.gameMap.set(gameId, game)
+                game.player2.downPress = true;
             }
         }
+        this.gameMap.set(gameId, game);
+    }
+
+
+    paddleStopMove(gameId : String, playerId : String, client : any) {
+        const game : GameEntity = this.getGame(playerId, gameId, client);
+        if (game && game.gameStatus.status === 'started') {
+            if (playerId === game.player1.id) {
+                game.player1.downPress = false;
+                game.player1.upPress = false;
+            }
+            if (playerId === game.player2.id) {
+                game.player2.downPress = false;
+                game.player2.upPress = false;
+            }
+        }
+        this.gameMap.set(gameId, game);
     }
 
     /**
@@ -524,7 +603,7 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
      * @param player2Id 
      * @returns 
      */
-    getGameInitValue(player1Id : String, player2Id : String, maxScore : number) : GameEntity {
+    getGameInitValue(player1Id : String, player2Id : String, maxScore : number, randomPlayer : boolean) : GameEntity {
         const _id = uuidv4();
         const newGameValue : GameEntity =  {
             id : _id,
@@ -538,27 +617,32 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
             player1 : {
                 id : player1Id,
                 inThegame : false,
-                paddleX : 5,
+                paddleX : 0,
                 paddleY : 0,
-                score : 0
+                score : 0,
+                downPress : false,
+                upPress : false
             },
             player2 : {
                 id : player2Id,
                 inThegame : false,
-                paddleX : 235,
+                paddleX : 240,
                 paddleY : 80,
-                score : 0
+                score : 0,
+                downPress : false,
+                upPress : false
             },
             w_paddle : 10,
             h_paddle : 20,
-            playerSpeed : 8,
+            playerSpeed : 2,
             scoreLimit : maxScore,
             ball_speed : 1.5,
             gameStatus  : {
                 update_t : new Date().getTime(),
                 status : 'waiting'
             },
-            winner : null
+            winner : null,
+            randomPlayer : randomPlayer
         }
         return newGameValue;
     }
@@ -640,24 +724,6 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
     }
 
     /**
-     * Check if the waiting time is finished
-     * 
-     */
-    checkTimeToEnd(updateTime : number, maxTimeInsecond : number, game : GameEntity) {
-       const time = updateTime + (maxTimeInsecond * 1000);
-       const current = new Date();
-       if (current.getTime() >= time)
-       {
-            game.gameStatus.status = 'finished';
-            if (game.player1.score >  game.player2.score)
-                game.winner = game.player1.id;
-            else if (game.player1.score <  game.player2.score)
-                game.winner = game.player2.id;
-            this.gameMap.set(game.id, game);
-       }
-    }
-
-    /**
      * Check if the game is finished
      * @param game 
      * @param intervalId 
@@ -665,15 +731,12 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
      */
     istheGameEnd(game : GameEntity, intervalId, server : any) {
         const { gameStatus } = game;
-        if (gameStatus.status === 'stopped')
-        {
-            this.checkTimeToEnd(game.gameStatus.update_t, 30, game);
-        } 
         if (gameStatus.status === 'finished')
         {
-            if (game.player1.inThegame) this.updateUserSatusInTheGame(game.player1.id as string, false);
-            if (game.player2.inThegame) this.updateUserSatusInTheGame(game.player2.id as string, false);
+            if (game.player1.inThegame) this.updateUserSatusInTheGame(game.player1.id as string, 'ONLINE');
+            if (game.player2.inThegame) this.updateUserSatusInTheGame(game.player2.id as string, 'ONLINE');
             server.to(game.id).emit('gameSate', {state : game.gameStatus.status});
+            server.to(game.id).emit('gameData', game);
             if (game.winner)
             {
                 const loserId : String = game.winner === game.player1.id ? game.player2.id : game.player1.id;
@@ -708,8 +771,8 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
      * @param gameId 
      * @param client 
      */
-
-    async quiteGame(playerId : String, gameId : String, client : any) {
+    async quiteGame(playerId : String, gameId : String, client : Socket, status : 'ONLINE' | 'OFFLINE' | 'INAGAME' ) {
+        
         const game : GameEntity = this.getGame(playerId, gameId, client);
         if (game) {
             if (game.id === this.inTheQueue)
@@ -720,16 +783,29 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
             else
             {
                 if (playerId === game.player1.id)
-                    game.player1.inThegame = false;
-                else
-                    game.player2.inThegame = false;
-                if (game.gameStatus.status !== 'waiting')
                 {
-                    game.gameStatus.status = 'stopped';
-                    game.gameStatus.update_t = new Date().getTime();
-                    this.gameMap.set(gameId, game);
+                    game.player1.inThegame = false;
+                    game.player2.score = 3;
+                    game.player1.score = 0;
+                    game.winner = game.player2.id
+
                 }
+                else
+                {
+                    game.player2.inThegame = false;
+                    game.winner = game.player1.id
+                    game.player1.score = 3;
+                    game.player2.score = 0;
+                }
+                if (game.gameStatus.status !== 'waiting')
+                    game.gameStatus.status = 'finished';
                 else {
+                    const gameInvitation = await this.prisma.gamesInvitation.findUnique({   
+                        where : {
+                            gameId : gameId as string
+                        },  
+                    });
+                    if (!gameInvitation || gameInvitation.senderId != playerId) return;
                     await this.prisma.gamesInvitation.update({
                         where : {
                             gameId : gameId as string
@@ -738,11 +814,16 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
                             status : 'CANCELED'
                         }
                     });
+                    const receiverSocket = this.usersConnected.get(gameInvitation.receiverId)
+                    if (receiverSocket) {
+                        receiverSocket.emit('gameInvitation');
+                    }
                     this.gameMap.delete(gameId);
                 }
             }
-            this.updateUserSatusInTheGame(playerId as string, false);
-            client.leave(gameId);
+            this.gameMap.set(gameId, game);
+            this.updateUserSatusInTheGame(playerId as string, status);
+            client?.leave(gameId as string);
         }
     }
 }

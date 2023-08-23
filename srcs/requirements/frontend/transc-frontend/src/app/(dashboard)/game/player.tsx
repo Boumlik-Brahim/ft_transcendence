@@ -17,6 +17,21 @@ interface Props {
 const Player = ({playerId, inputValue, setInputValue, waiting} : Props) => {
 
     const [user, setUser] = useState<any>();
+    const [level, setLevel] = useState<number>(0)
+
+     const utcDateString = user?.created_at
+     const getUserSat = async () => {
+        try {
+
+            const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${playerId}/userStat`);
+             if (response.ok) {
+                const data = await response.json();
+                setLevel(data.rate);
+             }
+        }
+        catch (error) {  console.log(error) }
+
+     }
 
     useEffect(() => {
         if (playerId)
@@ -26,6 +41,8 @@ const Player = ({playerId, inputValue, setInputValue, waiting} : Props) => {
             .then((user) => {
                 setUser(user)
             })
+            getUserSat()
+
         }
     }, [playerId])
 
@@ -52,8 +69,14 @@ const Player = ({playerId, inputValue, setInputValue, waiting} : Props) => {
                     <div className=' flex w-full flex-col mr-auto ml-auto gap-y-1'>
                         <h1 className='text-center uppercase text-[15px] font-bold mb-2'>{user.name}</h1>
                         <div className='flex items-center justify-between '> 
-                            <p className='text-[9px]  text-primary uppercase'>{user.created_at}</p>
-                            <p> <span className=' bg-primary text-[9px] text-white p-[0.4rem] rounded ml-1'>Levl</span> {`4`} </p>
+                            <p className="font-normal text-primary text-xs md:text-lg hidden xs:block"> 
+                            {new Date(user.created_at)
+                            .toDateString()
+                            .split(" ")
+                            .slice(1)
+                            .join(" ")}
+                        </p>
+                            <p> <span className=' bg-primary text-[9px] text-white p-[0.4rem] rounded ml-1'>Levl</span> {`${level}`} </p>
                         </div>
                     </div> 
                     ) 

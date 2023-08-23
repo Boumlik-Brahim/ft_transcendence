@@ -43,13 +43,13 @@ export default function History({ userId, userSessionId }: Props) {
 
     return (
     <>
-      <div className="wrapper">
+      <div className="wrapper px-[30px] mb-[5rem]">
         <p className="title">History</p>
         {opponents && (opponents.length > 0) ? (
-          <ul className="flex flex-col w-full gap-[20px]">
+          <ul className="flex flex-col w-full gap-[20px]  h-[600px] overflow-scroll overflow-x-hidden no-scrollbar">
             {opponents.map((H, index) => (
-              <li key={index} className={`history ${(H.playerA_Score < H.playerB_Score) ? "lose_match" : 
-              (H.playerA_Score > H.playerB_Score) ? "win_match" : "draw_match" }`}>
+              <li key={index} className={`history min-h-[100px] ${(H.playerA_Score < H.playerB_Score) ? "lose_match" : 
+              (H.playerA_Score > H.playerB_Score) ? "win_match" : "draw_match" }`} >
                 <div className="flex items-center justify-between gap-[10px] xs:w-[70px] w-[30px]">
                   <Image
                     src={opponents[index].playerA_Avatar}
