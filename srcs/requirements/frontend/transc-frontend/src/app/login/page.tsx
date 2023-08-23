@@ -3,25 +3,26 @@ import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import axios from 'axios';
-import { useRouter } from 'next/navigation';
 import  Cookies  from 'universal-cookie';
 import { useMediaQuery } from 'react-responsive';
-import TwoFa from '../(dashboard)/twofa/page';
 import TwoFaForm from '../../../components/TwoFaForm';
 
 
 export default function page()  {
-  const router = useRouter()
+  
   const [twoFa, setTwoFa] = useState(false);
+  const [isLgScreenState, setIsLgScreen] = useState(false);
 
+  const isLgScreen = useMediaQuery({ minWidth: 1200 });
   const cookies = new Cookies();
   const userId = cookies.get('id');
+  let showLogin = "";
+  twoFa ? showLogin = "hidden" : showLogin = "";
 
   useEffect(() => {
     async function checkTwoFa() {
       try{
         if (userId !== undefined) {
-          console.log("we will fetch now ********", userId);
           const res = await axios.get(`http://localhost:3000/users/${userId}`);
           if (res.data.isTwoFactorEnabled)
             setTwoFa(true);
@@ -33,13 +34,8 @@ export default function page()  {
     }
     checkTwoFa();
   },[])
-  let showLogin = "";
-  twoFa ? showLogin = "hidden" : showLogin = "";
   //^ ---------------------------  screen sizes states ----------------------------
-  const isLgScreen = useMediaQuery({ minWidth: 1200 });
 
-  const [isLgScreenState, setIsLgScreen] = useState(false);
-  //* useEffect for screen sizes state
   useEffect(() => {
     setIsLgScreen(isLgScreen);
   }, [isLgScreen]);
@@ -74,19 +70,24 @@ export default function page()  {
           <div>
             {
               isLgScreenState && (showLogin == "" ? (
-                <Link 
-                   href="http://localhost:3000/auth"
-                   className='py-3.5 px-4 border rounded-lg border-gray-700 w-full mt-4 flex justify-start items-center bg-white'
-                 >
-                   <Image
-                     src={"../42Logo.svg"}
-                     width={30}
-                     height={30}
-                     alt=""
-                     className="md:w-[40px] md:h-[40px]"
-                   /> 
-                   <p className="text-base font-medium ml-4 text-gray-700">Continue with 42</p>
-                 </Link>
+                <div
+                    className={`
+                        w-[200px] h-[50px] font-press text-[12px] rounded-full text-[#3E3B6A] bg-white flex items-center justify-between p-4
+                        md:w-[300px] md:h-[70px] hover:shadow-2xl hover:border-4 border-primary`}
+                    >
+                    <Link 
+                      href="http://localhost:3000/auth"
+                      >
+                        <p className='md:text-[20px]'>Login With</p>
+                    </Link>
+                    <Image
+                      src={"../42Logo.svg"}
+                      width={30}
+                      height={30}
+                      alt=""
+                      className="md:w-[40px] md:h-[40px]"
+                    />
+                  </div>
               ) : (
                   <div >
                     {twoFa && <TwoFaForm userId={userId}/>}
@@ -101,28 +102,27 @@ export default function page()  {
             width={400}
             height={400}
             alt=""
-            className=" h-[100vh] md:w-[700px] md:h-[700px] lg:w-[900px] lg:h-[900px]"
+            className=" h-[60vh] md:w-[700px] md:h-[700px] lg:w-[900px] lg:h-[900px]"
           />
         </div>
         <div
           className={`
-              ${showLogin} flex items-center justify-between p-4
-                md:w-[300px] md:h-[70px]
+              ${showLogin} w-[200px] h-[50px] font-press text-[12px] rounded-full text-[#3E3B6A] bg-white flex items-center justify-between p-4
+                md:w-[300px] md:h-[70px] hover:shadow-2xl hover:border-4 border-primary
                 lg:hidden`}
         >
           <Link 
-             href="http://localhost:3000/auth"
-             className='py-3.5 px-4 border rounded-lg border-gray-700 w-full mt-4 flex justify-start items-center bg-white'
-           >
-             <Image
-               src={"../42Logo.svg"}
-               width={30}
-               height={30}
-               alt=""
-               className="md:w-[40px] md:h-[40px]"
-             /> 
-             <p className="text-base font-medium ml-4 text-gray-700">Continue with 42</p>
-           </Link>
+            href="http://localhost:3000/auth"
+            >
+              <p className='md:text-[20px]'>Login With</p>
+          </Link>
+          <Image
+            src={"../42Logo.svg"}
+            width={30}
+            height={30}
+            alt=""
+            className="md:w-[40px] md:h-[40px]"
+          />
         </div>
         <div >
           {twoFa && 
