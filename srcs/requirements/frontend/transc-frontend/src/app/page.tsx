@@ -1,5 +1,4 @@
 'use client'
-import React, { useState } from "react";
 import Link from "next/link";
 import InfoBox from "../../components/Features";
 import Member from "../../components/Member";
@@ -13,7 +12,6 @@ export default function Page() {
       <section className="w-full h-[80vh] bg-[#e4e3e4]">
         <div className="w-full h-[100%]">
           <div className="w-full h-[100%] flex justify-center relative">
-            {/* <div className=" h-[80vh] w-[2px] border-[6px] border-dashed absolute z-19"></div> */}
             <div
               className="
               w-full h-[40px] flex items-center justify-between pt-20 p-10 z-20
@@ -27,7 +25,7 @@ export default function Page() {
                   className="w-[67px] h-[67px] md:w-[110px] md:h-[110px]"
                 />
                 <div className="
-                    w-[101px] h-[39px] font-press text-[10px] rounded-full text-[#3E3B6A flex items-center justify-center hover:bg-white transition duration-500
+                    w-[101px] h-[39px] font-press text-[10px] rounded-full text-[#3E3B6A flex items-center justify-center hover:bg-white  hover:shadow-2xl hover:border-4 border-primary transition duration-500
                     md:w-[150px] md:h-[70px] md:text-[18px]"
                   >
                   <Link href="/login" className="text-primary">
@@ -127,8 +125,8 @@ export default function Page() {
             <Member
               img="https://cdn.intra.42.fr/users/c43987424ac026f4092df16bb34bb273/iomayr.jpg"
               name="Breezy"
-              job="Full Stack"
-              paragraph="Lorem Ipsum is simply dummy text of the printing and typesetting industry."
+              job="Full Stack dev"
+              paragraph="Full stack developer passionate about crafting digital experiences."
               intraUrl="https://profile.intra.42.fr/users/iomayr"
               gitUrl="https://github.com/B-omayr"
             />
@@ -137,44 +135,43 @@ export default function Page() {
             <Member
               img="https://cdn.intra.42.fr/users/d9e99ac9bf273b2bf83540ce41fa4e78/bbrahim.jpg"
               name="Boumlik"
-              job="string"
+              job="backend dev"
               paragraph="Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-              intraUrl="string"
-              gitUrl="string"
+              intraUrl="https://profile.intra.42.fr/users/bbrahim"
+              gitUrl="https://github.com/Boumlik-Brahim"
             />
           </div>
           <div className=" transition duration-1000 ease-in-out">
             <Member
               img="	https://cdn.intra.42.fr/users/80f6d7da34053a4b0dc35e36a3c69ac6/bben-aou.jpg"
               name="Bilal"
-              job="string"
+              job="Frontend dev"
               paragraph="Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-              intraUrl="string"
-              gitUrl="string"
+              intraUrl="https://profile.intra.42.fr/users/bben-aou"
+              gitUrl="https://github.com/bben-aou"
             />
           </div>
           <div className=" transition duration-1000 ease-in-out">
             <Member
               img="	https://cdn.intra.42.fr/users/6c549ac71a92c1df2238e5fbbe2411a8/foulare.jpg"
               name="Foulare"
-              job="string"
+              job="Full Stack dev"
               paragraph="Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-              intraUrl="string"
-              gitUrl="string"
+              intraUrl="https://profile.intra.42.fr/users/foulare"
+              gitUrl="https://github.com/oularefodos"
             />
           </div>
           <div className=" transition duration-1000 ease-in-out">
             <Member
               img="	https://cdn.intra.42.fr/users/706e0da16cd5d7b5724479492876f661/obelkhad.jpg"
               name="OUssama"
-              job="string"
+              job="Full Stack dev"
               paragraph="Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-              intraUrl="string"
-              gitUrl="string"
+              intraUrl="https://profile.intra.42.fr/users/obelkhad"
+              gitUrl="https://github.com/osamabel"
             />
           </div>
           <div className="h-[100px] w-full">
-
           </div>
         </div>
       </section>
@@ -213,75 +210,3 @@ export default function Page() {
     </>
   );
 }
-
-// const LoginButton = () => {
-
-//   // const e = cookie.get('id');
-//   // console.log(e);
-
-//   // const [loginStatus, setLoginStatus] = useState<boolean | undefined>(undefined);
-
-//   // const handleLoginClick = async () => {
-//   //   try {
-//   //     const response = await fetch('http://localhost:3000/auth', {
-//   //       method: 'GET',
-//   //     });
-
-//   //     setLoginStatus(true);
-//   //   }
-//   //   catch (error) {
-//   //     console.error('Error during login:', error);
-//   //     setLoginStatus(false);
-//   //   }
-//   // };
-//   // return (
-//   //   <div>
-//   //   {/* {loginStatus === undefined ? ( */}
-//   //     <Link href="http://localhost:3000/auth">LoG In</Link>
-//   //     {/* // <button className="border-8 rounded" onClick={handleLoginClick}>
-//   //     //   Log In
-//   //     // </button> */}
-//   //   {/* // ) : loginStatus ? (
-//   //   //   <p>Login successful!</p>
-//   //   // ) : (
-//   //   //   <p>Login failed. Please try again.</p>
-//   //   // )} */}
-//   // </div>
-//   // )
-// }
-
-// export default LoginButton
-
-      // <section className="w-full h-[80vh]">
-      //   <div className="w-full h-[80vh] bg-channel-100">
-      //     <div className="w-full h-[100%] relative">
-      //       <div className="z-15 w-[100%] h-[20%]  font-press text-[15px] text-center z-10 pt-[50%] text-[#3E3B6A]">
-      //         <h1>WELCOME TO THE MOST IMPRESSIVE TRANSCENDANCE IN THE WORLD</h1>
-      //       </div>
-      //     </div>
-      //       <div className="w-full flex justify-center items-center ">
-      //         <div className=" h-[80vh] w-[2px] border-[6px] border-dashed  flex items-center"></div>
-      //       </div>
-      //   </div>
-      //   {/* <div className="w-ful h-[100%] bg-gray-300 flex items-center justify-center relative">
-      //     <div className=" h-[100%] w-[2px] border-[6px] border-dashed absolute "></div>
-      //     <div className="w-full h-[20%] bg-orange-500">div1</div> 
-      //       <div className="w-full flex flex-col ">
-      //       <div className="w-full flex items-center justify-between pt-20 p-10">
-      //         <Image src={"/logo_b.svg"} alt="logo" width={67} height={67} />
-      //         <Link
-      //           href=""
-      //           className="w-[101px] h-[39px] font-press text-[10px] rounded-full p-4 text-[#3E3B6A] bg-white flex items-center justify-center"
-      //         >
-      //           Log In
-      //         </Link>
-      //       </div>
-            // <div className="w-full h-[88px] flex items-center justify-center">
-            //   <h1 className="block w-[100%] h-[20%]  font-press text-[15px] text-center z-10 text-[#3E3B6A]">
-            //     WELCOME TO THE MOST IMPRESSIVE TRANSCENDANCE IN THE WORLD
-            //   </h1>
-              
-            // </div>
-      //     </div> 
-      //   </div> */}
-      // </section>
