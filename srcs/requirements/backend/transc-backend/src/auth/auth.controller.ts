@@ -35,15 +35,6 @@ export class AuthController {
             console.log(e);
         }
     }
-    
-    // @Post('logout')
-    // logout(@Body() data: { accessToken: string }, @Res() res: any, @Req() req: any) {
-    //     // const cookies = req.cookies;
-    //     console.log(req);
-    //     res.clearCookie('id').send({ status: 'ok' });;
-    //     // console.log(this.tokenBlacklistService.isBlacklisted(accessToken),  "isBlackListed?");
-    //     // this.tokenBlacklistService.addToBlacklist(accessToken);
-    // }
 
     @Post('2fa/generate')
     async register(@Query('userId') userId: string, @Res() res: any) {
@@ -60,6 +51,7 @@ export class AuthController {
                 throw new UnauthorizedException('Wrong authentication code');
             }
             await this.authService.turnOnTwoFactorAuthentication(userAuthentified.id);
+            res.status(200).json({ message: 'Two-factor authentication turned on successfully' });
     }
     
     @Post('2fa/authenticate')
