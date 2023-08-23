@@ -75,7 +75,7 @@ function Page({ params }: any) {
         setMessages(response.data);
 
       } catch (error) {
-        console.error(error);
+        // console.error(error);
       }
     }
     fetchMessages();
@@ -213,7 +213,7 @@ function Page({ params }: any) {
     useEffect(() => {
         async function fetchMemberStatus() {
             try {
-                const response = await axios.get(`http://localhost:3000/channel/${params.channel}/memberStatus/${userIdFromCookie}`);
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_APP_URI}:3000/channel/${params.channel}/memberStatus/${userIdFromCookie}`);
                 console.log(response);
                 response && setChannelMemberStatus(response.data);
                 response && console.log("=========/ ",response.data,"/========= ");

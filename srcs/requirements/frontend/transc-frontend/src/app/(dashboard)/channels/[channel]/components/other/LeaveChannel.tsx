@@ -47,7 +47,7 @@ function LeaveChannel({ channelId, userId, isOwner }: leaveChannelProps) {
   useEffect(() => {
     async function fetchPrivateChannel() {
       try {
-        const response = await axios.get<channel>(`http://localhost:3000/channel/${channelId}`);
+        const response = await axios.get<channel>(`${process.env.NEXT_PUBLIC_APP_URI}:3000/channel/${channelId}`);
         response && setChannelInfo(response.data);
         response && setChannelType(response.data.channelType);
 

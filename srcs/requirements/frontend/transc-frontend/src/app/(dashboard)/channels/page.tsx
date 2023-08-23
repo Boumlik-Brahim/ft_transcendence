@@ -30,6 +30,8 @@ import Friendsbar from "../../../../components/Friendsbar";
 import Notification from "../../../../components/Notification";
 
 function Page() {
+
+
     const channels = channelsData.map((channel: channelProps) => {
         return (
             <ChannelBoxInfo
@@ -64,33 +66,16 @@ const cookies = new Cookies();
 //     socket.current = io("ws://localhost:3000");
 //   }, [])
 //^ ----------------------------------------------------------------------------------------
-  /* --------------------------- get userSession ID --------------------------- */
-  const [userSession, setUserSession] = useState<string>("");
-  useEffect(() => {
-    const cookies = new Cookies();
-    setUserSession(cookies.get("id"));
-  }, []);
-  /* ------------------------------------ - ----------------------------------- */
 
 
     return (
         <>
             <Sidebar />
-            <div className="layouts">
-                <div className="my_container">
-                <div className="wrapper relative">
-                <h1 className="text-primary text-xl font-press font-normal uppercase self-start">
-                  Channels
-                </h1>
-                <div className="md:block absolute right-[0px] top-[0px] hidden">
-                  <Notification
-                    userId={userSession}
-                    userSession={userSession}
-                  />
-                 </div>
-              </div>
 
             <div className="w-full h-[85vh]  md:h-screen flex flex-col ">
+               
+                         
+                     
                 {/*------------------------------------------------- create channel page for small devices ------------------------------------------------------------------ */}
 
                 {(!isLgScreenState) && <CreateChannel />}
@@ -100,16 +85,15 @@ const cookies = new Cookies();
                 />
 
                 {isLgScreenState && <CreateChannelLg />}
+    
 
             </div>
 
 
 
-                </div>
-                    {/*--------------------------------------------------------- side friend list------------------------------------------------------------------------------- */}
-                    {   <Friendsbar userId={userIdFromCookie} userSessionId={userIdFromCookie} />}
-                    {/*---------------------------------------------------------------------------------------------------------------------------------------------------------- */}
-            </div>
+            {/*--------------------------------------------------------- side friend list------------------------------------------------------------------------------- */}
+            {(isLgScreenState) && (<Friendsbar  userId={userIdFromCookie} userSessionId={userIdFromCookie} />)}
+            {/*---------------------------------------------------------------------------------------------------------------------------------------------------------- */}
         </>
     )
 }

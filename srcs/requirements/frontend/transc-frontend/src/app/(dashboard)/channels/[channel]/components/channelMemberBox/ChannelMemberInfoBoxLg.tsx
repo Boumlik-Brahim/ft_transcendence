@@ -66,7 +66,7 @@ function ChannelMemberInfoBoxLg({ channelId }: { channelId: string }) {
     useEffect(() => {
         async function fetchMembers() {
             try {
-                const response = await axios.get<channelMembers[]>(`http://localhost:3000/channel/${channelId}/member`);
+                const response = await axios.get<channelMembers[]>(`${process.env.NEXT_PUBLIC_APP_URI}:3000/channel/${channelId}/member`);
                 setChannelMembers(response.data);
             } catch (error) {
                 alert(error);
@@ -79,7 +79,7 @@ function ChannelMemberInfoBoxLg({ channelId }: { channelId: string }) {
     useEffect(() => {
         const fetchMemberData = async (userId: string) => {
             try {
-                const response = await axios.get<MemberData>(`http://localhost:3000/users/${userId}`);
+                const response = await axios.get<MemberData>(`${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${userId}`);
                 const memberDataTemp: MemberData = response.data;
                 setMemberData((prevData) => [...prevData, memberDataTemp]);
             } catch (error) {

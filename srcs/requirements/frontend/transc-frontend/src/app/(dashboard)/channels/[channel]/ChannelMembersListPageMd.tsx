@@ -70,7 +70,7 @@ function ChannelMembersListPage({ channelId }: { channelId: string }) {
     useEffect(() => {
         async function fetchPrivateChannel() {
             try {
-                const response = await axios.get<channel>(`http://localhost:3000/channel/${channelId}`);
+                const response = await axios.get<channel>(`${process.env.NEXT_PUBLIC_APP_URI}:3000/channel/${channelId}`);
                 console.log(response);
                 response && setChannelData(response.data);
                 response && setChannelType(response.data.channelType);
@@ -84,7 +84,7 @@ function ChannelMembersListPage({ channelId }: { channelId: string }) {
 
         async function fetchChannelInfo() {
             try {
-                const response = await axios.get<channelInfo>(`http://localhost:3000/channel/${channelId}/member/${userIdFromCookie}`);
+                const response = await axios.get<channelInfo>(`${process.env.NEXT_PUBLIC_APP_URI}:3000/channel/${channelId}/member/${userIdFromCookie}`);
                 response && setChannelInfo(response.data);
             } catch (error) {
                 alert(error);

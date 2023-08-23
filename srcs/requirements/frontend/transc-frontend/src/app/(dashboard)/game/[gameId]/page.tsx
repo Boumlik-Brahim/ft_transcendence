@@ -110,7 +110,6 @@ const Page = ( {params} : any) => {
         });
 
         socket.on('Success', data => {
-            console.log(data);
             const { id } = data;
             router.push(`/game/${id}`)
         });
@@ -129,9 +128,6 @@ const Page = ( {params} : any) => {
             }
         }, [socket]);
 
-
-
-        console.log(gameSate, gameData);
         return (
             <>
             

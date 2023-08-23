@@ -18,6 +18,8 @@ type Props = {
 
 //& -----chat part --------
 
+import { RootState } from "@/app/store/store";
+import { useSelector } from "react-redux";
 
 import { redirect, useRouter } from 'next/navigation'
 
@@ -32,6 +34,9 @@ import { socketChat } from "./FriendAction";
 
 function Friendsbar({ userId, userSessionId }: Props) {
 
+  const isCreateChannelPopUpOn = useSelector(
+    (state: RootState) => state.createChannelPopUpToggle
+  );
 
 
 
@@ -119,7 +124,7 @@ function Friendsbar({ userId, userSessionId }: Props) {
   /* ------------------------------------ - ----------------------------------- */
 
   return (
-    <div className="friend">
+    <div className={`${`${ isCreateChannelPopUpOn.createChannelPopUpToggled ? "blur-sm bg-gray-400" : ""} friend`}`}>
       <div className="w-[70%] flex flex-col gap-[50px]">
         <h1 className="text-white text-2xl font-bold place-self-start">
           Online Friend

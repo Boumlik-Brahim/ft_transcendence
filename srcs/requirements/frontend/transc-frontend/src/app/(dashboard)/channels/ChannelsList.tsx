@@ -208,17 +208,16 @@ function ChannelsList() {
 
       <div className={`${(!isCreateChannelOn.createChannelBtnToggled) ? "flex-1  w-full h-full " : "hidden"} ${isCreateChannelPopUpOn.createChannelPopUpToggled ? "blur-sm " : ""} `}>
         {
-          isLgScreenState && <>
-            <div className="w-full h-[30vh] bg-white flex flex-col items-center justify-between px-[7%]">
-              <div className="w-full h-[50%] flex items-center justify-between">
-                {/* <h1 className="text-primary text-xl font-press font-normal uppercase">
+          isLgScreenState &&
+          <>
+            <div className="w-full h-[30vh] bg-white flex flex-col items-center justify-between px-[7%] ">
+              <div className="w-full h-[50%] flex items-center justify-between relative">
+                <h1 className="text-primary text-xl font-press font-normal uppercase">
                   Channels
-                </h1> */}
-                {/* <Image src={"/notification_b.svg"} alt="search" width={24} height={24} /> */}
-
-
-
-             
+                </h1>
+                <div className="md:block absolute right-[0px] hidden">
+                <Notification userId={currentUserId} userSession={currentUserId} />
+              </div>
 
               </div>
               <div className="w-full h-[50%] flex items-center" >
@@ -249,6 +248,7 @@ function ChannelsList() {
               </div>
             </div>
           </>
+
         }
         <div className={`${isLgScreenState ? "w-full h-[70vh]  " : "w-full h-[90%]"}`}>
           <div className="w-full h-1/2  px-[22px] ">

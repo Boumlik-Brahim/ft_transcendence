@@ -102,7 +102,7 @@ function MessageBox({ userId, messageContent, date }: Props) {
 
     return (
         <div className={`flex flex-col ${position} mb-[28px] pr-[13px]`} >
-            <div className='relative  w-[280px]  min-h-[30px] md:w-[300px] lg:w-[340px] '>
+            <div className='relative  w-[280px]  min-h-[30px] md:w-[300px] lg:w-[360px] '>
                 <Link href={`/profile/${userId}`}>
                 
                 <Image src={`${userName ? userName?.Avatar : "https://cdn.pixabay.com/photo/2017/07/03/09/54/dog-2467149_1280.jpg"}`} width={40} height={40} alt="avatar" className="absolute  w-[40px] h-[40px] rounded-full md:w-[43] md:h-[43]" />
@@ -121,8 +121,8 @@ function MessageBox({ userId, messageContent, date }: Props) {
                         </div>
                     </div>
                 </div>
-                <div className={`${bg_color} ml-[20px] py-[16px] px-[27px]  rounded-md `}>
-                    <p className=' font-poppins text-[10px] text-primary-500 font-medium leading-4 tracking-[0.1px] md:text-[11px]  md:font-medium'>
+                <div className={`${bg_color}  ml-[20px] py-[16px] px-[27px]  rounded-md  `}>
+                    <p className='font-poppins text-[10px] text-primary-500 font-medium leading-4 tracking-[0.1px] md:text-[11px]  md:font-medium '>
                         { messageContent}
                     </p>
                 </div>

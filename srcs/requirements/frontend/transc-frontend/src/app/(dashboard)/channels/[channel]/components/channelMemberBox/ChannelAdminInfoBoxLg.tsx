@@ -65,7 +65,7 @@ function ChannelAdminInfoBoxLg({ channelId }: { channelId: string }) {
     useEffect(() => {
         async function fetchAdmins() {
             try {
-                const response = await axios.get<channelAdmins[]>(`http://localhost:3000/channel/${channelId}/admin`);
+                const response = await axios.get<channelAdmins[]>(`${process.env.NEXT_PUBLIC_APP_URI}:3000/channel/${channelId}/admin`);
                 setChannelAdmins(response.data);
             } catch (error) {
                 alert(error);
@@ -78,7 +78,7 @@ function ChannelAdminInfoBoxLg({ channelId }: { channelId: string }) {
     useEffect(() => {
         const fetchAdminData = async (userId: string) => {
             try {
-                const response = await axios.get<AdminData>(`http://localhost:3000/users/${userId}`);
+                const response = await axios.get<AdminData>(`${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${userId}`);
                 const adminData: AdminData = response.data;
                 setAdminData((prevData) => [...prevData, adminData]);
             } catch (error) {

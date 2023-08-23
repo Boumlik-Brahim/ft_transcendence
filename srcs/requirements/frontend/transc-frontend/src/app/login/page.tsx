@@ -76,7 +76,7 @@ export default function page()  {
                         md:w-[300px] md:h-[70px] hover:shadow-2xl hover:border-4 border-primary`}
                     >
                     <Link 
-                      href="http://localhost:3000/auth"
+                      href={`${process.env.NEXT_PUBLIC_APP_URI}:3000/auth`}
                       >
                         <p className='md:text-[20px]'>Login With</p>
                     </Link>
@@ -112,7 +112,7 @@ export default function page()  {
                 lg:hidden`}
         >
           <Link 
-            href="http://localhost:3000/auth"
+            href={`${process.env.NEXT_PUBLIC_APP_URI}:3000/auth`}
             >
               <p className='md:text-[20px]'>Login With</p>
           </Link>

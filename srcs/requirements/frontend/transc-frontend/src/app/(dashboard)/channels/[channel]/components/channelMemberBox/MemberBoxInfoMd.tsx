@@ -40,7 +40,7 @@ function MemberBoxInfoMd({ userId, channelId, userName, profilePic }: { userId: 
     useEffect(() => {
         async function fetchChannelInfo() {
             try {
-                const response = await axios.get<channelInfo>(`http://localhost:3000/channel/${channelId}/member/${userIdFromCookie}`);
+                const response = await axios.get<channelInfo>(`${process.env.NEXT_PUBLIC_APP_URI}:3000/channel/${channelId}/member/${userIdFromCookie}`);
                 response && setChannelInfo(response.data);
                 (userIdFromCookie === response.data.userId && response.data.role === "OWNER") ? setIsOwner(true) : setIsOwner(false);
             } catch (error) {
@@ -51,7 +51,7 @@ function MemberBoxInfoMd({ userId, channelId, userName, profilePic }: { userId: 
 
         async function fetchMemberStatus() {
             try {
-                const response = await axios.get(`http://localhost:3000/channel/${channelId}/memberStatus/${userId}`);
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_APP_URI}:3000/channel/${channelId}/memberStatus/${userId}`);
                 console.log(response);
                 response && setChannelMemberStatus(response.data);
             } catch (error) {
