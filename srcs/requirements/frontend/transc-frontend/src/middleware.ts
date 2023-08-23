@@ -19,7 +19,7 @@ export const config = {
   matcher: [
     '/leaderboard',
     '/setting',
-    '/twofa',
+    '/TwoFa',
     '/login',
     '/channels/:path*',
     '/achievements',

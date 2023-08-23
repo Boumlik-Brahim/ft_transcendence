@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { Achievement, BlockedUser, Friend, GamesHistories, User, UserStat } from '@prisma/client';
+import { Achievement, BlockedUser, Friend, GamesHistories, Prisma, User, UserStat } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';

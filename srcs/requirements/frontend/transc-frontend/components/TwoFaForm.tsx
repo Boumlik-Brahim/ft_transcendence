@@ -24,7 +24,7 @@ export default function TwoFaForm({userId}: Props) {
     
   useEffect(() => {
     if (shouldNavigate)
-      router.push(`http://localhost:5173/setting`);
+      router.push(`${process.env.NEXT_PUBLIC_APP_URI}:5173/setting`);
   }, [shouldNavigate])
   
   const handleChange = async (e: any) => {
@@ -42,13 +42,13 @@ export default function TwoFaForm({userId}: Props) {
     const formDataValues = Object.values(formData);
     const concatenatedString = formDataValues.join("");
     try {
-      const userData = await fetch(`http://localhost:3000/users/${userId}`);
+      const userData = await fetch(`${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${userId}`);
       const user = await userData.json();
       const response = user.isTwoFactorEnabled ? 
-        await fetch(`http://localhost:3000/auth/2fa/authenticate?userId=${userId}&authCode=${concatenatedString}`, {
+        await fetch(`${process.env.NEXT_PUBLIC_APP_URI}:3000/auth/2fa/authenticate?userId=${userId}&authCode=${concatenatedString}`, {
           method: 'POST',
         }) :
-        await fetch(`http://localhost:3000/auth/2fa/turn-on?userId=${userId}&authCode=${concatenatedString}`,{
+        await fetch(`${process.env.NEXT_PUBLIC_APP_URI}:3000/auth/2fa/turn-on?userId=${userId}&authCode=${concatenatedString}`,{
           method: "POST",
         });
       if (response.ok){
