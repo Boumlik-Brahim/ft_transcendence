@@ -106,16 +106,16 @@ const Game = () => {
               {
             oponentName === '' && (
             <form className='w-full flex justify-center items-center mt-10 gap-2'>
-              <label className='text-[#3E3B6A] font-[400] text-[15px]' > Max Score </label>
+              {/* <label className='text-[#3E3B6A] font-[400] text-[15px]' > Max Score </label> */}
               <input 
                 type="range" id="numberInput" name="numberInput" min="10" max="100" step="10" 
                 defaultValue={10} 
                 className='range-input appearance-none  bg-[#F3F3F3] w-[180px] md:w-[280px] rounded-full'
                 onChange={e => setMaxScore(parseInt(e.target.value))}
               />
-                <div className='text-[#3E3B6A] font-[400] text-[15px]'>
+                {/* <div className='text-[#3E3B6A] font-[400] text-[15px]'>
                   {maxScore}
-                </div>
+                </div> */}
               </form>
             )
           }
