@@ -2,7 +2,9 @@
 import axios from "axios";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+// import { Link } from "react-router-dom";
 
+import Link from "next/link";
 
 interface Props {
     userId: string,
@@ -52,7 +54,9 @@ function RoomMessageBox({ userId,  date, messageContent }: Props) {
     return (
         <div className="w-[90%] min-h-[50px]  mx-[5%] flex mb-[17px] lg:mx-[0px]  ">
             <div className="w-[40px] h-full flex justify-center  md:w-[40px] lg:w-[51px] lg:ml-[40px]  ">
-                <Image src={`${ CurrentUserName ? CurrentUserName?.Avatar :"https://cdn.pixabay.com/photo/2017/07/03/09/54/dog-2467149_1280.jpg" }`} height={41} width={41} alt="profile" className="rounded-full lg:w-[45px] lg:h-[45px]" />
+                <Link href={`/profile/${userId}`}>
+                    <Image src={`${ CurrentUserName ? CurrentUserName?.Avatar :"https://cdn.pixabay.com/photo/2017/07/03/09/54/dog-2467149_1280.jpg" }`} height={41} width={41} alt="profile" className="rounded-full lg:w-[45px] lg:h-[45px] cursor-pointer" />
+                </Link>
             </div>
             <div className="w-[83%] min-h-[10px]  ml-[8px] lg:ml-[7px]  ">
                 <div className="w-[184px] h-[15px] flex mb-[4px]  ">

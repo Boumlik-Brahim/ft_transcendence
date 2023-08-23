@@ -10,11 +10,13 @@ import ChannelMembersListSm from "./components/channelMembersList/ChannelMembers
 import LeaveChannel from "./components/other/LeaveChannel";
 
 import { useDispatch, useSelector } from 'react-redux';
-import { ShowChannelMembers, HideChannelMembers } from '@/app/store/reducer'
 import { RootState } from '@/app/store/store';
 import ActionsPopUp from './components/other/ActionsPopUp'
 import Cookies from 'universal-cookie';
 import axios from "axios";
+import ChannelOwnerListLg from "./components/channelMembersList/ChannelOwnerListLg";
+import ChannelAdminListLg from "./components/channelMembersList/ChannelAdminListLg";
+import ChannelMembersListLg from "./components/channelMembersList/ChannelMembersListLg";
 
 interface channel {
     id: string
@@ -41,12 +43,8 @@ const cookies = new Cookies();
 const userIdFromCookie = cookies.get('id');
 
 
-function ChannelMembersListPage({ channelId, channelType }: { channelId: string, channelType:string}) {
+function ChannelMembersListPageLg({ channelId, channelType }: { channelId: string, channelType:string}) {
 
-    const dispatch = useDispatch();
-    const isShowChannelMembersOn = useSelector((state: RootState) => state.toggleShowChannelMembers);
-
-    
 
     const cookies = new Cookies();
     const userIdFromCookie = cookies.get('id');
@@ -75,18 +73,18 @@ function ChannelMembersListPage({ channelId, channelType }: { channelId: string,
     },[channelData]) 
 
     return (
-        <div className={`${isShowChannelMembersOn.showChannelMembersToggled ? "w-full h-full bg-primary" : "hidden"}`}>
+        <div className={` w-[25%] h-screen bg-primary`}>
 
-            <ChannelOwnerListSm
+            <ChannelOwnerListLg
                 channelId={channelId}
             />
             <>
-                <ChannelAdminListSm
+                <ChannelAdminListLg
                     channelId={channelId}
                 />
 
             </>
-            <ChannelMembersListSm
+            <ChannelMembersListLg
                 channelId={channelId}
             />
             {   
@@ -102,4 +100,4 @@ function ChannelMembersListPage({ channelId, channelType }: { channelId: string,
         </div>
     )
 }
-export default ChannelMembersListPage;
+export default ChannelMembersListPageLg;

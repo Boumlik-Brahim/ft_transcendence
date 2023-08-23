@@ -45,7 +45,7 @@ function Page({ params }: any) {
 
   const isContactListHidden = useSelector((state: RootState) => state.toggleShowContactList);
 
-  const roomIdFromParam = useSelector((state: RootState) => state.roomIdSlice.roomId);
+  const roomIdFromParam = useSelector  ((state: RootState) => state.roomIdSlice.roomId);
 
   const dispatch = useDispatch();
 

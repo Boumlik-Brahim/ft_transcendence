@@ -201,7 +201,7 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
       this.server.to(socket.id).emit('error', error);
     }
   }
-  
+
   @SubscribeMessage('kickMember')
   async handleKickMember(@MessageBody() payload: CreateKickedMemberDto , @ConnectedSocket() socket: Socket): Promise<void> {
     try{
@@ -219,7 +219,7 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
         this.server.to(payload.channelId).emit('refrechMember');
         for (const [key, val] of this.connectedClientsInChannel) {
           if (val === payload.userId) {
-            this.server.to(key).emit('redirect');
+            this.server.to(key).emit('redirectAfterGetKicked');
           }
         };
       }else{
@@ -233,6 +233,7 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   @SubscribeMessage('banMember')
   async handleBanMember(@MessageBody() payload: { channelId: string, userId: string, bannedTime: string }, @ConnectedSocket() socket: Socket): Promise<void> {
     try{
+      console.log(payload.bannedTime);
       const member = await this.channelService.findOneChannelMember(payload.channelId, payload.userId);
       if(member && (member.role === 'MEMBER' || member.role === 'ADMIN'))
       {
@@ -245,14 +246,14 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
         this.server.to(payload.channelId).emit('onMessage', `${user.name} is banned from ${channel.channelName}`);
         this.server.to(payload.channelId).emit('refrechMember');
       }else{
-        this.server.to(socket.id).emit('error', 'Invalid Member');
+        this.server.to(payload.channelId).emit('error', 'Invalid Member');
       }
     }catch(error){
       this.server.to(socket.id).emit('error', error);
     }
   }
   
-  @Cron(CronExpression.EVERY_30_SECONDS)
+  @Cron(CronExpression.EVERY_SECOND)
   async handleUnBanMember(): Promise<void> {
     const Count = await this.channelService.handleUnbanneMember();
     if (Count.count === 1){
@@ -260,7 +261,7 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
     }
   }
 
-  @Cron(CronExpression.EVERY_30_SECONDS)
+  @Cron(CronExpression.EVERY_SECOND)
   async handleUnBanAdmin(): Promise<void> {
     const Count = await this.channelService.handleUnbanneAdmin();
     if (Count.count === 1){
@@ -271,6 +272,7 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   @SubscribeMessage('muteMember')
   async handleMuteMember(@MessageBody() payload: { channelId: string, userId: string, mutedTime: string }, @ConnectedSocket() socket: Socket): Promise<void> {
     try{
+      console.log(payload.mutedTime);
       const member = await this.channelService.findOneChannelMember(payload.channelId, payload.userId);
       if(member && (member.role === 'MEMBER' || member.role === 'ADMIN'))
       {
@@ -280,6 +282,7 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
         const channel = await this.channelService.findOneChannel(payload.channelId);
         const user = await this.usersService.findOne(payload.userId);
         await this.channelService.updateChannelMemberMutedTime(payload.channelId, payload.userId, payload.mutedTime);
+        this.clientId = payload.channelId;
         this.server.to(payload.channelId).emit('onMessage', `${user.name} is muted from ${channel.channelName}`);
         this.server.to(payload.channelId).emit('refrechMember');
       }else{
@@ -290,21 +293,23 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
     }
   }
 
-  @Cron(CronExpression.EVERY_30_SECONDS)
+  @Cron(CronExpression.EVERY_SECOND)
   async handleUnMuteMember(): Promise<void> {
     const Count = await this.channelService.handleUnmuteMember();
+    // console.log("count", Count);
     if (Count.count === 1){
       this.server.to(this.clientId).emit('refrechMember');
     }
   }
 
-  @Cron(CronExpression.EVERY_30_SECONDS)
+  @Cron(CronExpression.EVERY_SECOND)
   async handleUnMuteAdmin(): Promise<void> {
     const Count = await this.channelService.handleUnmuteAdmin();
     if (Count.count === 1){
       this.server.to(this.clientId).emit('refrechMember');
     }
   }
+
   //* --------------------------------------------------------------ChannelRoles---------------------------------------------------------- *//
   
   //* --------------------------------------------------------------LeaveChannel---------------------------------------------------------- *//
@@ -322,7 +327,9 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
         await this.channelService.removeChannelMember(payload.channelId, payload.userId);
         socket.leave(payload.channelId);
         this.server.to(payload.channelId).emit('onMessage', `${user.name} has leaved the channel: ${channel.channelName}`);
-        this.server.to(payload.channelId).emit('refrechMember');
+        this.server.to(socket.id).emit('leavedSuccessfully');
+
+        this.server.to(socket.id).emit('refrechMember');
       }else{
         this.server.to(socket.id).emit('error', 'Invalid Member');
       }
@@ -352,7 +359,7 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
         }
         await this.channelService.removeAllChannelMembers(payload.channelId);
         await this.channelService.removeChannel(payload.channelId);
-        this.server.to(payload.channelId).emit('removedSuccefully');
+        this.server.to(payload.channelId).emit('channelDeletedSuccessfully');
       }else{
         this.server.to(socket.id).emit('error', 'Invalid Owner');
       }

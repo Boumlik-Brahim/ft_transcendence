@@ -19,17 +19,15 @@ interface MessageData {
 }
 
 
-function MessageInputChannelBox({channelId} : {channelId: string}) {
+function MessageInputChannelBox({channelId, channelMemberStatus} : {channelId: string, channelMemberStatus: string}) {
     const dispatch = useDispatch();
 
     const isChannelMembersHidden = useSelector((state: RootState) => state.toggleShowChannelMembers);
     const cookies = new Cookies();
-    // const socket = io("ws://localhost:3000", { auth: { userId: cookies.get('id') } });
 
     const currentUserId = cookies.get('id');
     const handleShowChannelMembers = () => {
         dispatch(ShowChannelMembers());
-        console.log(isChannelMembersHidden.showChannelMembersToggled);
     }
 
     const [message, setMessage] = useState<MessageData>({
@@ -37,8 +35,7 @@ function MessageInputChannelBox({channelId} : {channelId: string}) {
         userId: currentUserId,
         channelId: '',
     });
-    // const cookies = new Cookies();
-    // const socket = io("ws://localhost:3000", { auth: { userId: cookies.get('id') } });
+   
 
         //* function that sets the message typed in the input
         const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -64,17 +61,7 @@ function MessageInputChannelBox({channelId} : {channelId: string}) {
             console.log(data)
             alert(data);
         })     
-        // try{
-        //     const response = await axios.post<MessageData>('http://localhost:3000/channel/channelMessage', {
-        //         content: message.content,
-        //         userId: message.userId,
-        //         channelId: message.channelId,
-        //     });
-
-        // }
-        // catch(error) {
-        //     alert(error);
-        // }
+      
         // & clearing the input field after sending the message
         setMessage({ ...message, content: '' });
     };
@@ -94,18 +81,19 @@ function MessageInputChannelBox({channelId} : {channelId: string}) {
     };
 
     return (
-        <div className="w-full  h-[15%] md:h-[10%] bg-gray-50 flex items-center justify-between">
+        <div className={`${`w-full  h-[15%] md:h-[10%] bg-gray-50 flex items-center justify-between `}`}>
             <div className='
                     pr-[8px]  h-full w-[80%] flex items-center pl-[23px] 
                     md:pl-[30px] md:w-[90%] 
             '>
                 <input
-                    placeholder="Type your message"
+                    placeholder={`${`${(channelMemberStatus === "MUTED_MEMBER" || channelMemberStatus === "MUTED_ADMIN" || channelMemberStatus === "BANNED_MEMBER" || channelMemberStatus === "BANNED_ADMIN") ? "You Cannot Send Message . . ." : "Type your message"}`}`}
                     className={`
                                 h-[40px] lg:h-[38px] w-full rounded-full text-primary font-poppins font-normal text-[11px] pl-3.5  
                                 focus:outline-none  focus:border-primary focus:ring-2 focus:ring-primary
                                 placeholder:font-normal placeholder:text-gray-500 placeholder:text-[11px] 
                                 md:h-[45px] md:text-[14px]  md:placeholder:text-[13px]
+                                ${(channelMemberStatus === "MUTED_MEMBER" || channelMemberStatus === "MUTED_ADMIN" || channelMemberStatus === "BANNED_MEMBER" || channelMemberStatus === "BANNED_ADMIN" ) ? "cursor-pointer pointer-events-none opacity-50" : ""}
                     `} 
                     name="content"
                     value={message.content}

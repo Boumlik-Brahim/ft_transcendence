@@ -7,6 +7,7 @@ import Cookies from 'universal-cookie';
 
 import AdminBoxInfo from './AdminBoxInfo'
 import { socket } from "../../../page";
+import AdminBoxInfoMd from "./AdminBoxInfoMd";
 
 
 
@@ -41,7 +42,7 @@ const userIdFromCookie = cookies.get('id');
 
 
 
-function ChannelAdminInfoBox({ channelId }: { channelId: string }) {
+function ChannelAdminInfoBoxMd({ channelId }: { channelId: string }) {
 
     //  ^ ---------------------- Fetch Channel Admins --------------------------
     const [channelAdmins, setChannelAdmins] = useState<channelAdmins[]>([]);
@@ -93,7 +94,7 @@ function ChannelAdminInfoBox({ channelId }: { channelId: string }) {
 
     const admins = adminData.map((admin) => {
         return (
-            <AdminBoxInfo
+            <AdminBoxInfoMd
                 userId={admin.id}
                 channelId={channelId}
                 userName={admin.name}
@@ -114,7 +115,7 @@ function ChannelAdminInfoBox({ channelId }: { channelId: string }) {
                     ?
                     admins
                     :
-                    <div className="w-full h-[85%] text-channel-500 text-[13px] flex items-center justify-center font-poppins font-light tracking-wide ">
+                    <div className="w-full h-full text-channel-500 text-[9px] flex items-center justify-center font-poppins font-light tracking-wide ">
                         No admins available
                     </div>
             }
@@ -122,4 +123,4 @@ function ChannelAdminInfoBox({ channelId }: { channelId: string }) {
         </>
     )
 }
-export default ChannelAdminInfoBox;
+export default ChannelAdminInfoBoxMd;

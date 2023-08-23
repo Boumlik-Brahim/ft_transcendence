@@ -188,7 +188,7 @@ export class ChannelService {
         OR: [
           {role: 'MEMBER'},
           {role: 'MUTED_MEMBER'},
-          {role: 'BANNED_MEMBER'},
+          // {role: 'BANNED_MEMBER'},
         ]
       },
       orderBy: {
@@ -312,7 +312,7 @@ export class ChannelService {
     };
   }
 
-  @Cron(CronExpression.EVERY_30_SECONDS)
+  @Cron(CronExpression.EVERY_SECOND)
   async handleUnbanneMember(): Promise<{ count: number }> {
     const currentDate = new Date();
     const updatedChannelMembers = await this.prisma.channelMember.updateMany({
@@ -331,7 +331,7 @@ export class ChannelService {
     return updatedChannelMembers;
   }
 
-  @Cron(CronExpression.EVERY_30_SECONDS)
+  @Cron(CronExpression.EVERY_SECOND)
   async handleUnbanneAdmin(): Promise<{ count: number }> {
     const currentDate = new Date();
     const updatedChannelMembers = await this.prisma.channelMember.updateMany({
@@ -399,7 +399,7 @@ export class ChannelService {
     };
   }
 
-  @Cron(CronExpression.EVERY_30_SECONDS)
+  @Cron(CronExpression.EVERY_SECOND)
   async handleUnmuteMember(): Promise<{ count: number }> {
     const currentDate = new Date();
     const updatedChannelMembers = await this.prisma.channelMember.updateMany({
@@ -411,16 +411,17 @@ export class ChannelService {
       },
       data: {
         role: 'MEMBER',
-        mutedTime: new Date(0),
-        unmuteTime: new Date(0)
+        mutedTime: null,
+        unmuteTime: null
       }
     });
     return updatedChannelMembers;
   }
 
-  @Cron(CronExpression.EVERY_30_SECONDS)
+  @Cron(CronExpression.EVERY_SECOND)
   async handleUnmuteAdmin(): Promise<{ count: number }> {
     const currentDate = new Date();
+    // console.log("currentTime", currentDate);
     const updatedChannelMembers = await this.prisma.channelMember.updateMany({
       where: {
         role: 'MUTED_ADMIN',
@@ -436,6 +437,7 @@ export class ChannelService {
     });
     return updatedChannelMembers;
   }
+
   
   async removeChannelMember(channelId: string, userId: string): Promise<void> {
     try{
@@ -700,7 +702,7 @@ export class ChannelService {
         OR: [
           {role: 'ADMIN'},
           {role: 'MUTED_ADMIN'},
-          {role: 'BANNED_ADMIN'},
+          // {role: 'BANNED_ADMIN'},
         ]
       },
       orderBy: {

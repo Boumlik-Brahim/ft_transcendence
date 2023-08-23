@@ -31,7 +31,7 @@ interface Owner {
     updated_at: string
 }
 
-function ChannelOwnerListSm({ channelId }: { channelId: string }) {
+function ChannelOwnerListLg({ channelId }: { channelId: string }) {
 
 
     const cookies = new Cookies();
@@ -44,7 +44,7 @@ function ChannelOwnerListSm({ channelId }: { channelId: string }) {
     useEffect(() => {
         async function fetchPrivateChannel() {
             try {
-                const response = await axios.get<channel>(`${process.env.NEXT_PUBLIC_APP_URI}:3000/channel/${channelId}`);
+                const response = await axios.get<channel>(`http://localhost:3000/channel/${channelId}`);
                 console.log(response);
                 response && setChannelData(response.data);
             } catch (error) {
@@ -61,7 +61,7 @@ function ChannelOwnerListSm({ channelId }: { channelId: string }) {
     useEffect(() => {
         async function fetchChannelOwnerData() {
             try {
-                const response = channelData && await axios.get<Owner>(`${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${channelData?.channelOwnerId}`);
+                const response = channelData && await axios.get<Owner>(`http://localhost:3000/users/${channelData?.channelOwnerId}`);
                 response && setChannelOwnerData(response.data);
             } catch (error) {
                 alert(error);
@@ -104,24 +104,23 @@ function ChannelOwnerListSm({ channelId }: { channelId: string }) {
 
     return (
         <div className="w-full h-[20%] ">
-            <div className="w-full h-[40%]  flex items-end justify-between px-[12%]">
-                <div className="w-[75px] h-[23px] flex items-center justify-center  text-white text-[15px] font-poppins font-semibold underline uppercase">
+            <div className="w-full h-[40%]  flex items-end justify-between pl-[12%] ">
+                <div className="w-[75px] h-[23px] flex items-center justify-center  text-white text-[15px] font-poppins font-semibold  uppercase">
                     Owner
                 </div>
-                <Image key={1} src={"/close_w.svg"} width={25} height={25} alt={"close"} className="md:w-[34px] md:h-[34px] cursor-pointer" onClick={handleShowChannelMembers} />
             </div>
-            <div className="w-full h-[60%]  flex items-center justify-center">
-                <div className="h-full w-[80%] flex ">
-                    <div className="w-[80%] h-full flex items-center px-[27px]">
-                        <Image src={`${channelOwnerData ? channelOwnerData?.Avatar : "https://cdn.pixabay.com/photo/2017/07/03/09/54/dog-2467149_1280.jpg"}`} alt="delete channel" width={41} height={41} className="rounded-full" />
-                        <div className="w-[130px] h-full flex items-center ml-[16px] text-white text-[15px] font-poppins font-medium truncate">
+            <div className="w-[90%] h-[60%]  flex items-center  mx-[10%]">
+                   <div className="h-full w-[20%] flex items-center justify-center">
+                   <Image src={`${channelOwnerData ? channelOwnerData?.Avatar : "https://cdn.pixabay.com/photo/2017/07/03/09/54/dog-2467149_1280.jpg"}`} alt="Owner avatar" width={41} height={41} className="rounded-full" />
+                    </div> 
+                   <div className="h-full w-[80%]  flex items-center">
+                       <div className="h-full w-[70%] flex items-center pl-[10px] text-white text-[15px] font-poppins font-medium truncate">
                             {channelOwnerData?.name}
-                        </div>
+                       </div>
+                       <div className={`${(removeChannelPermission) ? "h-full w-[30%] flex items-center " : "hidden"}`}>
+                                <Image src={"/trash.svg"} alt="delete channel" className="cursor-pointer" width={16} height={16} onClick={handleRemoveChannel}/>
+                       </div>
                     </div>
-                    <div className={`${(removeChannelPermission) ? "w-[20%] h-full  flex items-center" : "hidden"}`}>
-                        <Image src={"/trash.svg"} alt="delete channel" width={16} height={16} onClick={handleRemoveChannel}/>
-                    </div>
-                </div>
             </div>
             <div className="w-full flex justify-center ">
                 <span className="w-[75%] h-px bg-stone-300 " />
@@ -129,4 +128,4 @@ function ChannelOwnerListSm({ channelId }: { channelId: string }) {
         </div>
     )
 }
-export default ChannelOwnerListSm; 
+export default ChannelOwnerListLg; 
