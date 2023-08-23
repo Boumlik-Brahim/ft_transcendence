@@ -13,14 +13,6 @@ function InfoBox({title, paragraph,image, isChat} : Props) {
 
   const [isVisible, setIsVisible] = useState(false);
 
-  const onScroll = () => {
-    if (window.scrollY >= 400) {
-      setIsVisible(true);
-    } else {
-      setIsVisible(false);
-    }
-  };
-
   useEffect(() => {
     window.addEventListener('scroll', onScroll);
     return () => {
@@ -28,8 +20,13 @@ function InfoBox({title, paragraph,image, isChat} : Props) {
     };
   }, []);
 
-  let changes  = "";
-  {isChat ? changes = "lg:flex-row-reverse" : changes="lg:flex-row";}
+  const onScroll = () => {
+    if (window.scrollY >= 400) {
+      setIsVisible(true);
+    } else {
+      setIsVisible(false);
+    }
+  };
   
   return(
     <div className={`
@@ -56,7 +53,6 @@ function InfoBox({title, paragraph,image, isChat} : Props) {
         width={332}
         height={332}
         alt=""
-        // className={`hidden md:flex float-left fade-section ${isVisible ? 'animate-fadeInFromLeft' : ''}`}
         className={`hidden md:flex float-left fade-section ${isVisible ? (isChat ? 'animate-fadeInFromLeft' : 'animate-fadeInFromRight') : ''}`}
       />
     </div>
