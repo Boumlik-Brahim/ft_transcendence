@@ -6,6 +6,9 @@ import { useState } from 'react';
 import Cookies from 'universal-cookie';
 import Link from 'next/link';
 import Sidebar from '../../../../components/Sidebar';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 function page() {
   const cookies = new Cookies();
@@ -16,7 +19,7 @@ function page() {
   const [userData, setUserData] = useState<string>("");
 
   useEffect(() => {
-    async function fetchData () {
+    async function TakeImageUrl() {
       try{
         const data = await fetch(`http://localhost:3000/users/${userId}/image`,{
           credentials: "include",
@@ -34,11 +37,11 @@ function page() {
         console.log(error);
       }
     }
-    fetchData();
-  },[])
+    TakeImageUrl();
+  },[imageUrl])
   
   useEffect(() => {
-    async function check () {
+    async function checkTwoFa () {
       const userData = await fetch(`http://localhost:3000/users/${userId}`,{
         credentials: "include",
         headers: {
@@ -51,7 +54,7 @@ function page() {
         setDisableTwoFa(true);
       }
     }
-    check();
+    checkTwoFa();
   }, [])
 
   const handleActiveClick = async () => {
@@ -89,8 +92,7 @@ function page() {
     if (userData){
       const username = userData;
       setUserData('');
-      console.log("Username:", username); 
-      await fetch(`http://localhost:3000/users/${userId}/update/username`,{
+      const response = await fetch(`http://localhost:3000/users/${userId}/update/username`,{
         method: "POST",
         credentials: "include",
         headers: {
@@ -99,6 +101,11 @@ function page() {
         },
         body: JSON.stringify({ userName: username }), 
       });
+      if (response.ok){
+        toast.success('Saved successfully!', {
+          position: toast.POSITION.TOP_CENTER,
+        });
+      }
     }
     else{
       // I need to show the user an message of invalid input
@@ -111,15 +118,23 @@ function page() {
     try{
       const formData = new FormData();
       formData.append('file', file);
-      await fetch(`http://localhost:3000/users/${userId}/upload`, {
+      const response = await fetch(`http://localhost:3000/users/${userId}/upload`, {
         method: 'POST',
         body: formData,
         credentials: "include",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
-        },
       });
+      if (response.ok){
+        const res = await response.json();
+        setImageUrl(res.data);
+        toast.success('Saved successfully!', {
+          position: toast.POSITION.TOP_CENTER,
+        });   
+      }
+      else{
+        toast.error('Wrong File!', {
+          position: toast.POSITION.TOP_CENTER,
+        });
+      }
     }
     catch(error) {
       console.error(error);
@@ -180,9 +195,11 @@ function page() {
                   </Link>
               )
             }
+            <ToastContainer/>
           </div>
           <div className='self-center '>
             <button onClick={handleSaveClick} className='w-[240px] h-[40px] self-center text-white text-lg bg-[#3E3B6A] rounded-lg'>SAVE</button>
+            <ToastContainer/>
           </div>
         </div>
         <Friendsbar
