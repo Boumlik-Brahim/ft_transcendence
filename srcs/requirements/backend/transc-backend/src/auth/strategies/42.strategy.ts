@@ -1,10 +1,8 @@
-/* eslint-disable prettier/prettier */
 import { Injectable } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { Strategy } from 'passport-42';
 import { userDto } from "../dto/user.dto";
 import { ConfigService } from "@nestjs/config";
-// import { AuthDto } from "../dto/user.dto";
 
 @Injectable()
 export class IntraStrategy extends PassportStrategy(Strategy, '42') {

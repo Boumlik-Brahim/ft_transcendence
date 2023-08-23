@@ -1,11 +1,10 @@
 /* eslint-disable prettier/prettier */
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { Achievement, BlockedUser, Friend, GamesHistories, Prisma, User, UserStat } from '@prisma/client';
+import { Achievement, BlockedUser, Friend, GamesHistories, User, UserStat } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateFriendDto } from './dto/create-friend.dto';
-import { UpdateFriendDto } from './dto/update-Friend.dto';
 import { CreateUserStatDto } from './dto/create-userStat.dto';
 import { UpdateUserStatDto } from './dto/update-userStat.dto';
 import { CreateBlockedUserDto } from './dto/create-blockedUser.dto';
