@@ -1,5 +1,4 @@
-/* eslint-disable prettier/prettier */
-import { Controller, Get, Post,Req, Body, Patch, Param, Delete, UploadedFile, UseInterceptors, HttpException, HttpStatus  } from '@nestjs/common';
+import { Controller, Get, Post,Req, Body, Patch, Param, Delete, UploadedFile, UseInterceptors, UseGuards, Put, HttpStatus, HttpException  } from '@nestjs/common';
 import { Achievement, BlockedUser, Friend, GamesHistories, User, UserStat } from '@prisma/client';
 import { diskStorage } from 'multer';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -43,7 +42,6 @@ export class UsersController {
 
   @Patch(':id/userStatus')
   async updateUserStatus(@Param('id') id: string, @Body('status') status: 'ONLINE' | 'OFFLINE' | 'INAGAME'): Promise<User> {
-    console.log("status :::::::::::::::::::::::: ", status);
     const updateUser = await this.usersService.updateUserStatus(id, status);
     return updateUser;
   }
@@ -63,9 +61,7 @@ export class UsersController {
 
   @Get('/:userId/userStat')
   async findOneUserStat(@Param('userId') userId: string): Promise<UserStat> {
-    console.log("ENDPOINT ===> BB", userId)
     const userStat = await this.usersService.findOneUserStat(userId);
-    console.log("ENDPOINT ===>", userStat)
     return userStat;
   }
   
@@ -92,8 +88,8 @@ export class UsersController {
     catch (error) {
       throw (error);
     }
-  } 
-  
+  }
+
 
   //* -------------------------------------------------------------achievementCRUDOp------------------------------------------------------ *//
   @Post('/achievement')
@@ -153,14 +149,15 @@ export class UsersController {
     const friendShip = await this.usersService.pendingReq(userId);
     return friendShip;
   }
-  
+
   @Get('/:userId/friend')
   async findAllFriends(@Param('userId') userId: string): Promise<Friend[]> {
     const Friends = await this.usersService.findAllFriends(userId);
     return Friends;
   }
   
-  @Patch('/:userId/friend/:friendId')
+  @Put('/:userId/friend/:friendId')
+  // @UseGuards(JwtAuthGuard)
   async updateFriend(@Param('userId') userId: string, @Param('friendId') friendId: string): Promise<Friend> {
     const updateFriend = await this.usersService.updateFriend(userId, friendId);
     return updateFriend;
@@ -182,6 +179,7 @@ export class UsersController {
   }
 
   @Post(':id/upload')
+  // @UseGuards(JwtAuthGuard)
   @UseInterceptors(
   FileInterceptor('file', {
       storage: diskStorage({
@@ -189,9 +187,9 @@ export class UsersController {
           filename: (req, file, cb) => {
             const timestamp = new Date().getTime();
             const fileExtension = file.originalname.split('.').pop();
-            const userId = req.params.id; // console.log(req.params.id);
+            const userId = req.params.id;
             const newFileName = `${timestamp}-${userId}.${fileExtension}`;
-            (req as any).newFileName = `http://localhost:3000/${newFileName}`;
+            (req as any).newFileName = `${process.env.APP_URI}:3000/${newFileName}`; // Set newFileName in the request object
             cb(null, newFileName);
           },
         }),
@@ -222,5 +220,5 @@ export class UsersController {
   async getUserAvatar(@Param("userId") userId: string){
     return await this.usersService.getAvatar(userId);
   }
-    
+
 }

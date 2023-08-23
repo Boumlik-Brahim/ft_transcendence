@@ -24,5 +24,6 @@ import { join } from 'path';
   ],
   controllers: [AppController],
   providers: [AppService, AppGateway, ConnectedClientsService],
+  exports: [ConnectedClientsService]
 })
 export class AppModule { }

@@ -5,6 +5,7 @@ import ContactLg from "../Contact/ContactLg";
 
 import { useState, useEffect } from 'react';
 import axios from "axios";
+import {socketChat} from '../../../../../../../components/FriendAction'
 
 
 
@@ -27,7 +28,7 @@ interface Contact {
 
 
 
-function ContactListLg({ inputRef,roomId }: any) {
+function ContactListLg() {
 
     //* States
     const [activeButtonId, setActiveButtonId] = useState<string | null>(null);
@@ -44,32 +45,40 @@ function ContactListLg({ inputRef,roomId }: any) {
         
         setActiveButtonId(buttonId);
         dispatch(setOtherUser(buttonId));
-        dispatch(selectedOne(buttonId))
+        dispatch(selectedOne(buttonId));
+        dispatch(setRefreshOn()); 
         try {
-            const res = await axios.put(`http://localhost:3000/chat/${currentUserId}/${buttonId}`, {"seen": true});
-            
+            const res = await axios.put(`${process.env.NEXT_PUBLIC_APP_URI}:3000/chat/${currentUserId}/${buttonId}`, {"seen": true});
+            dispatch(setRefreshOn()); 
+
         } catch (err) {
             console.log(err);
         }
         
-        inputRef.current.on("joined", (data: any) => {
+        socketChat.on("joined", (data: any) => {
+            // dispatch(setRefreshOn()); // 
             dispatch(setRoomId(data.roomName))
-            dispatch(setRefreshOn()); // 
         });
     };
 
 //* fetching contact List 
+
+const [refetch, setRefetch] = useState(false);
 useEffect(() => {
     async function fetchContact() {
         try {
-            const response = currentUserId && await axios.get<Contact[]>(`http://localhost:3000/users/${currentUserId}/receivers`);
+            const response = await axios.get<Contact[]>(`${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${currentUserId}/receivers`);
             response && setCont(response.data);
         } catch (error) {
             console.error(error);
         }
     }
     fetchContact();
-}, [currentUserId,refreshStatus]);
+    socketChat.on("refresh", () => {
+        fetchContact();
+    });
+}, [refreshStatus]);
+
 
 
 
@@ -85,7 +94,6 @@ useEffect(() => {
                 unreadMessages={contact._count.senders}
                 profilePicturePath={contact.Avatar}
                 activeButtonId={activeButtonId}
-                inputRef={inputRef}
                 onClick={handleButtonClick}
             />
         );

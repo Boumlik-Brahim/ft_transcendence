@@ -9,6 +9,7 @@ import { RootState } from '@/app/store/store';
 
 import { useState, useEffect } from 'react';
 import { setCurrentUser, setOtherUser,setRoomId, setRefreshOn, selectedOne } from '@/app/store/reducer';
+import {socketChat} from '../../../../../../../components/FriendAction'
 
 import axios from "axios";
 
@@ -29,7 +30,7 @@ interface Contact {
 }
 
 
-function ContactListSm({ inputRef }: any) {
+function ContactListSm() {
 
     //* States
     const [cont, setCont] = useState<Contact[]>([]);
@@ -47,12 +48,12 @@ function ContactListSm({ inputRef }: any) {
         setActiveButtonId(buttonId);
         dispatch(selectedOne(buttonId))
         try {
-            const res = await axios.put(`http://localhost:3000/chat/${currentUserId}/${buttonId}`, { "seen": true });
+            const res = await axios.put(`${process.env.NEXT_PUBLIC_APP_URI}:3000/chat/${currentUserId}/${buttonId}`, { "seen": true });
 
         } catch (err) {
             console.log(err);
         }
-        inputRef.current.on("joined", (data: any) => {
+        socketChat.on("joined", (data: any) => {
             dispatch(setRoomId(data.roomName))
             dispatch(setRefreshOn()); // 
         });
@@ -62,7 +63,7 @@ function ContactListSm({ inputRef }: any) {
     useEffect(() => {
         async function fetchContact() {
             try {
-                const response = currentUserId && await axios.get<Contact[]>(`http://localhost:3000/users/${currentUserId}/receivers`);
+                const response = currentUserId && await axios.get<Contact[]>(`${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${currentUserId}/receivers`);
                 response && setCont(response.data);
             } catch (error) {
                 console.error(error);
@@ -81,7 +82,6 @@ function ContactListSm({ inputRef }: any) {
                 name={contact.name}
                 unreadMessages={contact._count.senders}
                 profilePicturePath={contact.Avatar}
-                inputRef={inputRef}
                 onClick={handleButtonClick}
                 activeButtonId={activeButtonId}
             />

@@ -6,15 +6,76 @@ import { useEffect, useState } from "react";
 import { friendShip, users_int } from "../interfaces";
 import axios from "axios";
 import { usePendingUsers } from "@/app/(dashboard)/profile/utils";
-import { socket } from "@/app/(dashboard)/profile/[userId]/page";
+// import { socket } from "@/app/(dashboard)/profile/[userId]/page";
 import Link from "next/link";
+import { socket } from "./Notification";
 
 type Props = {
   userId: string;
   userSessionId: string;
 };
 
+
+//& -----chat part --------
+
+
+import { redirect, useRouter } from 'next/navigation'
+
+
+import {  useDispatch } from 'react-redux';
+import { setOtherUser,selectedOne , setRefreshOn} from '@/app/store/reducer';
+import { socketChat } from "./FriendAction";
+//& --------------------------
+
+
+
+
 function Friendsbar({ userId, userSessionId }: Props) {
+
+
+
+
+  const [roomId, setRoomId] = useState("");
+  const [checkRoomId, setCheckRoomId] = useState(false);
+  const dispatch = useDispatch();
+    
+      const router = useRouter()
+  
+  
+      
+      const handleSubmitNotif = async ({userSessionId, friend} : {userSessionId : string ,friend : any}) => {
+            dispatch(setOtherUser(friend.id));
+            dispatch(selectedOne(friend.id));
+            dispatch(setRefreshOn());
+        
+         socketChat.emit("joinRoom", {
+          senderId: userSessionId,
+          recieverId: friend.id
+        });
+         socketChat.on("joined", (data) => {
+          setRoomId(data.roomName);
+          // dispatch(setRefreshOn()); // 
+  
+          setCheckRoomId(!checkRoomId);
+          router.push(`/chat/${data.roomName}`)
+  
+        });
+      try {
+         const res =  await axios.put(`${process.env.NEXT_PUBLIC_APP_URI}:3000/chat/${userSessionId}/${friend.id}`, {"seen": true});
+  
+        } catch (err) {
+          console.log(err);
+        }
+  }
+  
+  
+  // &--------------------------------------------------------------------------------------
+
+
+
+
+
+
   /* ------------------------------ fetch Friend ------------------------------ */
   const [notification, setNotification] = useState<string>("");
   const [friendShip, setFriendShip] = useState<friendShip[]>([]);
@@ -23,7 +84,7 @@ function Friendsbar({ userId, userSessionId }: Props) {
     const fetchFriends = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:3000/users/${userSessionId}/friend`
+          `${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${userSessionId}/friend`
         );
         setFriendShip(response.data);
       } catch (error) {
@@ -67,7 +128,7 @@ function Friendsbar({ userId, userSessionId }: Props) {
           <ul className="w-full flex flex-col gap-[30px] min-w-[200px]">
             {friends.map((friend, index) => (
               <li key={index} className="flex justify-between items-center">
-                <Link href={`${friend.id}`}>
+                <Link href={`${process.env.NEXT_PUBLIC_APP_URI}:5173/profile/${friend.id}`}>
                   <div className="relative flex items-center gap-[10px] w-[100px]">
                     <div
                       className={`absolute 
@@ -81,19 +142,21 @@ function Friendsbar({ userId, userSessionId }: Props) {
                                 : "bg-[#f8c303]"
                             }`}
                     ></div>
-                    <Image
+                    {/* <Image
                       src={friend?.Avatar}
                       width={70}
                       height={70}
                       alt={friend?.name}
                       className="rounded-full max-w-[70px] max-h-[70px] w-[70px] h-[70px] object-cover"
-                    />
+                    /> */}
+                    <img src={friend?.Avatar} alt="avatar" className="rounded-full max-w-[70px] max-h-[70px] w-[70px] h-[70px] object-cover"/>
+
                     <p className="text-white font-medium text-[1rem]">
                       {friend?.name}
                     </p>
                   </div>
                 </Link>
-                <div className="friend_message">
+                <div className="friend_message"  onClick={() => handleSubmitNotif({ userSessionId, friend })}>
                   <Image src={send_w} width={30} alt={friend?.name} />
                 </div>
               </li>

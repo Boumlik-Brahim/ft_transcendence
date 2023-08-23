@@ -1,31 +1,58 @@
 import { Injectable } from '@nestjs/common';
 import { Socket } from 'socket.io';
+import { GameEntity } from './game/entity/game.entity';
+import { PrismaService } from 'prisma/prisma.service';
+
+export const connectedClients: Map<string, string> = new Map();
 
 @Injectable()
 export class ConnectedClientsService {
 
-    private connectedClients: Map<string, string> = new Map();
+    private connectedClientsInChat: Map<string, string> = new Map();
+    private gameMap = new Map<String, GameEntity>();
 
+    constructor(private prisma : PrismaService) {}
+    
     addClient(client: Socket) {
         const userId = client.handshake.auth.userId as string;
-        this.connectedClients.set(client.id, userId);
-        this.connectedClients.forEach((value, key) => {
-            console.log(`User: ${key}, Socket ID: ${value}`);
-        });
+        console.log(`Socket ID: ${client.id}, User: ${userId} is connected on app gateway`);
+        if (userId && client.id){
+            if(!connectedClients.has(client.id))
+            {
+                connectedClients.set(client.id, userId);
+            }
+        }
     }
-    
+
     isUserConnected(client: Socket): boolean {
-        return this.connectedClients.has(client.id);
+        return connectedClients.has(client.id);
     }
     
     getAllClients(): Map<string, string> {
-        return this.connectedClients;
+        return connectedClients;
     }
     
     removeClient(client: Socket) {
-        this.connectedClients.delete(client.id);
-        this.connectedClients.forEach((value, key) => {
-            console.log(`User: ${key}, Socket ID: ${value}`);
-        });
+        connectedClients.delete(client.id);
     }
+    
+    addClientInchat(client: Socket) {
+        const userId = client.handshake.auth.userId as string;
+        console.log(`Socket ID: ${client.id}, User: ${userId} is connected on Chat gateway`);
+        if (userId && client.id){
+            if(!this.connectedClientsInChat.has(client.id))
+            {
+                this.connectedClientsInChat.set(client.id, userId);
+            }
+        }
+    }
+    
+    getAllClientsFromChat(): Map<string, string> {
+        return this.connectedClientsInChat;
+    }
+    
+    removeClientFromChat(client: Socket) {
+        this.connectedClientsInChat.delete(client.id);
+    }
+
 }

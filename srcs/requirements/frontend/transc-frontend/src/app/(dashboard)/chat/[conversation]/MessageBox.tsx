@@ -4,9 +4,14 @@ import Image from "next/image";
 // import { conversation } from "./TempData/conversation"
 import { useState, useEffect } from 'react';
 import axios from "axios";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/app/store/store";
 import Link from "next/link";
+import { socketChat } from "../../../../../components/FriendAction";
+
+import {  setRefreshOn } from '@/app/store/reducer';
+
+
 
 //* User Interface
 interface User {
@@ -40,7 +45,7 @@ function MessageBox({ userId, messageContent, date }: Props) {
     //^ ----------------------- fetch User (receiver) data ----------------------
 
 
-    const link = `http://localhost:3000/users/${userId}`
+    const link = `${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${userId}`
     //* useEffect to fetch User data 
     useEffect(() => {
         async function fetchUser() {
@@ -58,7 +63,7 @@ function MessageBox({ userId, messageContent, date }: Props) {
 
 
     //^ ----------------------- fetch current User data ----------------------
-    const currentUser = `http://localhost:3000/users/${currentUserId}`
+    const currentUser = `${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${currentUserId}`
     const [CurrentUserName, setUserCurrentUserName] = useState<User>();
     //* useEffect to fetch current User Data 
     useEffect(() => {
@@ -72,6 +77,8 @@ function MessageBox({ userId, messageContent, date }: Props) {
         }
         fetchUser();
     }, [currentUser])
+    
+
 
     //^ --------------------- checking if the user sender or receiver --------------------
 

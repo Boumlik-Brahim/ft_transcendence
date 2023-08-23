@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { Logger } from '@nestjs/common';
 import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { ChannelService } from '../channel.service';
@@ -10,10 +9,12 @@ import { ConnectedClientsService } from 'src/connected-clients.service';
 import { createHash } from 'crypto';
 import { PrismaService } from 'prisma/prisma.service';
 import { UsersService } from 'src/users/users.service';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @WebSocketGateway({
+  // namespace: 'channelGateway',
   cors: {
-    origin: 'http://localhost:5173/channels'
+    origin: `${process.env.APP_URI}:5173/channels`,
   },
 })
 
@@ -29,13 +30,25 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
  
   private logger: Logger = new Logger('Channel Gateway Log');
 
+  private clientId;
+
+  private connectedClientsInChannel: Map<string, string> = new Map();
+
   //* ----------------------------------------------------------------Connection----------------------------------------------------------- *//
   afterInit(server: any) {
     this.logger.log('Channel Server Initialized!');
   }
   
   handleConnection(client: Socket) {
-    this.connectedClientsService.addClient(client);
+    const userId = client.handshake.auth.userId as string;
+    if (userId && client.id){
+      if(!this.connectedClientsInChannel.has(client.id))
+      {
+          this.connectedClientsInChannel.set(client.id, userId);
+      }
+    }
+    console.log(`Socket ID: ${client.id}, User: ${userId} is connected on Channel gateway`);
+    this.clientId = client.id;
     this.logger.log(`Client connected to Channel server: ${client.id}`);
   }
   //* ----------------------------------------------------------------Connection----------------------------------------------------------- *//
@@ -71,76 +84,55 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   
   //* ---------------------------------------------------------------JoinChannel----------------------------------------------------------- *//
   @SubscribeMessage('joinChannel')
-  async joinChannel(@MessageBody() payload: { userId: string, channelId: string }, @ConnectedSocket() socket: Socket) : Promise<void> {
+  async joinChannel(@MessageBody() payload: { userId: string, channelId: string, channelPasword: string }, @ConnectedSocket() socket: Socket) : Promise<void> {
     try{
-      const member = await this.channelService.findOneChannelMember(payload.channelId, payload.userId);
+      const channel = await this.channelService.findOneChannel(payload.channelId);
+      const member = await this.prisma.channelMember.findUnique({
+        where: {
+          userAndChannel: {
+            userId: payload.userId,
+            channelId: payload.channelId
+          },
+        },
+      });
       if (member){
-        const channel = await this.channelService.findOneChannel(payload.channelId);
-        socket.join(channel.id);
+        if (channel.channelType === 'PROTECTED' && payload.channelPasword){
+          const hachedChannelPswd = createHash('sha256').update(payload.channelPasword).digest('hex');
+          if (channel.channelPassword === hachedChannelPswd){
+            socket.join(channel.id);
+            this.server.to(socket.id).emit('joinedSuccessfully');
+          }else{
+            this.server.to(socket.id).emit('error', `Invalid password ${payload.channelPasword}`);
+          }
+        }else{
+          socket.join(channel.id);
+          this.server.to(socket.id).emit('joinedSuccessfully');
+        }
       }else{
-        this.server.to(socket.id).emit('error', 'Invalid Member');
-      }
-    }catch(error){
-      this.server.to(socket.id).emit('error', error);
-    }
-  }
-  
-  @SubscribeMessage('joinPublicChannel')
-  async joinPublicChannel(@MessageBody() payload: { userId: string, channelId: string }, @ConnectedSocket() socket: Socket) : Promise<void> {
-    try{
-      const channel = await this.channelService.findOneChannel(payload.channelId);
-      if (channel.channelType === 'PUBLIC'){
-        await this.channelService.createChannelMember({"userId": payload.userId, "channelId": payload.channelId, "role": 'MEMBER'});
-        const user = await this.usersService.findOne(payload.userId);
-        socket.join(payload.channelId);
-        this.server.to(payload.channelId).emit('onMessage', `${user.name} has joined channel: ${channel.channelName}`);
-        this.server.to(socket.id).emit('refrechMember');
-      }
-      else{
-        this.server.to(socket.id).emit('error', 'Invalid channel');
-      }
-    }catch(error){
-      this.server.to(socket.id).emit('error', error);
-    }
-  }
-  
-  @SubscribeMessage('joinProtectedChannel')
-  async joinProtectedChannel(@MessageBody() payload: { userId: string, channelId: string, channelPasword: string }, @ConnectedSocket() socket: Socket): Promise<void> {
-    try{
-      const hachedChannelPswd = createHash('sha256').update(payload.channelPasword).digest('hex');
-      const channel = await this.channelService.findOneChannel(payload.channelId);
-      if (channel.channelType === 'PROTECTED'){
-        if (channel.channelPassword === hachedChannelPswd){
-          await this.channelService.createChannelMember({"userId": payload.userId, "channelId": payload.channelId, "role": 'MEMBER'});
+        const kickedMember = await this.channelService.findOneKickedMember(payload.channelId, payload.userId);
+        if (!kickedMember){
           const user = await this.usersService.findOne(payload.userId);
-          socket.join(payload.channelId);
-          this.server.to(payload.channelId).emit('onMessage', `${user.name} has joined channel: ${channel.channelName}`);
-          this.server.to(socket.id).emit('refrechMember');
+          if (channel.channelType === 'PUBLIC' || channel.channelType === 'PRIVATE'){
+            await this.channelService.createChannelMember({"userId": payload.userId, "channelId": payload.channelId, "role": 'MEMBER'});
+            socket.join(payload.channelId);
+            this.server.to(payload.channelId).emit('onMessage', `${user.name} has joined channel: ${channel.channelName}`);
+            this.server.to(socket.id).emit('refrechMember');
+          }
+          else if (channel.channelType === 'PROTECTED' && payload.channelPasword){
+            const hachedChannelPswd = createHash('sha256').update(payload.channelPasword).digest('hex');
+            if (channel.channelPassword === hachedChannelPswd){
+              await this.channelService.createChannelMember({"userId": payload.userId, "channelId": payload.channelId, "role": 'MEMBER'});
+              socket.join(payload.channelId);
+              this.server.to(payload.channelId).emit('onMessage', `${user.name} has joined channel: ${channel.channelName}`);
+              this.server.to(socket.id).emit('joinedSuccessfully');
+              this.server.to(socket.id).emit('refrechMember');
+            }else{
+              this.server.to(socket.id).emit('error', `Invalid password ${payload.channelPasword}`);
+            }
+          }
+        }else{
+          this.server.to(socket.id).emit('error', `You are kicked from this Channel`);
         }
-        else{
-          this.server.to(socket.id).emit('error', `Invalid password ${payload.channelPasword}`);
-        }
-      }else{
-        this.server.to(socket.id).emit('error', 'Invalid channel');
-      }
-    }catch(error){
-      this.server.to(socket.id).emit('error', error);
-    }
-  }
-  
-  @SubscribeMessage('joinPrivateChannel')
-  async joinPrivateChannel(@MessageBody() payload: { userId: string, channelId: string}, @ConnectedSocket() socket: Socket): Promise<void> {
-    try{
-      const channel = await this.channelService.findOneChannel(payload.channelId);
-      if (channel.channelType === 'PRIVATE'){
-        await this.channelService.createChannelMember({"userId": payload.userId, "channelId": payload.channelId, "role": 'MEMBER'});
-        const user = await this.usersService.findOne(payload.userId);
-        socket.join(payload.channelId);
-        this.server.to(payload.channelId).emit('onMessage', `${user.name} has joined channel: ${channel.channelName}`);
-        this.server.to(socket.id).emit('refrechMember');
-      }
-      else{
-        this.server.to(socket.id).emit('error', 'Invalid channel');
       }
     }catch(error){
       this.server.to(socket.id).emit('error', error);
@@ -152,6 +144,9 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   @SubscribeMessage('messageChannel')
   async handleMessage(@MessageBody() payload: CreateChannelMessageDto, @ConnectedSocket() socket: Socket): Promise<void> {
     try{
+      if (!socket.rooms.has(payload.channelId)){
+        socket.join(payload.channelId);
+      }
       await this.channelService.createChannelMessage(payload);
       this.server.to(payload.channelId).emit('onMessage', payload);
     }catch(error){
@@ -167,12 +162,15 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
       const member = await this.channelService.findOneChannelMember(payload.channelId, payload.userId);
       if (member && member.role === 'MEMBER')
       {
+        if (!socket.rooms.has(payload.channelId)){
+          socket.join(payload.channelId);
+        }
         const channel = await this.channelService.findOneChannel(payload.channelId);
         const user = await this.usersService.findOne(payload.userId);
         member.role = 'ADMIN';
         await this.channelService.updateChannelMember(payload.channelId, payload.userId, member);
         this.server.to(payload.channelId).emit('onMessage', `${user.name} is an Admin of channel: ${channel.channelName}`);
-        this.server.to(socket.id).emit('refrechMember');
+        this.server.to(payload.channelId).emit('refrechMember');
       }else{
         this.server.to(socket.id).emit('error', 'Is Not A Member');
       }
@@ -187,12 +185,15 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
       const member = await this.channelService.findOneChannelMember(payload.channelId, payload.userId);
       if (member && member.role === 'ADMIN')
       {
+        if (!socket.rooms.has(payload.channelId)){
+          socket.join(payload.channelId);
+        }
         const channel = await this.channelService.findOneChannel(payload.channelId);
         const user = await this.usersService.findOne(payload.userId);
         member.role = 'MEMBER';
         await this.channelService.updateChannelMember(payload.channelId, payload.userId, member);
         this.server.to(payload.channelId).emit('onMessage', `${user.name} is become Memeber of ${channel.channelName}`);
-        this.server.to(socket.id).emit('refrechMember');
+        this.server.to(payload.channelId).emit('refrechMember');
       }else{
         this.server.to(socket.id).emit('error', 'Is Not An Admin');
       }
@@ -205,14 +206,22 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   async handleKickMember(@MessageBody() payload: CreateKickedMemberDto , @ConnectedSocket() socket: Socket): Promise<void> {
     try{
       const member = await this.channelService.findOneChannelMember(payload.channelId, payload.userId);
-      if (member)
+      if (member && (member.role === 'MEMBER' || member.role === 'ADMIN'))
       {
+        if (!socket.rooms.has(payload.channelId)){
+          socket.join(payload.channelId);
+        }
         const channel = await this.channelService.findOneChannel(payload.channelId);
         const user = await this.usersService.findOne(payload.userId);
         await this.channelService.createKickedMember(payload);
         await this.channelService.removeChannelMember(payload.channelId, payload.userId);
         this.server.to(payload.channelId).emit('onMessage', `${user.name} is kicked from channel: ${channel.channelName}`);
-        this.server.to(socket.id).emit('refrechMember');
+        this.server.to(payload.channelId).emit('refrechMember');
+        for (const [key, val] of this.connectedClientsInChannel) {
+          if (val === payload.userId) {
+            this.server.to(key).emit('redirect');
+          }
+        };
       }else{
         this.server.to(socket.id).emit('error', 'Invalid Member');
       }
@@ -227,11 +236,52 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
       const member = await this.channelService.findOneChannelMember(payload.channelId, payload.userId);
       if(member && (member.role === 'MEMBER' || member.role === 'ADMIN'))
       {
+        if (!socket.rooms.has(payload.channelId)){
+          socket.join(payload.channelId);
+        }
         const channel = await this.channelService.findOneChannel(payload.channelId);
         const user = await this.usersService.findOne(payload.userId);
         await this.channelService.updateChannelMemberBannedTime(payload.channelId, payload.userId, payload.bannedTime);
         this.server.to(payload.channelId).emit('onMessage', `${user.name} is banned from ${channel.channelName}`);
-        this.server.to(socket.id).emit('refrechMember');
+        this.server.to(payload.channelId).emit('refrechMember');
+      }else{
+        this.server.to(socket.id).emit('error', 'Invalid Member');
+      }
+    }catch(error){
+      this.server.to(socket.id).emit('error', error);
+    }
+  }
+  
+  @Cron(CronExpression.EVERY_30_SECONDS)
+  async handleUnBanMember(): Promise<void> {
+    const Count = await this.channelService.handleUnbanneMember();
+    if (Count.count === 1){
+      this.server.to(this.clientId).emit('refrechMember');
+    }
+  }
+
+  @Cron(CronExpression.EVERY_30_SECONDS)
+  async handleUnBanAdmin(): Promise<void> {
+    const Count = await this.channelService.handleUnbanneAdmin();
+    if (Count.count === 1){
+      this.server.to(this.clientId).emit('refrechMember');
+    }
+  }
+  
+  @SubscribeMessage('muteMember')
+  async handleMuteMember(@MessageBody() payload: { channelId: string, userId: string, mutedTime: string }, @ConnectedSocket() socket: Socket): Promise<void> {
+    try{
+      const member = await this.channelService.findOneChannelMember(payload.channelId, payload.userId);
+      if(member && (member.role === 'MEMBER' || member.role === 'ADMIN'))
+      {
+        if (!socket.rooms.has(payload.channelId)){
+          socket.join(payload.channelId);
+        }
+        const channel = await this.channelService.findOneChannel(payload.channelId);
+        const user = await this.usersService.findOne(payload.userId);
+        await this.channelService.updateChannelMemberMutedTime(payload.channelId, payload.userId, payload.mutedTime);
+        this.server.to(payload.channelId).emit('onMessage', `${user.name} is muted from ${channel.channelName}`);
+        this.server.to(payload.channelId).emit('refrechMember');
       }else{
         this.server.to(socket.id).emit('error', 'Invalid Member');
       }
@@ -240,22 +290,19 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
     }
   }
 
-  @SubscribeMessage('muteMember')
-  async handleMuteMember(@MessageBody() payload: { channelId: string, userId: string, mutedTime: string }, @ConnectedSocket() socket: Socket): Promise<void> {
-    try{
-      const member = await this.channelService.findOneChannelMember(payload.channelId, payload.userId);
-      if(member && (member.role === 'MEMBER' || member.role === 'ADMIN'))
-      {
-        const channel = await this.channelService.findOneChannel(payload.channelId);
-        const user = await this.usersService.findOne(payload.userId);
-        await this.channelService.updateChannelMemberMutedTime(payload.channelId, payload.userId, payload.mutedTime);
-        this.server.to(payload.channelId).emit('onMessage', `${user.name} is muted from ${channel.channelName}`);
-        this.server.to(socket.id).emit('refrechMember');
-      }else{
-        this.server.to(socket.id).emit('error', 'Invalid Member');
-      }
-    }catch(error){
-      this.server.to(socket.id).emit('error', error);
+  @Cron(CronExpression.EVERY_30_SECONDS)
+  async handleUnMuteMember(): Promise<void> {
+    const Count = await this.channelService.handleUnmuteMember();
+    if (Count.count === 1){
+      this.server.to(this.clientId).emit('refrechMember');
+    }
+  }
+
+  @Cron(CronExpression.EVERY_30_SECONDS)
+  async handleUnMuteAdmin(): Promise<void> {
+    const Count = await this.channelService.handleUnmuteAdmin();
+    if (Count.count === 1){
+      this.server.to(this.clientId).emit('refrechMember');
     }
   }
   //* --------------------------------------------------------------ChannelRoles---------------------------------------------------------- *//
@@ -267,12 +314,15 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
       const member = await this.channelService.findOneChannelMember(payload.channelId, payload.userId);
       if(member && (member.role === 'MEMBER' || member.role === 'ADMIN'))
       {
+        if (!socket.rooms.has(payload.channelId)){
+          socket.join(payload.channelId);
+        }
         const channel = await this.channelService.findOneChannel(payload.channelId);
         const user = await this.usersService.findOne(payload.userId);
         await this.channelService.removeChannelMember(payload.channelId, payload.userId);
         socket.leave(payload.channelId);
         this.server.to(payload.channelId).emit('onMessage', `${user.name} has leaved the channel: ${channel.channelName}`);
-        this.server.to(socket.id).emit('refrechMember');
+        this.server.to(payload.channelId).emit('refrechMember');
       }else{
         this.server.to(socket.id).emit('error', 'Invalid Member');
       }
@@ -289,6 +339,9 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
       const member = await this.channelService.findOneChannelMember(payload.channelId, payload.userId);
       if(member && member.role === 'OWNER')
       {
+        if (!socket.rooms.has(payload.channelId)){
+          socket.join(payload.channelId);
+        }
         const kickedMemebers = await this.channelService.findAllKickedMembers(payload.channelId);
         if(kickedMemebers){
           await this.channelService.removeAllKickedMembers(payload.channelId);
@@ -299,6 +352,7 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
         }
         await this.channelService.removeAllChannelMembers(payload.channelId);
         await this.channelService.removeChannel(payload.channelId);
+        this.server.to(payload.channelId).emit('removedSuccefully');
       }else{
         this.server.to(socket.id).emit('error', 'Invalid Owner');
       }
@@ -316,8 +370,12 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
       const user = await this.usersService.findOne(payload.userId);
       if(member && member.role === 'OWNER')
       {
-        const channel = await this.channelService.updateChannel(payload.channelId, payload.updatedChannelName);
+        const channel = await this.channelService.updateChannel(payload.channelId, {"channelName": payload.updatedChannelName });
         this.server.to(channel.id).emit('onMessage', `${user.name} update the channel name to: ${channel.channelName}`);
+        // --------------- Bilal    : i added this emit to receive the new Channel name --------------------
+          this.server.to(socket.id).emit('newChannelName', payload.updatedChannelName);
+        // --------------- ---------------------------------------------------------------------------------
+
       }else{
         this.server.to(socket.id).emit('error', 'Invalid Owner');
       }
@@ -329,7 +387,7 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   
   //* --------------------------------------------------------------Disconection---------------------------------------------------------- *//
   handleDisconnect(client: Socket) {
-    this.connectedClientsService.removeClient(client);
+    this.connectedClientsInChannel.delete(client.id);
     this.logger.log(`Client disconnected from Channel server: ${client.id}`);
   }
   //* --------------------------------------------------------------Disconection---------------------------------------------------------- *//

@@ -17,6 +17,10 @@
   list-style: none;
 }
 
+/* canvas {
+  image-rendering: pixelated;
+} */
+
 body {
   position: relative;
   font-family: 'Roboto', sans-serif;
@@ -28,7 +32,7 @@ body {
 }
 
 .wrapper {
-  @apply flex flex-col items-center justify-between gap-[20px] xs:gap-[40px] w-[80%] mb-[5rem];
+  @apply flex flex-col items-center justify-between gap-[20px] xs:gap-[40px] w-[80%]  mt-[100px];
 }
 
 /* .game_font{
@@ -49,7 +53,7 @@ body {
 
 .my_container{
   @apply flex flex-1 flex-col items-center lg:gap-[100px];
-  @apply py-[100px] overflow-scroll overflow-x-hidden;
+  @apply overflow-scroll overflow-x-hidden;
 }
 
 .status{
@@ -192,9 +196,15 @@ body {
   background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(26,37,137,0) 0%, rgba(170,246,163,1) 50%, rgba(0,212,255,0) 100%);
  }
 
+ .draw_match{
+  border: 3px solid #d4d4d4;
+ }
+
  input:checked ~ .dot {
   transform: translateX(100%);
   background-color: #48bb78;
+  /* background-color: #bab8d1; */
+
 }
 
 .btn-background{
@@ -202,8 +212,12 @@ body {
 }
 
 /* chat part */
+
+.without-ring {
+  @apply focus:ring-0 focus:ring-offset-0;
+}
+
 @layer utilities {
-  @variants responsive {
     /* Hide scrollbar for Chrome, Safari and Opera */
     .no-scrollbar::-webkit-scrollbar {
         display: none;
@@ -218,7 +232,7 @@ body {
       font-size: 7px !important;
     }
     
-  }
+
 }
 @keyframes show-up {
   0% {
@@ -238,6 +252,53 @@ body {
 
 
 
+
+
+/* Change the track color */
+.range-input {
+  /* Add your existing styles here */
+  /* background-color: red; */
+  outline: none;
+}
+
+/* Style the thumb circle */
+.range-input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  /* top : 100px; */
+  /* appearance: none; */
+  width: 30px !important; /* Adjust the width to make the circle larger */
+  height: 30px !important; /* Adjust the height to make the circle larger */
+  background-color: #3E3B6A !important; /* Change the thumb color */
+  border: none !important;
+  border-radius: 50% !important;
+  cursor: pointer !important;
+  margin-top: -14px !important;
+}
+
+.range-input::-moz-range-thumb {
+  width: 30px !important;
+  height: 30px !important;
+  background-color: #3E3B6A !important;
+  border: none !important;
+  border-radius: 50% !important;
+  cursor: pointer !important;
+}
+
+.range-input::-ms-thumb {
+  width: 30px !important;
+  height: 30px !important;
+  background-color: #3E3B6A !important;
+  border: none !important;
+  border-radius: 50% !important;
+  cursor: pointer !important;
+}
+
+/* Optionally style the track (progress bar) */
+.range-input::-webkit-slider-runnable-track {
+  background-color: #dcdcdc;
+  height: 2px; /* Adjust the height of the track */
+  border-radius: 2px;
+}
 /*---------------- brahim part : --------------------*/
 .game-container-lg {
   position: relative;

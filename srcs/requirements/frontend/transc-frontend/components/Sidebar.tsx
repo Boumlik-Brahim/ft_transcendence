@@ -49,16 +49,16 @@ function Sidebar() {
         status: "OFFLINE",
     }
     const handleLogOut = async () => {
-        const res = await fetch(`http://localhost:3000/users/${userId}/userStatus`,{
-            method: 'PATCH',
+        const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${userId}/userStatus`,{
+            method: "PUT",
             credentials: "include",
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(updateData),
         })
-        router.push(`http://localhost:5173/`)
         cookies.remove('accessToken', { path: '/' });
+        router.push(`${process.env.NEXT_PUBLIC_APP_URI}:5173/`);
     }
     
     //--------------------------------------//

@@ -15,15 +15,14 @@ import { RootState } from '@/app/store/store';
 import { useEffect, useState, useRef, useReducer } from "react";
 
 import axios from "axios";
-
-import { io, Socket } from 'socket.io-client'
 import Cookies from 'universal-cookie';
 
 
 import { setCurrentUser, setOtherUser, setRefreshOn, setRoomId } from '@/app/store/reducer';
 import { useRouter } from 'next/router'
 import Sidebar from '@/../components/Sidebar'
-
+import {socketChat} from '../../../../../components/FriendAction'
+import { socket } from "../../../../../components/Notification";
 interface Message {
   id?: string;
   content: string;
@@ -100,8 +99,9 @@ function Page({ params }: any) {
 
     async function fetchMessages() {
       try {
-        const response = await axios.get<Message[]>(`http://localhost:3000/chat?hashedRoomId=${roomIdFromParam}`);
+        const response = await axios.get<Message[]>(`${process.env.NEXT_PUBLIC_APP_URI}:3000/chat?hashedRoomId=${roomIdFromParam}`);
         setMessages(response.data);
+
 
       } catch (error) {
         console.error(error);
@@ -127,6 +127,17 @@ function Page({ params }: any) {
 
   //& ------- mapping for the chat conversation and make each chat in it's component ----- 
   const conversations = messages.map((item, i) => {
+     async function seen() {
+        try {
+          const cookies = new Cookies();
+          const userIdFromCookie = cookies.get('id');
+          const res = await axios.put(`${process.env.NEXT_PUBLIC_APP_URI}:3000/chat/${userIdFromCookie}/${item.senderId}`, { "seen": true });
+
+        } catch (err) {
+            console.log(err);
+        }
+      }
+      seen();
     return (
       <div key={i} ref={autoScrollRef} >
         {
@@ -143,42 +154,27 @@ function Page({ params }: any) {
 
   //^ -----------------------------------  Socket IO Part --------------------------------------
 
-
-  const socket = useRef<Socket>();
-
-
-
-  //* useEffect for creating socket
-  useEffect(() => {
-    const cookies = new Cookies();
-    socket.current = io("ws://localhost:3000", { auth: { userId: cookies.get('id') } });
-  }, [])
-
   //* useEffect for getting message from socket
   useEffect(() => {
-    socket.current?.on("getMessage", (data) => {
+    socketChat.on("getMessage", (data) => {
       setMessages((prev) => [...prev, { senderId: data.senderId, content: data.text, recieverId: data.receiverId, created_at: new Date().toISOString(), room: data.room }])
-    });
 
-  }, [socket]);
+    });
+  }, [socketChat]);
 
   //* useEffect for getting channel Id from socket
   useEffect(() => {
-
-    socket.current?.on("joined", (data) => {
+    socketChat.on("joined", (data) => {
       dispatch(setRoomId(data.roomName))
     });
   }, [dispatch]);
-
+  
   useEffect(() => {
-
-    socket.current?.on("refresh", () => {
+    socketChat.on("refresh", () => {
       dispatch(setRefreshOn());
     });
   }, [dispatch]);
-
-
-
+  
   //^ -----------------------------------------------------------------------------------------
 
 
@@ -186,7 +182,7 @@ function Page({ params }: any) {
   return (
 <>
     <Sidebar/>
-    <div className="w-full h-[85vh] md:h-screen flex">
+    <div className="w-full h-[85vh] md:h-screen  flex">
       <div className={`${!isContactListHidden.showContactListToggled ? "w-full h-full " : "hidden"} `}>
 
         {isMdScreenState && <Header
@@ -197,18 +193,17 @@ function Page({ params }: any) {
         <div className="w-full h-[85%] bg-sender pl-[20px]  pr-[15px] py-[15px] overflow-auto no-scrollbar  md:h-[80%] ">
           {conversations}
         </div>
-        <MessageInputBox
-          inputRef={socket} />
+        <MessageInputBox/>
       </div>
       {<ContactListSm
-        inputRef={socket}
+        
       />
       }
       {(isMdScreenState && !isLgScreenState) && <ContactListMd
-        inputRef={socket}
+       
       />}
       {isLgScreenState && <ContactListLg
-        inputRef={socket}
+        
       />}
 
 

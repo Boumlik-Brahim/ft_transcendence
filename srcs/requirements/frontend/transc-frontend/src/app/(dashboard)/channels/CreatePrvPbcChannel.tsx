@@ -8,7 +8,7 @@ import { use, useEffect, useState } from "react";
 import axios from "axios";
 import {setCurrentUser,setRefreshChannelsOn,createChannelPopUpOff } from '@/app/store/reducer';
 import { io } from "socket.io-client";
-
+import {socket} from './page'
 
 function CreatePrvPbcChannel() {
     const isPrivateChannelOn = useSelector((state: RootState) => state.togglePrivate);
@@ -65,13 +65,11 @@ interface Channels{
             ...prevData,
             channelType : "PUBLIC"
           }))
-
-        console.log("channel name : ",channelData.channelName, " type : ", channelData.channelType);
-    },[channelData.channelName, channelData.channelType, isPrivateChannelOn.privateToggled])
+    },[ isPrivateChannelOn.privateToggled])
     
     const currentUserId = useSelector((state: RootState) => state.EditUserIdsSlice.currentUserId);
     const refreshStatus = useSelector((state: RootState) => state.refreshFetchChannels.refreshFetchChannels);
-    const socketTest= io("ws://localhost:3000");
+    // const socketTest= io("ws://localhost:3000");
 
     const [emptyChannelNameError, setEmptyChannelNameError] = useState(false);
 const handleSubmit = async () => {
@@ -80,15 +78,14 @@ const handleSubmit = async () => {
         return;
     }
      // & sending the message in the socket 
-     socketTest.emit("createChannel", {
+     socket.emit("createChannel", {
         channelName: channelData.channelName,
         channelType: channelData.channelType,
         channelPassword: channelData.channelPassword,
         channelOwnerId:currentUserId,
     } );
     setChannelData({ ...channelData, channelName: '' });
-    socketTest.on("refrechCreateChannel", (data: any) => {
-        console.log("results ------- > ");
+    socket.on("refrechCreateChannel", (data: any) => {
         dispatch(createChannelPopUpOff());
         dispatch(setRefreshChannelsOn());
     });

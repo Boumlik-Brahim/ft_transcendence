@@ -8,6 +8,7 @@ import { setCurrentUser, setOtherUser, show, selectedOne, setRefreshOn, setRoomI
 import { RootState } from '@/app/store/store';
 import { useEffect } from "react";
 import axios from "axios";
+import {socketChat} from '../../../../../../../components/FriendAction'
 
 //* Interface of Props 
 interface Props {
@@ -17,11 +18,10 @@ interface Props {
     unreadMessages: number;
     activeButtonId: string | null;
     onClick: (buttonId: string) => void;
-    inputRef: any
 }
 
 
-function ContactSm({ id, name, unreadMessages, profilePicturePath, onClick, activeButtonId, inputRef }: Props) {
+function ContactSm({ id, name, unreadMessages, profilePicturePath, onClick, activeButtonId }: Props) {
 
     //* States
     const currentUserId = useSelector((state: RootState) => state.EditUserIdsSlice.currentUserId);
@@ -37,7 +37,7 @@ function ContactSm({ id, name, unreadMessages, profilePicturePath, onClick, acti
     const handleClick = async () => {
 
         try {
-            const res = await axios.put(`http://localhost:3000/chat/${currentUserId}/${otherUserId}`, { "seen": true });
+            const res = await axios.put(`${process.env.NEXT_PUBLIC_APP_URI}:3000/chat/${currentUserId}/${otherUserId}`, { "seen": true });
 
         } catch (err) {
             console.log(err);
@@ -52,13 +52,13 @@ function ContactSm({ id, name, unreadMessages, profilePicturePath, onClick, acti
         dispatch(setRefreshOn()); // 
 
         //* creating new room 
-        inputRef.current.emit("joinRoom", {
+        socketChat.emit("joinRoom", {
             senderId: currentUserId,
             recieverId: id
         });
 
         //* updating number of unseen messages
-        inputRef.current.on("joined", (data: any) => {
+        socketChat.on("joined", (data: any) => {
             dispatch(setRoomId(data.roomName))
             dispatch(setRefreshOn()); // 
         });
@@ -133,7 +133,7 @@ export default ContactSm;
     //     dispatch(setRefreshOn());
         
     //     try {
-    //         const res = await axios.put(`http://localhost:3000/chat/${userSessionId}/${userId}`, {"seen": true});
+    //         const res = await axios.put(`${process.env.NEXT_PUBLIC_APP_URI}:3000/chat/${userSessionId}/${userId}`, {"seen": true});
     
     //       } catch (err) {
     //         console.log(err);

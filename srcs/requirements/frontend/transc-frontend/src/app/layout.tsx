@@ -1,6 +1,7 @@
 import { ReduxProvider } from './store/Provider'
 import './styles/globals.css'
-
+import Sidebar  from '../../components/Sidebar'
+import { SocketProvider } from './socket'
 export const metadata = {
   title: 'Profile',
   description: 'User Profile',
@@ -15,8 +16,9 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning={true}>
       <body suppressHydrationWarning={true} >
         <ReduxProvider>
-          
-          {children}
+          <SocketProvider>
+            {children}
+          </SocketProvider>
         </ReduxProvider>
       </body>
     </html>

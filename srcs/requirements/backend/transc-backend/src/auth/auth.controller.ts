@@ -25,7 +25,7 @@ export class AuthController {
         try {
             let user = await this.authService.getUser(req);
             if (!user.isTwoFactorEnabled){
-                const token = await this.authService.signToken(req.user);
+                const token = await this.authService.signToken(user);
                 res.cookie('accessToken', token);
             }
             res.cookie('id', user.id);

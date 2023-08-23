@@ -7,42 +7,59 @@ import "../profile.css";
 import { history_game } from "../../../../../constant";
 import { useParams } from "next/navigation";
 import Search from "../../../../../components/Search";
-import { useEffect, useState } from "react";
-import { users_int } from "../../../../../interfaces";
+import { use, useEffect, useState } from "react";
+import { history, userStat, users_int } from "../../../../../interfaces";
 import FriendAction from "../../../../../components/FriendAction";
-import Notification from "../../../../../components/Notification";
-import { io } from "socket.io-client";
-export const socket = io("http://localhost:3000", {
-  transports: ["websocket"],
-});
 import Cookies from "universal-cookie";
+import Notification from "../../../../../components/Notification";
+// import { io } from "socket.io-client";
+// const cookies = new Cookies();
+// export const socket = io("http://localhost:3000", {
+//   auth: { userId: cookies.get('id') } ,
+//   transports: ["websocket"],
+// });
 import Achievements from "../../../../../components/Achievements";
 import Sidebar from "../../../../../components/Sidebar";
-import { bgMain } from "../../../../../public";
+import {
+  _your_first_game,
+  _your_first_game_gif,
+  bgMain,
+} from "../../../../../public";
+import History from "../../../../../components/History";
 
 function page() {
   /* ------------------------- get url ID from url ------------------------- */
   const { userId } = useParams();
   /* ------------------------------------ - ----------------------------------- */
-
+  
   /* --------------------------- get userSession ID --------------------------- */
+  const cookies = new Cookies();
+  const accessToken = cookies.get('accessToken');
   const [userSession, setUserSession] = useState<string>("");
   useEffect(() => {
-    const cookies = new Cookies();
     setUserSession(cookies.get("id"));
-    console.log("userSession ===> ", userSession);
   }, []);
   /* ------------------------------------ - ----------------------------------- */
-
   /* ------------------------------ fetch userId ------------------------------ */
   const [profileUser, setProfileUser] = useState<users_int>();
   useEffect(() => {
     const fetchprofileInfo = async () => {
       try {
+        // const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${userId}`,{
+        //   credentials: "include",
+        // });
+        // const res = await response.json();
+        // setProfileUser(res)
         const response = await axios.get(
-          `http://127.0.0.1:3000/users/${userId}`
+          `${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${userId}`,{ 
+              withCredentials: true, 
+              headers: {
+                      Authorization: `Bearer ${accessToken}`,
+                    }, 
+              }
         );
         setProfileUser(response.data);
+       
       } catch (error) {
         console.log(error);
       }
@@ -51,6 +68,30 @@ function page() {
   }, [userId]);
   /* ------------------------------------ - ----------------------------------- */
 
+  /* ----------------------------- fetch userStat ----------------------------- */
+  const [userStat, setUserStat] = useState<userStat>();
+  useEffect(() => {
+    const fetchUserStat = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${userId}/userStat`,{ 
+              withCredentials: true, 
+              headers: {
+                      Authorization: `Bearer ${accessToken}`,
+                    }, 
+              }
+        );
+        setUserStat(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchUserStat();
+  }, [userId]);
+  /* ------------------------------------ - ----------------------------------- */
+
+
+
   return (
     profileUser &&
     userSession && (
@@ -58,22 +99,23 @@ function page() {
         <Sidebar />
         <div className="layouts">
           <div className="my_container relative">
-            <div className="wrapper relative">
+            <div className="wrapper relative ">
               <Search id={userSession} />
               <div className="md:block absolute right-[0px] top-[0px] hidden">
-                <Notification userId={userId} userSession={userSession} />
+              {  <Notification userId={userId} userSession={userSession} />}
               </div>
             </div>
 
             <div className="wrapper">
               <div className="flex flex-col gap-[40px] lg:gap-[70px] items-center justify-around lg:h-[500px] w-[200px] xs:w-[300px] md:w-[400px] gradients px-[1rem] py-[1rem] xs:py-[2rem]">
-                <Image
+                {/* <Image
                   src={profileUser.Avatar}
                   width={300}
                   height={300}
                   alt="avatar"
                   className="rounded-full object-cover"
-                />
+                /> */}
+                <img src={profileUser.Avatar} alt="avatar" className="rounded-full object-cover w-[300px] h-[300px]"/>
                 <div className="flex flex-col items-center gap-[10px] w-[80%]">
                   <p
                     id="name_user"
@@ -94,53 +136,17 @@ function page() {
                         level
                       </span>
                       <span className="text-primary font-bold text-2xl">
-                        {"4"}
+                        {userStat ? parseFloat(userStat.rate).toFixed(2): '0'}
                       </span>
                     </div>
                   </div>
                 </div>
-        
-               {/* { (userId !== userSession) && <FriendAction userId={userId} userSessionId={userSession} />} */}
-
               </div>
-
-             {/* {   <FriendAction userId={userId} userSessionId={userSession} />} */}
-             { (userId !== userSession) && <FriendAction userId={userId} userSessionId={userSession} />}
-
+              { <FriendAction userId={userId} userSessionId={userSession} />}
+              
             </div>
             <Achievements userId={userId} userSessionId={userSession} />
-            <div className="wrapper">
-              <p className="title">{true ? "Your" : "Brahim"} History</p>
-              <ul className="flex flex-col w-full gap-[20px]">
-                {history_game.map((history, index) => (
-                  <li key={index} className={`history ${history.status}`}>
-                    <div className="flex items-center justify-between gap-[10px] xs:w-[70px] w-[30px]">
-                      <Image
-                        src={profileUser.Avatar}
-                        width={50}
-                        height={50}
-                        className="rounded-full object-cover md:w-[70px]"
-                        alt="avatar"
-                      />
-                      <p className="font-semibold text-[9px] md:text-lg text-primary ">
-                        {profileUser.name}
-                      </p>
-                    </div>
-                    <div className="history_score">1:2</div>
-                    <div className="flex items-center gap-[10px] w-[70px] flex-row-reverse">
-                      <Image
-                        src={history.avarat}
-                        className="w-[40px] md:w-[70px]"
-                        alt="avatar"
-                      />
-                      <p className="font-semibold text-[9px] md:text-lg text-primary">
-                        {history.oppenet}
-                      </p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            <History userId={userId} userSessionId={userSession} />
           </div>
           <Friendsbar userId={userId} userSessionId={userSession} />
         </div>

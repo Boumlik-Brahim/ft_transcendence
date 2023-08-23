@@ -1,5 +1,7 @@
 'use client'
 import React, { useEffect, useRef } from 'react'
+import { Context } from 'react-responsive'
+import Cookies from 'universal-cookie'
 
 interface GameEntity {
   id : String,
@@ -28,31 +30,36 @@ interface Player {
 }
 
 interface PropsType {
-  gameData : GameEntity | undefined
+  gameData : GameEntity | undefined;
+  gameState : string | undefined
 }
 
 
-const Canvas = ({ gameData } : PropsType) => {
+const Canvas = ({ gameData, gameState } : PropsType) => {
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   const convertValueX = (gamePoint : number, canvasValue : number, gameValue : number) : number => {
-    return ((gamePoint * canvasValue) / gameValue);
+    const t = ((canvasValue) / gameValue);
+    return t * gamePoint
   }
 
   const drawBall = (context : any, r : number, x : number, y : number) => {
     context.beginPath();
+    context.fillStyle = "#3E3B6A"
     context.arc(x, y, r, 0, 2 * Math.PI)
     context.fill();
+    // context.closePath();
   };
 
   const writeScore = (context : any, x : number, score1 : number) => {
-    context.font = "14px Arial";
+    context.font = "20px Arial";
     context.textAlign = 'center'
     context.globalAlpha = 0.3
     const text = score1.toString();
-    const y = 20;
+    const y = 26;
     context.fillText(text, x, y);
+
   }
 
   const drawMiddleLine = (context : any, w : number, h : number) => {
@@ -63,14 +70,15 @@ const Canvas = ({ gameData } : PropsType) => {
     context.moveTo(w / 2, 0);
     context.lineTo(w/2, h);
     context.stroke();
+    // context.closePath();
   }
   
   const drawPaddle = (context : any, x : number, y : number, h : number, w : number) => {
-    context.beginPath();
     context.fillStyle = "#3E3B6A"
-    context.setLineDash([0, 0])
-    context.fillRect(x, y, w, h);
-    context.stroke();
+    context.beginPath();
+    context.roundRect(x, y, w, h);
+    context.fill();
+    // context.closePath();
   }
 
   const drawGame = (context : any, canvas : any) => {
@@ -109,7 +117,7 @@ const Canvas = ({ gameData } : PropsType) => {
         }
       }
     }
-  }, [gameData]);
+  }, [gameData, gameState]);
 
   return (
     <canvas ref={canvasRef} className=' w-full border h-full rounded-lg shadow  '></canvas>
