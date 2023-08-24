@@ -13,7 +13,6 @@ function MessageInputChannelBox() {
 
     const handleShowChannelMembers = () => {
         dispatch(ShowChannelMembers());
-        console.log(isChannelMembersHidden.showChannelMembersToggled);
     }
     return (
         <div className="w-full h-[15%] bg-channel-600 flex items-center justify-between">

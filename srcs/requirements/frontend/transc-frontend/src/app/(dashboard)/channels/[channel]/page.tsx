@@ -207,16 +207,14 @@ function Page({ params }: any) {
 
     socket.on("refrechMember", () => {
         setRefresh(!refresh);
-        console.log("-------------------------- should hide input -------------------------------");
     })
     
     useEffect(() => {
         async function fetchMemberStatus() {
             try {
                 const response = await axios.get(`${process.env.NEXT_PUBLIC_APP_URI}:3000/channel/${params.channel}/memberStatus/${userIdFromCookie}`);
-                console.log(response);
+                
                 response && setChannelMemberStatus(response.data);
-                response && console.log("=========/ ",response.data,"/========= ");
 
               response && ((response.data.role === "MUTED_MEMBER" ) ? setIsMuted(true) : setIsMuted(false))
             } catch (error) {
@@ -233,7 +231,6 @@ function Page({ params }: any) {
 
   useEffect(() => {
     socket.on("redirectAfterGetKicked", () => {
-        console.log("!! --- You have been kicked from this channel --- !!")
         router.push(`/channels/`)
     })
 }, [socket])

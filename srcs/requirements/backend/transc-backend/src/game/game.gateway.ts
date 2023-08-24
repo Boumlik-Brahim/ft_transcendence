@@ -139,7 +139,6 @@ export class GameGateway {
 
   @SubscribeMessage('quiteGame')
   quitGame(@MessageBody() data: JoinGameDto, @ConnectedSocket() client: Socket) {
-    console.log("fode oulae -------- ---------- ------------ out -----");
     if (!this.gameService.isConneted(data.userId, client)) {
       client.emit("error", "Permission denied")
       return;
@@ -154,7 +153,6 @@ export class GameGateway {
   }
   
   handleDisconnect(client : Socket) {
-    console.log("fode oulare leaves")
     this.gameService.deleteUser(client);
   }
 

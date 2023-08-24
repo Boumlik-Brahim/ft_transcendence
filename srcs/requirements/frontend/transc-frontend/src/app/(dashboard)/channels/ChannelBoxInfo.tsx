@@ -115,12 +115,10 @@ function ChannelBoxInfo({ id, channel_name, channel_owner, channel_members, chan
         })  
         
         socket.on("joinedSuccessfully",()=>{
-                console.log("joined Successfully")
                 router.push(`/channels/${id}`)
         })
 
         socket.on("error", (data) => {
-            console.log("wrong Password !!!!")
             alert(data);
         })
     }
@@ -171,12 +169,10 @@ function ChannelBoxInfo({ id, channel_name, channel_owner, channel_members, chan
         })  
         
         socket.on("joinedSuccessfully",()=>{
-                console.log("joined Successfully")
                 router.push(`/channels/${id}`)
         })
 
         socket.on("error", (data) => {
-            console.log("wrong Password !!!!")
             alert(data);
         })      
     }

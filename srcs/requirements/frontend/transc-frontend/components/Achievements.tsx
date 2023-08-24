@@ -154,8 +154,6 @@ export default function Achievements({ userId, userSessionId }: Props) {
               }
         );
         setUserStat(response.data);
-        console.log("userId >>>>>>>>?>>>>", userId);
-        console.log("userStat >>>>>>>>?>>>>", userStat);
       } catch (error) {
         console.log(error);
       }

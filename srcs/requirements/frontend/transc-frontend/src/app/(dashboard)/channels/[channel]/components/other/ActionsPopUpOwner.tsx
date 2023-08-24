@@ -79,7 +79,6 @@ function ActionsPopUpOwner({userId, channelId ,show, clicks, setClicks, setShow 
 
     useEffect(()=>{
 
-        console.log("----- pop-up ---- : user  : ", userId, " clicked btn");
     },[])
 
     // const handleToggle = (btnName : string) => {
@@ -107,15 +106,12 @@ function ActionsPopUpOwner({userId, channelId ,show, clicks, setClicks, setShow 
 
     useEffect(()=>{
         socket.on("memberKickedSuccessfully", () => {
-            console.log(" !! => user : ", userId , " has been kicked !");
-            console.log(btnToggling);
         })
     },[socket])
     
 
     const handleSetAdmin = () =>{
 
-        console.log("set admin btn has been clicked !")
     }
 
 

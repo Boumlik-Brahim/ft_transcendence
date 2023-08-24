@@ -4,7 +4,7 @@ import { UserInter } from "../users/user.interface";
 import { AuthGuard } from "@nestjs/passport";
 import { ApiTags } from "@nestjs/swagger";
 import { UsersService } from "src/users/users.service";
-import { LOGIN_REDIRECT_URL} from "src/utils/constants";
+import { SETTING_REDIRECT_URL} from "src/utils/constants";
 
 
 @ApiTags('auth')
@@ -16,7 +16,7 @@ export class AuthController {
     @Get()
     @UseGuards(AuthGuard('42'))
     login(@Res() res: any, user: UserInter) : Promise<any> {
-        return res.redirect(LOGIN_REDIRECT_URL);
+        return res.redirect(SETTING_REDIRECT_URL);
     }
     
     @Get('callback')

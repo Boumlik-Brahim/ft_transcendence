@@ -421,7 +421,6 @@ export class ChannelService {
   @Cron(CronExpression.EVERY_SECOND)
   async handleUnmuteAdmin(): Promise<{ count: number }> {
     const currentDate = new Date();
-    // console.log("currentTime", currentDate);
     const updatedChannelMembers = await this.prisma.channelMember.updateMany({
       where: {
         role: 'MUTED_ADMIN',

@@ -31,7 +31,6 @@ function ActionsPopUp({ userId, channelId, isOwner, isMember, show, clicks, memb
    
     socket.on("refrechMember", () => {
         setRefresh(!refresh);
-        console.log("------------- i should refresh here ---------------");
     })
   
 
@@ -90,14 +89,11 @@ function ActionsPopUp({ userId, channelId, isOwner, isMember, show, clicks, memb
     
 
     useEffect(() => {
-        
-        console.log("----- pop-up ---- : user  : ", userId, " clicked btn");
-        console.log("refreshing . . . . . ");
 
         async function fetchMemberStatus() {
             try {
                 const response = await axios.get(`${process.env.NEXT_PUBLIC_APP_URI}:3000/channel/${channelId}/memberStatus/${userId}`);
-                console.log(response);
+                
                 response && setChannelMemberStatus(response.data);
             } catch (error) {
                 alert(error);
@@ -130,7 +126,6 @@ function ActionsPopUp({ userId, channelId, isOwner, isMember, show, clicks, memb
     useEffect(() => {
         
         socket.on("memberKickedSuccessfully", () => {
-            console.log(" !! => user : ", userId, " has been kicked !");
         })
     }, [socket])
 
@@ -143,17 +138,14 @@ function ActionsPopUp({ userId, channelId, isOwner, isMember, show, clicks, memb
                 channelId: channelId, 
                 userId: userId,
             })
-            console.log("Making Member Admin ...... ");
         }
         else{
             socket.emit("createMember", {
                 channelId: channelId, 
                 userId: userId,
             })
-            console.log("Making Admin Member ...... ");
         }
 
-        console.log("set admin btn has been clicked !")
     }
 
 
@@ -174,7 +166,6 @@ function ActionsPopUp({ userId, channelId, isOwner, isMember, show, clicks, memb
         });
 
         
-        console.log("Mute btn has been clicked !")
     }
 
 
@@ -188,14 +179,12 @@ function ActionsPopUp({ userId, channelId, isOwner, isMember, show, clicks, memb
         const minutes: number = date.getMinutes();
         const futureTime = new Date(currentTime.getTime() + minutes* 60000); 
         const formattedTime = futureTime.toISOString();
-        console.log("Time sent to backend : -------------> ", formattedTime);
 
         socket.emit("banMember", {
             channelId: channelId,
             userId: userId,
             bannedTime: formattedTime
         });
-        console.log("Ban btn has been clicked !")
     }
 
 

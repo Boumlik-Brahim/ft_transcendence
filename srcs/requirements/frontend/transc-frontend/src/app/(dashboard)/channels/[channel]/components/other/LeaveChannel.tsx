@@ -67,7 +67,6 @@ function LeaveChannel({ channelId, userId, isOwner }: leaveChannelProps) {
     }
     useEffect(() => {
         socket.on("leavedSuccessfully", () => {
-            console.log("!! --- You leaved the channel --- !!")
             router.push(`/channels/`)
         })
     }, [socket])

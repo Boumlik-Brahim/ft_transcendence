@@ -82,7 +82,6 @@ export class GameService {
         if (indexToDelete != -1) {
             const keyToDelete = Array.from(this.usersConnected.keys())[indexToDelete]
             const games = Array.from(this.gameMap.values());
-            console.log("Game To delete")
             if (games) {
                 games.map(game => {
                     if (keyToDelete === game?.player1.id || keyToDelete === game?.player2.id) {
@@ -180,7 +179,6 @@ export class GameService {
                 where : { id : invitationId }
             })
             if (!invitation || !user || invitation.status !== 'PENDING' || userId !== invitation.receiverId) return ;
-            console.log("Rejecte The Game")
             const { gameId, senderId} = invitation;
             this.gameMap.delete(gameId);
             await this.prisma.gamesInvitation.update({
@@ -315,7 +313,6 @@ async updateUserSatusInTheGame (userId : string, status : 'ONLINE' | 'OFFLINE' |
 async joinGame(userId : string, gameId : string, client : Socket, server : Server) {
     try {
         const game = this.gameMap.get(gameId);
-        console.log("joinjoinjoinjoinjoi", game)
         if (!game) {
             client.emit("error_access");
             return;

@@ -52,7 +52,7 @@ function MemberBoxInfoLg({ userId ,channelId, userName, profilePic }: {userId:st
         async function fetchMemberStatus() {
             try {
                 const response = await axios.get(`${process.env.NEXT_PUBLIC_APP_URI}:3000/channel/${channelId}/memberStatus/${userId}`);
-                console.log(response);
+                
                 response && setChannelMemberStatus(response.data);
             } catch (error) {
                 alert(error);

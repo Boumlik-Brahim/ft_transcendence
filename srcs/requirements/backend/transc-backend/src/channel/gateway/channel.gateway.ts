@@ -47,7 +47,6 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
           this.connectedClientsInChannel.set(client.id, userId);
       }
     }
-    console.log(`Socket ID: ${client.id}, User: ${userId} is connected on Channel gateway`);
     this.clientId = client.id;
     this.logger.log(`Client connected to Channel server: ${client.id}`);
   }
@@ -233,7 +232,6 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   @SubscribeMessage('banMember')
   async handleBanMember(@MessageBody() payload: { channelId: string, userId: string, bannedTime: string }, @ConnectedSocket() socket: Socket): Promise<void> {
     try{
-      console.log(payload.bannedTime);
       const member = await this.channelService.findOneChannelMember(payload.channelId, payload.userId);
       if(member && (member.role === 'MEMBER' || member.role === 'ADMIN'))
       {
@@ -273,7 +271,6 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   @SubscribeMessage('muteMember')
   async handleMuteMember(@MessageBody() payload: { channelId: string, userId: string, mutedTime: string }, @ConnectedSocket() socket: Socket): Promise<void> {
     try{
-      console.log(payload.mutedTime);
       const member = await this.channelService.findOneChannelMember(payload.channelId, payload.userId);
       if(member && (member.role === 'MEMBER' || member.role === 'ADMIN'))
       {
@@ -297,7 +294,6 @@ export class ChannelGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   @Cron(CronExpression.EVERY_SECOND)
   async handleUnMuteMember(): Promise<void> {
     const Count = await this.channelService.handleUnmuteMember();
-    // console.log("count", Count);
     if (Count.count === 1){
       this.server.to(this.clientId).emit('refrechMember');
     }

@@ -14,7 +14,6 @@ async function getUsers() {
 
 async function page() {
   const data = await getUsers();
-  // console.log(data);
   return (
     <div className="layouts">
       <div className="flex-1">

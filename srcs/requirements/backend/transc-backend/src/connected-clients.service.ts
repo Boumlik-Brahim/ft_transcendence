@@ -15,7 +15,6 @@ export class ConnectedClientsService {
     
     addClient(client: Socket) {
         const userId = client.handshake.auth.userId as string;
-        console.log(`Socket ID: ${client.id}, User: ${userId} is connected on app gateway`);
         if (userId && client.id){
             if(!connectedClients.has(client.id))
             {
@@ -38,7 +37,6 @@ export class ConnectedClientsService {
     
     addClientInchat(client: Socket) {
         const userId = client.handshake.auth.userId as string;
-        console.log(`Socket ID: ${client.id}, User: ${userId} is connected on Chat gateway`);
         if (userId && client.id){
             if(!this.connectedClientsInChat.has(client.id))
             {

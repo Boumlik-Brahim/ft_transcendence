@@ -71,7 +71,7 @@ function ChannelMembersListPage({ channelId }: { channelId: string }) {
         async function fetchPrivateChannel() {
             try {
                 const response = await axios.get<channel>(`${process.env.NEXT_PUBLIC_APP_URI}:3000/channel/${channelId}`);
-                console.log(response);
+                
                 response && setChannelData(response.data);
                 response && setChannelType(response.data.channelType);
                 response && setChannelOwnerId(response.data.channelOwnerId);
@@ -114,12 +114,10 @@ function ChannelMembersListPage({ channelId }: { channelId: string }) {
             channelId: channelId,
             userId: userIdFromCookie
         });
-        console.log("leave btn clicked ");
 
     }
     useEffect(() => {
         socket.on("leavedSuccessfully", () => {
-            console.log("!! --- You leaved the channel --- !!")
             router.push(`/channels/`)
         })
     }, [socket])

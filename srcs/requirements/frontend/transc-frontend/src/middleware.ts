@@ -8,7 +8,7 @@ export default function middleware(req: NextRequest, res: NextResponse) {
     const userId = req.cookies.get("id")?.value || "";
 
     if (isPublicPath && hasToken){
-        return NextResponse.redirect(new URL(`/profile/${userId}`, req.nextUrl));
+        return NextResponse.redirect(new URL(`/setting`, req.nextUrl));
     }
     if (!hasToken && !isPublicPath){
         return NextResponse.redirect(new URL('/login', req.nextUrl));

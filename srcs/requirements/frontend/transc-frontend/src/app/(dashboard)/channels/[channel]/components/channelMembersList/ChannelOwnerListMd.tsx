@@ -45,7 +45,7 @@ function ChannelOwnerListMd({ channelId }: { channelId: string }) {
         async function fetchPrivateChannel() {
             try {
                 const response = await axios.get<channel>(`${process.env.NEXT_PUBLIC_APP_URI}:3000/channel/${channelId}`);
-                console.log(response);
+                
                 response && setChannelData(response.data);
             } catch (error) {
                 alert(error);

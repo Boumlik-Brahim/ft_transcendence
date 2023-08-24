@@ -66,13 +66,6 @@ function MessageInputChannelBox({channelId, channelMemberStatus} : {channelId: s
         setMessage({ ...message, content: '' });
     };
 
-    
-    // inputRef.current?.on("onMessage", (data:any) => {
-    //     // setMessages((prev) => [...prev, { content: data.content, userId: data.userId, channelId: data.userId, created_at: new Date().toISOString(), }])
-    //     console.log(data)
-    //   });
-
-
     //* function that watch if enter clicked to send th message
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {

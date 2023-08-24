@@ -35,23 +35,6 @@ function ChannelsList() {
     setIsLgScreen(isLgScreen);
   }, [isMdScreen, isLgScreen]);
 
-
-  // const channelsList = channelsData.map((channel: channelProps) => {
-  //   return (
-  //     <ChannelBoxInfo
-  //       key={channel.id}
-  //       id={channel.channel_name}
-  //       channel_name={channel.channel_name}
-  //       channel_owner={channel.channel_owner}
-  //       channel_members={channel.channel_members}
-  //       channel_mode={channel.channel_mode}
-  //     />
-  //     );
-  //   });
-  // if (channels.length == 0)
-  // console.log("Empty channels")
-
-
   const wrongChannelIdStyling = "red-400"
 
   //^ ---------------------------------- fetch  channels --------------------------------

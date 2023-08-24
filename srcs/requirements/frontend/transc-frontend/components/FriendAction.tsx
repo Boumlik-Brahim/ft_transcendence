@@ -277,7 +277,6 @@ function FriendAction({ userId, userSessionId }: Props) {
         // })
         // const res = await response.json();
         // setFriends(res);
-        console.log("from friend req : ------------------------> ", accessToken);
         const response = await axios.get(
           `${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${userId}/friend`,{ 
               withCredentials: true, 
