@@ -66,7 +66,7 @@ const Friends = ({ _name, setName, setIsRandom, setOponent } : Props) => {
                         <div className={`w-full flex items-center m-2 justify-between ${ namesfilter.length === index + 1 ? '' : 'border-b-[1px]'}`}>
                             <div className=' flex items-center gap-2 text-white'>
                                 <div className='h-[30px] w-[30px] bg-slate-200 rounded-full'>
-                                    <Image src={Avatar} height='80' width='80' alt='no player' className='border-4 rounded-full' />
+                                    <img src={Avatar} height='80' width='80' alt='no player' className='rounded-full object-fill min-w-[30px] min-h-[30px]' />
                                 </div>
                                 <p>{name}</p>
                             </div>

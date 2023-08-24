@@ -105,7 +105,7 @@ function MessageBox({ userId, messageContent, date }: Props) {
             <div className='relative  w-[280px]  min-h-[30px] md:w-[300px] lg:w-[360px] '>
                 <Link href={`/profile/${userId}`}>
                 
-                <Image src={`${userName ? userName?.Avatar : "https://cdn.pixabay.com/photo/2017/07/03/09/54/dog-2467149_1280.jpg"}`} width={40} height={40} alt="avatar" className="absolute  w-[40px] h-[40px] rounded-full md:w-[43] md:h-[43]" />
+                <img src={`${userName ? userName?.Avatar : "https://cdn.pixabay.com/photo/2017/07/03/09/54/dog-2467149_1280.jpg"}`} alt="avatar" className="absolute  w-[40px] h-[40px] object-fill  rounded-full md:w-[43] md:h-[43]" />
                 </Link>
 
                 <div className='w-full h-[24px]  flex pl-[46px]'>

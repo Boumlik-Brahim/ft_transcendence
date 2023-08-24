@@ -154,7 +154,7 @@ function ChannelsList() {
         setPrivateInputId('')
         setCheck(false)
         // console.error(error);
-        alert(error);
+        // alert(error);
       }
     }
     fetchPrivateChannel();

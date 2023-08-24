@@ -120,17 +120,17 @@ export class ChannelController {
     return channelMessage;
   }
   
-  // @Get('/:channelId/channelMessage')
-  // async findAllChannelMessages(@Param('channelId') channelId: string): Promise<ChannelMessage[]> {
-  //   const channelMessages = await this.channelService.findAllChannelMessages(channelId);
-  //   return channelMessages;
-  // }
-
-  @Get('/:channelId/channelMessage/:senderId')
-  async findAllChannelMessages(@Param('channelId') channelId: string, @Param('senderId') senderId: string): Promise<ChannelMessage[]> {
-    const channelMessages = await this.channelService.findAllChannelNonBlockedMessages(channelId, senderId);
+  @Get('/:channelId/channelMessage')
+  async findAllChannelMessages(@Param('channelId') channelId: string): Promise<ChannelMessage[]> {
+    const channelMessages = await this.channelService.findAllChannelMessages(channelId);
     return channelMessages;
   }
+
+  // @Get('/:channelId/channelMessage/:senderId')
+  // async findAllChannelMessages(@Param('channelId') channelId: string, @Param('senderId') senderId: string): Promise<ChannelMessage[]> {
+  //   const channelMessages = await this.channelService.findAllChannelNonBlockedMessages(channelId, senderId);
+  //   return channelMessages;
+  // }
 
   @Delete('/:channelId/channelMessages')
   async removeChannelMessages(@Param('channelId') channelId: string): Promise<void> {

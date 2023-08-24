@@ -324,8 +324,8 @@ export class ChannelService {
       },
       data: {
         role: 'MEMBER',
-        bannedTime: new Date(0),
-        unbanneTime: new Date(0)
+        bannedTime: null,
+        unbanneTime: null
       }
     });
     return updatedChannelMembers;
@@ -343,8 +343,8 @@ export class ChannelService {
       },
       data: {
         role: 'ADMIN',
-        bannedTime: new Date(0),
-        unbanneTime: new Date(0)
+        bannedTime: null,
+        unbanneTime: null
       }
     });
     return updatedChannelMembers;
@@ -431,8 +431,8 @@ export class ChannelService {
       },
       data: {
         role: 'ADMIN',
-        mutedTime: new Date(0),
-        unmuteTime: new Date(0)
+        mutedTime: null,
+        unmuteTime: null
       }
     });
     return updatedChannelMembers;

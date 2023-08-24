@@ -113,7 +113,7 @@ function ChannelOwnerListSm({ channelId }: { channelId: string }) {
             <div className="w-full h-[60%]  flex items-center justify-center">
                 <div className="h-full w-[80%] flex ">
                     <div className="w-[80%] h-full flex items-center px-[27px]">
-                        <Image src={`${channelOwnerData ? channelOwnerData?.Avatar : "https://cdn.pixabay.com/photo/2017/07/03/09/54/dog-2467149_1280.jpg"}`} alt="delete channel" width={41} height={41} className="rounded-full" />
+                        <img src={`${channelOwnerData ? channelOwnerData?.Avatar : "https://cdn.pixabay.com/photo/2017/07/03/09/54/dog-2467149_1280.jpg"}`} alt="delete channel" className="rounded-full w-[41px] h-[41px] object-fill" />
                         <div className="w-[130px] h-full flex items-center ml-[16px] text-white text-[15px] font-poppins font-medium truncate">
                             {channelOwnerData?.name}
                         </div>

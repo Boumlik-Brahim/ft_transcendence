@@ -33,15 +33,12 @@ export class GameGateway {
   }
 
   handleConnection(client : Socket) {
-    console.log("New user tries to connect")
     const token = client.handshake.auth.token;
     if (token) {
       try {
         const user = jwt.verify(token, JWT_SECRET) as {id : string, email : string, iat: number}
-        console.log(user, "whitout id")
         const { id } = user;
         if (user.id)
-        console.log(id, " ------- userId -------", user);
         this.gameService.addUser(id, client, this.server);
       }
       catch {

@@ -49,7 +49,7 @@ const Canvas = ({ gameData, gameState } : PropsType) => {
     context.fillStyle = "#3E3B6A"
     context.arc(x, y, r, 0, 2 * Math.PI)
     context.fill();
-    // context.closePath();
+    context.closePath();
   };
 
   const writeScore = (context : any, x : number, score1 : number) => {
@@ -70,15 +70,16 @@ const Canvas = ({ gameData, gameState } : PropsType) => {
     context.moveTo(w / 2, 0);
     context.lineTo(w/2, h);
     context.stroke();
-    // context.closePath();
+    context.closePath();
   }
   
   const drawPaddle = (context : any, x : number, y : number, h : number, w : number) => {
-    context.fillStyle = "#3E3B6A"
+    
     context.beginPath();
-    context.roundRect(x, y, w, h);
+    context.rect(x, y, w, h, 40);
+    context.fillStyle = "#3E3B6A";
     context.fill();
-    // context.closePath();
+    context.closePath();
   }
 
   const drawGame = (context : any, canvas : any) => {

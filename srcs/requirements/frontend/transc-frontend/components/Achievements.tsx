@@ -154,6 +154,8 @@ export default function Achievements({ userId, userSessionId }: Props) {
               }
         );
         setUserStat(response.data);
+        console.log("userId >>>>>>>>?>>>>", userId);
+        console.log("userStat >>>>>>>>?>>>>", userStat);
       } catch (error) {
         console.log(error);
       }
@@ -161,7 +163,6 @@ export default function Achievements({ userId, userSessionId }: Props) {
     fetchUserStat();
   }, [userId]);
   /* ------------------------------------ - ----------------------------------- */
-
 
   /* -------------------------- friend requset socket ------------------------- */
   useEffect(() => {
@@ -275,7 +276,7 @@ export default function Achievements({ userId, userSessionId }: Props) {
                 alt="ach"
               />
             </div>
-            <div className={`relative ${userStat && (Number(userStat.rate) < 19) && "achievement_disabled" }  mt-[-35px] `}>
+            <div className={`relative ${ (userStat?.rate === undefined) || ((Number(userStat?.rate) < 19) ) ? "achievement_disabled" : "" }  mt-[-35px] `}>
               <Image src={_19_in_score} alt="ach" />
               <Image
                 src={_19_in_score_gif}
@@ -322,7 +323,7 @@ export default function Achievements({ userId, userSessionId }: Props) {
                 alt="ach"
               />
             </div>
-            <div className={`relative  ${userStat && (Number(userStat.rate) < 21) && "achievement_disabled" }  mt-[-35px] `}>
+            <div className={`relative  ${(userStat?.rate === undefined) || ((Number(userStat?.rate) < 21) ) ? "achievement_disabled" : "" }  mt-[-35px] `}>
               <Image src={_21_in_score} alt="ach" />
               <Image
                 src={_21_in_score_gif}
@@ -369,7 +370,7 @@ export default function Achievements({ userId, userSessionId }: Props) {
                 alt="ach"
               />
             </div>
-            <div className={`relative  ${userStat && (Number(userStat.rate) < 42) && "achievement_disabled" }  mt-[-35px] `}>
+            <div className={`relative  ${(userStat?.rate === undefined) || ((Number(userStat?.rate) < 42) ) ?"achievement_disabled" : ""} mt-[-35px] `}>
               <Image src={_42_in_score} alt="ach" />
               <Image
                 src={_42_in_score_gif}
@@ -416,7 +417,7 @@ export default function Achievements({ userId, userSessionId }: Props) {
                 alt="ach"
               />
             </div>
-            <div className={`relative  ${userStat && (Number(userStat.rate) < 1337) && "achievement_disabled" }  mt-[-35px]`}>
+            <div className={`relative  ${(userStat?.rate === undefined) || ((Number(userStat?.rate) < 1337) ) ? "achievement_disabled" : ""}  mt-[-35px]`}>
               <Image src={_1337_in_score} alt="ach" />
               <Image
                 src={_1337_in_score_gif}

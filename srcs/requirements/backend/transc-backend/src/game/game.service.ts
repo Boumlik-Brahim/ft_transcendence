@@ -71,54 +71,6 @@ export class GameService {
     }
 
 
-    // async checkIfThereVAlidInvitation (senderId : string, receiverId) {
-    //     try {
-    //         const gameInvitations = await this.prisma.gamesInvitation.findMany({
-    //             where : {
-    //                 OR : [
-    //                     {
-    //                         AND : [
-    //                             {
-    //                                 senderId : senderId
-    //                             },
-    //                             {
-    //                                 receiverId : receiverId
-    //                             },
-    //                             {
-    //                                 status : 'PENDING'
-    //                             }
-    //                         ]
-    //                     },
-    //                     {
-    //                         AND : [
-    //                             {
-    //                                 senderId : receiverId
-    //                             },
-    //                             {
-    //                                 receiverId: senderId
-    //                             },
-    //                             {
-    //                                 status : 'PENDING'
-    //                             }
-    //                         ]
-    //                     }
-    //                 ]
-    //             }
-    //         });
-    //         if (gameInvitations.length > 0) {
-    //             const gameInvitation = gameInvitations[0];
-    //             const senderclient = this.usersConnected.get(senderId);
-    //             senderclient.emit("Success", {id : gameInvitation.id});
-    //             return true;
-    //         }
-    //         return false;
-    //     }
-    //     catch (error) { 
-    //         console.log(error);
-    //     } 
-    // } 
-
-
     /**
      * Delete user inthe connected user map
      * @param socket 
@@ -129,15 +81,16 @@ export class GameService {
         const indexToDelete = arrayOfUserConnected.findIndex((_socket) => socket.id === _socket.id);
         if (indexToDelete != -1) {
             const keyToDelete = Array.from(this.usersConnected.keys())[indexToDelete]
-            this.usersConnected.delete(keyToDelete);
             const games = Array.from(this.gameMap.values());
+            console.log("Game To delete")
             if (games) {
                 games.map(game => {
                     if (keyToDelete === game?.player1.id || keyToDelete === game?.player2.id) {
-                     this.quiteGame(keyToDelete, game.id, socket, 'ONLINE');
+                        this.quiteGame(keyToDelete, game.id, socket, 'ONLINE');
                     }
                 })
             }
+            this.usersConnected.delete(keyToDelete);
         }
     }
 
@@ -362,6 +315,7 @@ async updateUserSatusInTheGame (userId : string, status : 'ONLINE' | 'OFFLINE' |
 async joinGame(userId : string, gameId : string, client : Socket, server : Server) {
     try {
         const game = this.gameMap.get(gameId);
+        console.log("joinjoinjoinjoinjoi", game)
         if (!game) {
             client.emit("error_access");
             return;
@@ -502,16 +456,18 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
         let lastTimestamp = performance.now();
         const id = setInterval(() => {
             const currentTimestamp = performance.now();
-            const deltaTime = (currentTimestamp - lastTimestamp) / 1000
-            if (game.gameStatus.status === 'started')
-            {
-                this.updatePaddle(game);
-                this.gameLogique(game, deltaTime);
-                server.to(game.id).emit("gameData", game);
+            const deltaTime = currentTimestamp - lastTimestamp
+            if (deltaTime >= 1000/60) {
+                if (game.gameStatus.status === 'started')
+                {
+                    this.updatePaddle(game);
+                    this.gameLogique(game, deltaTime);
+                    server.to(game.id).emit("gameData", game);
+                }
+                this.istheGameEnd(game, id, server);
+                lastTimestamp = currentTimestamp;
             }
-            this.istheGameEnd(game, id, server);
-            lastTimestamp = currentTimestamp;
-        }, 1000/50);
+        }, 1000/60);
     }
 
     /**
@@ -778,7 +734,7 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
             if (game.id === this.inTheQueue)
             {
                 this.inTheQueue = null;
-                this.gameMap.delete(game.id);
+                this.gameMap.delete(game.id)
             }
             else
             {
@@ -797,8 +753,10 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
                     game.player1.score = 3;
                     game.player2.score = 0;
                 }
-                if (game.gameStatus.status !== 'waiting')
+                if (game.gameStatus.status !== 'waiting') {
                     game.gameStatus.status = 'finished';
+                    this.gameMap.set(gameId, game);
+                }
                 else {
                     const gameInvitation = await this.prisma.gamesInvitation.findUnique({   
                         where : {
@@ -821,9 +779,8 @@ async joinGame(userId : string, gameId : string, client : Socket, server : Serve
                     this.gameMap.delete(gameId);
                 }
             }
-            this.gameMap.set(gameId, game);
             this.updateUserSatusInTheGame(playerId as string, status);
-            client?.leave(gameId as string);
+            client.leave(gameId as string);
         }
     }
 }

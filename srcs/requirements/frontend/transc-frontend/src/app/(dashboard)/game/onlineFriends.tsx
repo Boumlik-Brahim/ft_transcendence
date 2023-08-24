@@ -70,7 +70,7 @@ const OnlineFriends = ({ setOponent, setIsRandom } : Props) => {
                     <div className='w-full flex justify-around items-center mt-5' key={index}>
                         <div className='flex items-center w-[50%]'>
                         <div className='h-auto m-auto relative flex justify-end'>
-                            <Image src={user.Avatar} height='61' width='61' className='rounded-full border-2 border-green-500' alt='no player' />
+                            <img src={user.Avatar} height='61' width='61' className='rounded-full border-2 border-green-500 object-fill min-w-[61px] min-h-[61px]' alt='no player' />
                         </div>
                         <h1 className='text-white text-[18px] font-[700] block w-[50%]'>{user.name}</h1>
                         </div>

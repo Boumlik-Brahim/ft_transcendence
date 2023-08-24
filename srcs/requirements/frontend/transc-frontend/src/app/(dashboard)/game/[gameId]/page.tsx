@@ -166,7 +166,7 @@ const Page = ( {params} : any) => {
                                 </div>
                                 <div className='h-[50px] flex flex-wrap justify-center items-center '>
                                     <Link href='/game'>
-                                        <button className='bg-primary m-4 p-2 w-[150px] border border-primary text-white rounded-xl cursor hover:bg-white hover:text-primary'>
+                                        <button className='bg-primary  p-2 w-[150px] border border-primary text-white rounded-xl cursor hover:bg-white hover:text-primary'>
                                             Leave
                                         </button>
                                     </Link>

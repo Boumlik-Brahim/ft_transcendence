@@ -53,6 +53,7 @@ const dispatch = useDispatch();
 
     const router = useRouter()
 
+
     
     const handleSubmitNotif = async ({userSession, msg} : {userSession : string ,msg : notifMessage}) => {
           dispatch(setOtherUser(msg.user.id));
@@ -123,11 +124,19 @@ const dispatch = useDispatch();
     fetchfriendShip();
   }, [notification, userSession]);
 
-  const getGameInvitation = () => {
+  const getGameInvitation = async () => {
     if (userId) {
-        fetch(`${process.env.NEXT_PUBLIC_APP_URI}:3000/game/invitations/${userId}`)
-        .then(data => data.json())
-        .then (res => {setGameNoticat(res); console.log(res)})
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URI}:3000/game/invitations/${userId}`);
+        if (response.ok) {
+          const data = await response.json();
+          setGameNoticat(data)
+        }
+      }
+      catch (error) {
+
+      }
+        
     }
   }
 

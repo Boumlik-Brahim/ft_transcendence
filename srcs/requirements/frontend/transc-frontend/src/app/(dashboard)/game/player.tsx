@@ -26,7 +26,7 @@ const Player = ({playerId, inputValue, setInputValue, waiting} : Props) => {
             const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URI}:3000/users/${playerId}/userStat`);
              if (response.ok) {
                 const data = await response.json();
-                setLevel(data.rate);
+                setLevel(data.rate.toFixed(2));
              }
         }
         catch (error) {  console.log(error) }
@@ -53,7 +53,7 @@ const Player = ({playerId, inputValue, setInputValue, waiting} : Props) => {
                     {
                         user ? 
                         (
-                            <Image src={user.Avatar} height='200' width='200' className='rounded-full' alt='player' />
+                            <img src={user.Avatar} height='200' width='200' className='rounded-full object-fill min-w-[200px] min-h-[200px]' alt='player' />
                         )
                         :
                         (

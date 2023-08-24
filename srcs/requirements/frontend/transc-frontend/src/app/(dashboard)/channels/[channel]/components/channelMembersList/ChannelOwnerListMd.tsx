@@ -80,7 +80,7 @@ function ChannelOwnerListMd({ channelId }: { channelId: string }) {
         <div className="w-full h-[10vh] ">
             <div className="w-full h-full flex">
                 <div className={`${`h-full  ${removeChannelPermission ? "w-[70%] justify-end" : "w-full justify-center"} flex items-center `}`}>
-                    <Image src={`${channelOwnerData ? channelOwnerData.Avatar : "https://cdn.pixabay.com/photo/2017/07/03/09/54/dog-2467149_1280.jpg"}`} alt="delete channel" width={50} height={50} className="rounded-full" />
+                    <img src={`${channelOwnerData ? channelOwnerData.Avatar : "https://cdn.pixabay.com/photo/2017/07/03/09/54/dog-2467149_1280.jpg"}`} alt="delete channel" className="rounded-full w-[50px] h-[50px] object-fill" />
                 </div>
                { removeChannelPermission && 
                     <div className="h-full w-[30%]  flex items-center justify-start pl-[7px]">

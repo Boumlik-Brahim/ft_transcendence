@@ -51,11 +51,9 @@ export default function History({ userId, userSessionId }: Props) {
               <li key={index} className={`history min-h-[100px] ${(H.playerA_Score < H.playerB_Score) ? "lose_match" : 
               (H.playerA_Score > H.playerB_Score) ? "win_match" : "draw_match" }`} >
                 <div className="flex items-center justify-between gap-[10px] xs:w-[70px] w-[30px]">
-                  <Image
+                  <img
                     src={opponents[index].playerA_Avatar}
-                    width={50}
-                    height={50}
-                    className="rounded-full object-cover md:w-[70px]"
+                    className="rounded-full object-cover md:w-[70px] max-w-[50px] h-[50px]"
                     alt="avatar"
                   />
                   <p className="font-semibold text-[9px] md:text-lg text-primary ">
@@ -66,11 +64,9 @@ export default function History({ userId, userSessionId }: Props) {
                     {`${opponents[index].playerA_Score} : ${opponents[index].playerB_Score}`}
                 </div>
                 <div className="flex items-center gap-[10px] w-[70px] flex-row-reverse">
-                  <Image
+                  <img
                     src={opponents[index].playerB_Avatar}
-                    width={50}
-                    height={50}
-                    className="rounded-full object-cover md:w-[70px]"
+                    className="rounded-full object-cover md:w-[70px] max-w-[50px] h-[50px]"
                     alt="avatar"
                   />
                   <p className="font-semibold text-[9px] md:text-lg text-primary">

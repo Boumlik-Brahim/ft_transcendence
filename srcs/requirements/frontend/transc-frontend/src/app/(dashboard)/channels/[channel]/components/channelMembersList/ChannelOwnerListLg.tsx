@@ -111,7 +111,8 @@ function ChannelOwnerListLg({ channelId }: { channelId: string }) {
             </div>
             <div className="w-[90%] h-[60%]  flex items-center  mx-[10%]">
                    <div className="h-full w-[20%] flex items-center justify-center">
-                   <Image src={`${channelOwnerData ? channelOwnerData?.Avatar : "https://cdn.pixabay.com/photo/2017/07/03/09/54/dog-2467149_1280.jpg"}`} alt="Owner avatar" width={41} height={41} className="rounded-full" />
+                   {/* <Image src={`${channelOwnerData ? channelOwnerData?.Avatar : "https://cdn.pixabay.com/photo/2017/07/03/09/54/dog-2467149_1280.jpg"}`} alt="Owner avatar" width={41} height={41} className="rounded-full" /> */}
+                   <img src={`${channelOwnerData ? channelOwnerData?.Avatar : "https://cdn.pixabay.com/photo/2017/07/03/09/54/dog-2467149_1280.jpg"}`} alt="Owner avatar" className="rounded-full w-[41px] h-[41px] object-fill" />
                     </div> 
                    <div className="h-full w-[80%]  flex items-center">
                        <div className="h-full w-[70%] flex items-center pl-[10px] text-white text-[15px] font-poppins font-medium truncate">

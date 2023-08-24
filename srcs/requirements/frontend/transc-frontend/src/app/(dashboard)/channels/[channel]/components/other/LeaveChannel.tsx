@@ -73,20 +73,57 @@ function LeaveChannel({ channelId, userId, isOwner }: leaveChannelProps) {
     }, [socket])
 
 
-
+    
+    // const handleCopyClick = () => {
+        //       navigator.clipboard.writeText(channelIdState).then(() => {
+            //         setIsCopied(true);
+            //         setTimeout(() => {
+                //             setIsCopied(false);
+                //         }, 2000); // Reset the "Copied" state after 2 seconds
+                //     }).catch((error) => {
+                    //         console.error("Failed to copy text: ", error);
+                    //     });
+                    // };
+                    
+                    
     const [isCopied, setIsCopied] = useState(false);
-
+    const [channelIdState, setChannelIdState] = useState(channelId);
+    
     const handleCopyClick = () => {
-        navigator.clipboard.writeText(channelId).then(() => {
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(channelIdState).then(() => {
             setIsCopied(true);
             setTimeout(() => {
-                setIsCopied(false);
-            }, 2000); // Reset the "Copied" state after 2 seconds
-        }).catch((error) => {
+              setIsCopied(false);
+            }, 2000);
+          }).catch((error) => {
             console.error("Failed to copy text: ", error);
-        });
-    };
-
+          });
+        } else {
+          // Fallback for browsers that don't support navigator.clipboard
+          const textArea = document.createElement("textarea");
+          textArea.value = channelIdState;
+          document.body.appendChild(textArea);
+          textArea.select();
+    
+          try {
+            const successful = document.execCommand('copy');
+            if (successful) {
+              setIsCopied(true);
+              setTimeout(() => {
+                setIsCopied(false);
+              }, 2000);
+            } else {
+              console.error("Copying text using document.execCommand('copy') failed.");
+            }
+          } catch (error) {
+            console.error("Failed to copy text using document.execCommand: ", error);
+          }
+    
+          document.body.removeChild(textArea);
+        }
+      };
+    
 
 
     return (

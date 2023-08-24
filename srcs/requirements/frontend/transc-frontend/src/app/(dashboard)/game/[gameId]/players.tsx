@@ -45,7 +45,7 @@ const Players = ({userId_1, userId_2} : Props) => {
                     player1 &&
                     <div className='flex gap-3 items-center'>
                         <div className='h-[80px] w-[80px] m-auto relative'>
-                            <Image src={player1.Avatar} height='80' width='80' alt='no player' className='border-4 rounded-full' />
+                            <img src={player1.Avatar} height='80' width='80' alt='no player' className='border-4 rounded-full object-fill min-w-[80px] min-h-[80px]' />
                         </div>
                         <h1 className='text-white text-[20px] font-[700]'> {player1.name} </h1>
                     </div>
@@ -55,7 +55,7 @@ const Players = ({userId_1, userId_2} : Props) => {
                     <div className='flex gap-3 items-center'>
                         <h1 className='text-white text-[20px] font-[700]'> {player2.name} </h1>
                         <div className='h-auto m-auto relative'>
-                            <Image src={player2.Avatar} height='80' width='80' alt='player'  className='border-4 rounded-full' />
+                            <img src={player2.Avatar} height='80' width='80' alt='player'  className='border-4 rounded-full object-fill min-w-[80px] min-h-[80px] ' />
                        
                         </div>
                     </div>
